@@ -82,6 +82,9 @@ public final class HistoryStore: @unchecked Sendable {
         if let serial = drive.serialNumber, !serial.isEmpty {
             return "\(drive.model)#\(serial)"
         }
+        if let mediaUUID = drive.mediaUUID, !mediaUUID.isEmpty {
+            return "\(drive.model)#\(mediaUUID)"
+        }
         return "\(drive.model)#\(drive.sizeBytes)"
     }
 
@@ -93,7 +96,9 @@ public final class HistoryStore: @unchecked Sendable {
         case .nvme(let nvme):
             defects = nvme.smart.mediaErrors
         case .ata(let ata):
-            defects = ata.attribute(5)?.rawValue
+            defects = (ata.attribute(5)?.rawValue ?? 0)
+                &+ (ata.attribute(187)?.rawValue ?? 0)
+                &+ (ata.attribute(198)?.rawValue ?? 0)
             pending = ata.attribute(197)?.rawValue
         }
 
@@ -149,17 +154,43 @@ public final class HistoryStore: @unchecked Sendable {
 
             var points: [HistoryPoint] = []
             while sqlite3_step(statement) == SQLITE_ROW {
-                points.append(HistoryPoint(
-                    capturedAt: Date(timeIntervalSince1970: sqlite3_column_double(statement, 0)),
-                    temperatureC: columnOptionalInt(statement, 1).map(Int.init),
-                    healthScore: columnOptionalInt(statement, 2).map(Int.init),
-                    rating: sqlite3_column_text(statement, 3).map { String(cString: $0) },
-                    lifetimeLeftPercent: columnOptionalInt(statement, 4).map(Int.init),
-                    powerOnHours: columnOptionalInt(statement, 5).map { UInt64(clamping: $0) },
-                    bytesWritten: columnOptionalInt(statement, 6).map { UInt64(clamping: $0) },
-                    defectCount: columnOptionalInt(statement, 7).map { UInt64(clamping: $0) },
-                    pendingSectors: columnOptionalInt(statement, 8).map { UInt64(clamping: $0) }
-                ))
+                points.append(point(from: statement))
+            }
+            return points
+        }
+    }
+
+    /// Latest recorded point in each time bucket. Useful for charts: it keeps
+    /// long ranges responsive without changing the underlying raw history.
+    public func history(driveKey: String, since: Date,
+                        bucketInterval: TimeInterval) throws -> [HistoryPoint] {
+        guard bucketInterval > 1 else { return try history(driveKey: driveKey, since: since) }
+        return try queue.sync {
+            let sql = """
+                SELECT captured_at, temperature_c, health_score, rating,
+                       lifetime_left, power_on_hours, bytes_written,
+                       defect_count, pending_sectors
+                FROM drive_snapshots
+                WHERE id IN (
+                    SELECT MAX(id)
+                    FROM drive_snapshots
+                    WHERE drive_key = ? AND captured_at >= ?
+                    GROUP BY CAST(captured_at / ? AS INTEGER)
+                )
+                ORDER BY captured_at ASC
+                """
+            var statement: OpaquePointer?
+            guard sqlite3_prepare_v2(db, sql, -1, &statement, nil) == SQLITE_OK else {
+                throw HistoryError.sqlite(String(cString: sqlite3_errmsg(db)))
+            }
+            defer { sqlite3_finalize(statement) }
+            sqlite3_bind_text(statement, 1, driveKey, -1, SQLITE_TRANSIENT)
+            sqlite3_bind_double(statement, 2, since.timeIntervalSince1970)
+            sqlite3_bind_double(statement, 3, bucketInterval)
+
+            var points: [HistoryPoint] = []
+            while sqlite3_step(statement) == SQLITE_ROW {
+                points.append(point(from: statement))
             }
             return points
         }
@@ -167,8 +198,24 @@ public final class HistoryStore: @unchecked Sendable {
 
     /// Latest recorded point per drive key (for change detection in monitoring).
     public func latest(driveKey: String) throws -> HistoryPoint? {
-        try history(driveKey: driveKey,
-                    since: .distantPast).last
+        try queue.sync {
+            let sql = """
+                SELECT captured_at, temperature_c, health_score, rating,
+                       lifetime_left, power_on_hours, bytes_written,
+                       defect_count, pending_sectors
+                FROM drive_snapshots
+                WHERE drive_key = ?
+                ORDER BY captured_at DESC
+                LIMIT 1
+                """
+            var statement: OpaquePointer?
+            guard sqlite3_prepare_v2(db, sql, -1, &statement, nil) == SQLITE_OK else {
+                throw HistoryError.sqlite(String(cString: sqlite3_errmsg(db)))
+            }
+            defer { sqlite3_finalize(statement) }
+            sqlite3_bind_text(statement, 1, driveKey, -1, SQLITE_TRANSIENT)
+            return sqlite3_step(statement) == SQLITE_ROW ? point(from: statement) : nil
+        }
     }
 
     public func pruneOlderThan(_ date: Date) throws {
@@ -191,6 +238,20 @@ public final class HistoryStore: @unchecked Sendable {
     private func columnOptionalInt(_ statement: OpaquePointer?, _ index: Int32) -> Int64? {
         sqlite3_column_type(statement, index) == SQLITE_NULL
             ? nil : sqlite3_column_int64(statement, index)
+    }
+
+    private func point(from statement: OpaquePointer?) -> HistoryPoint {
+        HistoryPoint(
+            capturedAt: Date(timeIntervalSince1970: sqlite3_column_double(statement, 0)),
+            temperatureC: columnOptionalInt(statement, 1).map(Int.init),
+            healthScore: columnOptionalInt(statement, 2).map(Int.init),
+            rating: sqlite3_column_text(statement, 3).map { String(cString: $0) },
+            lifetimeLeftPercent: columnOptionalInt(statement, 4).map(Int.init),
+            powerOnHours: columnOptionalInt(statement, 5).map { UInt64(clamping: $0) },
+            bytesWritten: columnOptionalInt(statement, 6).map { UInt64(clamping: $0) },
+            defectCount: columnOptionalInt(statement, 7).map { UInt64(clamping: $0) },
+            pendingSectors: columnOptionalInt(statement, 8).map { UInt64(clamping: $0) }
+        )
     }
 
     private func execute(_ sql: String) throws {

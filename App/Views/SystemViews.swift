@@ -194,6 +194,8 @@ struct MemoryView: View {
     }
 
     private func pressureLabel(_ level: Int) -> String {
-        level >= 4 ? "Nghiêm trọng" : level >= 2 ? "Cao" : "Bình thường"
+        if level >= 4 { return String(localized: "pressure.critical", defaultValue: "Nghiêm trọng") }
+        if level >= 2 { return String(localized: "pressure.high", defaultValue: "Cao") }
+        return String(localized: "pressure.normal", defaultValue: "Bình thường")
     }
 }

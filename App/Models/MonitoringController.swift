@@ -13,6 +13,7 @@ enum SettingsKeys {
     static let alertTempThreshold = "alertTempThreshold"     // Int °C, default 60
     static let monitoringEnabled = "monitoringEnabled"       // Bool, default true
     static let showMenuBar = "showMenuBar"                   // Bool, default true
+    static let backupReminderPrefix = "backupReminder."
 
     static func registerDefaults() {
         UserDefaults.standard.register(defaults: [
@@ -79,15 +80,12 @@ final class MonitoringController {
         for snapshot in store.snapshots {
             guard let health = snapshot.health, let reading = snapshot.reading else { continue }
             let key = HistoryStore.driveKey(for: snapshot.drive)
-            let defects: UInt64
-            switch reading {
-            case .nvme(let nvme): defects = nvme.smart.mediaErrors
-            case .ata(let ata):
-                defects = (ata.attribute(5)?.rawValue ?? 0)
-                    &+ (ata.attribute(197)?.rawValue ?? 0)
-            }
+            let defects = RiskAdvisor.dangerousCounter(reading: reading)
             let overTemp = (reading.temperatureCelsius ?? 0) >= threshold && threshold > 0
             let previous = alertedState[key]
+            let persistedDefects = snapshot.previousHistory.map {
+                ($0.defectCount ?? 0) &+ ($0.pendingSectors ?? 0)
+            }
 
             let model = snapshot.drive.model
             if let previous {
@@ -115,8 +113,14 @@ final class MonitoringController {
                                      defaultValue: "Ổ đĩa đang hỏng: \(model)"),
                        body: String(localized: "notify.failing.body",
                                     defaultValue: "Tình trạng: \(health.rating.displayName) (\(health.score)/100). Sao lưu dữ liệu ngay lập tức!"))
+            } else if let persistedDefects, defects > persistedDefects {
+                notify(title: String(localized: "notify.defects.title",
+                                     defaultValue: "Phát hiện lỗi mới: \(model)"),
+                       body: String(localized: "notify.defects.body",
+                                    defaultValue: "Số sector lỗi/media error tăng từ \(Int(clamping: persistedDefects)) lên \(Int(clamping: defects)). Đây là dấu hiệu bề mặt lưu trữ đang xuống cấp."))
             }
 
+            maybeRemindBackup(key: key, model: model, health: health)
             alertedState[key] = AlertState(rating: health.rating, defects: defects,
                                            overTemp: overTemp)
         }
@@ -135,5 +139,17 @@ final class MonitoringController {
         let request = UNNotificationRequest(
             identifier: UUID().uuidString, content: content, trigger: nil)
         UNUserNotificationCenter.current().add(request)
+    }
+
+    private func maybeRemindBackup(key: String, model: String, health: HealthReport) {
+        guard health.rating >= .warning else { return }
+        let defaultsKey = SettingsKeys.backupReminderPrefix + key
+        let last = UserDefaults.standard.object(forKey: defaultsKey) as? Date
+        if let last, Date().timeIntervalSince(last) < 86_400 { return }
+        UserDefaults.standard.set(Date(), forKey: defaultsKey)
+        notify(title: String(localized: "notify.backup.title",
+                             defaultValue: "Backup reminder: \(model)"),
+               body: String(localized: "notify.backup.body",
+                            defaultValue: "The drive is at \(health.rating.displayName). Confirm your latest backup is usable before writing more important data."))
     }
 }

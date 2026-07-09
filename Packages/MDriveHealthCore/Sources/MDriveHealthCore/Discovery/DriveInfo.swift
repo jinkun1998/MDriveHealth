@@ -24,6 +24,8 @@ public struct DriveInfo: Identifiable, Sendable, Codable, Hashable {
     public let bsdName: String
     public let model: String
     public let serialNumber: String?
+    /// IOMedia UUID when macOS exposes one; useful as a fallback identity.
+    public let mediaUUID: String?
     public let firmwareRevision: String?
     public let sizeBytes: UInt64
     /// IOKit physical interconnect, e.g. "Apple Fabric", "PCI-Express", "SATA",
@@ -40,13 +42,15 @@ public struct DriveInfo: Identifiable, Sendable, Codable, Hashable {
     public var isVirtual: Bool { interconnect == "Virtual Interface" }
 
     public init(registryEntryID: UInt64, bsdName: String, model: String,
-                serialNumber: String?, firmwareRevision: String?, sizeBytes: UInt64,
+                serialNumber: String?, mediaUUID: String? = nil,
+                firmwareRevision: String?, sizeBytes: UInt64,
                 interconnect: String, location: String, isSolidState: Bool,
                 smartInterface: SMARTInterfaceKind) {
         self.registryEntryID = registryEntryID
         self.bsdName = bsdName
         self.model = model
         self.serialNumber = serialNumber
+        self.mediaUUID = mediaUUID
         self.firmwareRevision = firmwareRevision
         self.sizeBytes = sizeBytes
         self.interconnect = interconnect

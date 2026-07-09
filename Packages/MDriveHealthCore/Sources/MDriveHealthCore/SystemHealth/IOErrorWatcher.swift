@@ -15,14 +15,16 @@ public enum IOErrorWatcher {
     /// Returns kernel log lines mentioning I/O errors within the window.
     /// `bsdName` (e.g. "disk0") narrows results to one device when given.
     public static func recentErrors(withinMinutes minutes: Int,
-                                    bsdName: String? = nil) -> [IOErrorEvent] {
+                                    bsdName: String? = nil,
+                                    timeout: TimeInterval = 20) -> [IOErrorEvent] {
         var predicate = """
             process == "kernel" AND (eventMessage CONTAINS[c] "I/O error" \
             OR eventMessage CONTAINS[c] "read error" \
             OR eventMessage CONTAINS[c] "write error")
             """
         if let bsdName, !bsdName.isEmpty {
-            predicate += " AND eventMessage CONTAINS \"\(bsdName)\""
+            let escapedName = bsdName.replacingOccurrences(of: "\"", with: "\\\"")
+            predicate += " AND eventMessage CONTAINS \"\(escapedName)\""
         }
 
         let process = Process()
@@ -39,6 +41,11 @@ public enum IOErrorWatcher {
             try process.run()
         } catch {
             return []
+        }
+        DispatchQueue.global().asyncAfter(deadline: .now() + timeout) {
+            if process.isRunning {
+                process.terminate()
+            }
         }
         let data = stdout.fileHandleForReading.readDataToEndOfFile()
         process.waitUntilExit()

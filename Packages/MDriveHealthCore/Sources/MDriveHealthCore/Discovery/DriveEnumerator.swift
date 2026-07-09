@@ -80,6 +80,7 @@ public struct DriveEnumerator: Sendable {
             bsdName: media.bsdName,
             model: model,
             serialNumber: serial?.isEmpty == true ? nil : serial,
+            mediaUUID: media.uuid,
             firmwareRevision: firmware?.isEmpty == true ? nil : firmware,
             sizeBytes: media.sizeBytes,
             interconnect: protocolChars["Physical Interconnect"] as? String ?? "Unknown",
@@ -98,7 +99,7 @@ public struct DriveEnumerator: Sendable {
 
     /// Finds the whole-disk IOMedia child (e.g. disk0) of a block storage device.
     private static func wholeMedia(of service: io_service_t)
-        -> (bsdName: String, sizeBytes: UInt64)? {
+        -> (bsdName: String, sizeBytes: UInt64, uuid: String?)? {
         var childIterator: io_iterator_t = 0
         let kr = IORegistryEntryCreateIterator(
             service, kIOServicePlane, IOOptionBits(kIORegistryIterateRecursively),
@@ -119,7 +120,8 @@ public struct DriveEnumerator: Sendable {
 
             let size = (props["Size"] as? UInt64)
                 ?? (props["Size"] as? NSNumber)?.uint64Value ?? 0
-            return (bsdName, size)
+            let uuid = (props["UUID"] as? String)?.trimmingCharacters(in: .whitespaces)
+            return (bsdName, size, uuid?.isEmpty == true ? nil : uuid)
         }
         return nil
     }

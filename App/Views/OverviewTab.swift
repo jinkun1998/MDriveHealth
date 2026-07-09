@@ -13,6 +13,8 @@ struct OverviewTab: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 18) {
+                riskSummary
+
                 if let error = snapshot.lastError {
                     errorBanner(error)
                 } else if snapshot.drive.smartInterface == .unsupported {
@@ -36,6 +38,43 @@ struct OverviewTab: View {
             }
             .padding()
             .frame(maxWidth: .infinity, alignment: .leading)
+        }
+    }
+
+    @ViewBuilder
+    private var riskSummary: some View {
+        let advice = RiskAdvisor.advice(for: snapshot)
+        if advice.level > .healthy {
+            VStack(alignment: .leading, spacing: 10) {
+                HStack(alignment: .top, spacing: 10) {
+                    Image(systemName: advice.level.systemImage)
+                        .font(.title2)
+                        .foregroundStyle(advice.level.color)
+                        .frame(width: 28)
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(advice.title)
+                            .font(.headline)
+                        Text(advice.message)
+                            .foregroundStyle(.secondary)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                }
+
+                if !advice.actions.isEmpty {
+                    VStack(alignment: .leading, spacing: 6) {
+                        Text("risk.actions.title")
+                            .font(.subheadline.weight(.semibold))
+                        ForEach(Array(advice.actions.enumerated()), id: \.offset) { _, action in
+                            Label(action, systemImage: "checklist.checked")
+                                .font(.callout)
+                        }
+                    }
+                    .padding(.leading, 38)
+                }
+            }
+            .padding(12)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(advice.level.color.opacity(0.10), in: RoundedRectangle(cornerRadius: 8))
         }
     }
 
@@ -156,6 +195,10 @@ struct OverviewTab: View {
             Text("macOS không cho phép đọc SMART qua cầu USB mass-storage — đây là hạn chế của hệ điều hành, áp dụng cho mọi ứng dụng. Ổ cắm qua Thunderbolt hoặc khe NVMe/SATA nội bộ vẫn đọc được bình thường.")
                 .foregroundStyle(.secondary)
                 .fixedSize(horizontal: false, vertical: true)
+            Label("Gợi ý: thử cáp/hộp ổ hỗ trợ SMART passthrough, hoặc theo dõi lỗi I/O nếu ổ hay mất kết nối.",
+                  systemImage: "lightbulb")
+                .font(.callout)
+                .foregroundStyle(.secondary)
         }
         .padding(12)
         .background(.blue.opacity(0.08), in: RoundedRectangle(cornerRadius: 10))

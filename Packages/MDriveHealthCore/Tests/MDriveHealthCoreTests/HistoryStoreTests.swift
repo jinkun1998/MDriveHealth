@@ -69,6 +69,36 @@ final class HistoryStoreTests: XCTestCase {
         XCTAssertTrue(points[0].capturedAt < points[1].capturedAt)
     }
 
+    func testLatestUsesMostRecentPoint() throws {
+        let base = Date(timeIntervalSince1970: 1_700_000_000)
+        for offset in [0.0, 100, 200] {
+            let reading = sampleReading(capturedAt: base.addingTimeInterval(offset),
+                                        mediaErrors: UInt64(offset))
+            try store.record(driveKey: "TEST#1", bsdName: "disk0",
+                             reading: reading, health: reading.evaluateHealth())
+        }
+
+        let latest = try store.latest(driveKey: "TEST#1")
+        XCTAssertEqual(latest?.capturedAt, base.addingTimeInterval(200))
+        XCTAssertEqual(latest?.defectCount, 200)
+        XCTAssertNil(try store.latest(driveKey: "missing"))
+    }
+
+    func testBucketedHistoryKeepsOnePointPerBucket() throws {
+        let base = Date(timeIntervalSince1970: 1_700_000_000)
+        for offset in [0.0, 10, 20, 70, 80] {
+            let reading = sampleReading(capturedAt: base.addingTimeInterval(offset),
+                                        mediaErrors: UInt64(offset))
+            try store.record(driveKey: "TEST#1", bsdName: "disk0",
+                             reading: reading, health: reading.evaluateHealth())
+        }
+
+        let points = try store.history(driveKey: "TEST#1", since: base,
+                                       bucketInterval: 60)
+        XCTAssertEqual(points.count, 2)
+        XCTAssertEqual(points.map(\.defectCount), [20, 80])
+    }
+
     func testKeysAreIsolatedAndPruneWorks() throws {
         let now = Date()
         let old = sampleReading(capturedAt: now.addingTimeInterval(-400 * 86_400))

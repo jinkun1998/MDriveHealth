@@ -48,9 +48,8 @@ public enum DriveReading: Sendable, Codable, Hashable {
         case .nvme(let reading):
             return reading.smart.bytesWritten
         case .ata(let reading):
-            // 241 Total_LBAs_Written (512-byte sectors on most drives).
-            guard let lbas = reading.attribute(241)?.rawValue else { return nil }
-            return lbas &* 512
+            guard let written = reading.attribute(241) else { return nil }
+            return Self.ataHostBytesWritten(from: written)
         }
     }
 
@@ -59,6 +58,27 @@ public enum DriveReading: Sendable, Codable, Hashable {
         case .nvme(let reading): return reading.smart.capturedAt
         case .ata(let reading): return reading.capturedAt
         }
+    }
+}
+
+private extension DriveReading {
+    static func ataHostBytesWritten(from attribute: ATAAttribute) -> UInt64? {
+        let name = attribute.name.lowercased()
+
+        if name.contains("gib") {
+            return attribute.rawValue &* 1_073_741_824
+        }
+        if name.contains("gb") || name.contains("gigabyte") {
+            return attribute.rawValue &* 1_000_000_000
+        }
+        if name.contains("lba") || name.contains("sector") {
+            return attribute.rawValue &* 512
+        }
+
+        // The default drivedb entry for attribute 241 is Total_LBAs_Written.
+        // Unknown vendor meanings are left nil rather than reporting a
+        // confidently wrong write total.
+        return attribute.name == "Total_LBAs_Written" ? attribute.rawValue &* 512 : nil
     }
 }
 

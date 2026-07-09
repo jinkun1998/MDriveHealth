@@ -1,0 +1,790 @@
+{
+  "sourceLanguage": "vi",
+  "strings": {
+    "issue.nvme.readonly.title": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Media đã chuyển sang chế độ chỉ đọc"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Media in read-only mode"
+          }
+        }
+      }
+    },
+    "issue.nvme.readonly.detail": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Controller đã khoá media ở chế độ chỉ đọc. Hãy sao lưu ngay lập tức và thay ổ."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The controller has locked the media read-only. Back up immediately and replace the drive."
+          }
+        }
+      }
+    },
+    "issue.nvme.reliability.title": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Độ tin cậy NVM suy giảm"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "NVM subsystem reliability degraded"
+          }
+        }
+      }
+    },
+    "issue.nvme.reliability.detail": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Controller báo độ tin cậy suy giảm do lỗi media hoặc lỗi nội bộ."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The controller reports degraded reliability due to media or internal errors."
+          }
+        }
+      }
+    },
+    "issue.nvme.spare.title": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Spare dự phòng dưới ngưỡng"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Available spare below threshold"
+          }
+        }
+      }
+    },
+    "issue.nvme.spare.detail": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Khối dự phòng còn %lld%%, thấp hơn ngưỡng %lld%%. Ổ sắp cạn vùng dự phòng."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Spare blocks at %lld%% are below the %lld%% threshold. The drive is running out of reserve capacity."
+          }
+        }
+      }
+    },
+    "issue.nvme.tempbit.title": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nhiệt độ ngoài ngưỡng cho phép"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Temperature outside thresholds"
+          }
+        }
+      }
+    },
+    "issue.nvme.tempbit.detail": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Controller báo đang hoạt động ngoài ngưỡng nhiệt an toàn."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The controller reports operation outside its temperature thresholds."
+          }
+        }
+      }
+    },
+    "issue.nvme.backup.title": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bộ backup nguồn cho bộ nhớ đệm bị hỏng"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Volatile memory backup failed"
+          }
+        }
+      }
+    },
+    "issue.nvme.backup.detail": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Thiết bị dự phòng mất điện cho volatile memory đã hỏng."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The power-loss protection backup device has failed."
+          }
+        }
+      }
+    },
+    "issue.nvme.pmr.title": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vùng persistent memory không ổn định"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Persistent memory region unreliable"
+          }
+        }
+      }
+    },
+    "issue.nvme.pmr.detail": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vùng persistent memory đang ở chế độ chỉ đọc hoặc không đáng tin cậy."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The persistent memory region is read-only or unreliable."
+          }
+        }
+      }
+    },
+    "issue.wear.exhausted.title": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đã dùng hết tuổi thọ định mức"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rated endurance exhausted"
+          }
+        }
+      }
+    },
+    "issue.nvme.wear.exhausted.detail": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mức hao mòn theo nhà sản xuất là %lld%%. Ổ đã vượt tuổi thọ định mức — vẫn có thể hoạt động nhưng nên lên kế hoạch thay."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vendor wear estimate is %lld%%. The drive exceeded its rated endurance; it may keep working but plan a replacement."
+          }
+        }
+      }
+    },
+    "issue.wear.high.title": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tuổi thọ sắp cạn"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Endurance nearly exhausted"
+          }
+        }
+      }
+    },
+    "issue.nvme.wear.high.detail": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mức hao mòn theo nhà sản xuất là %lld%% tuổi thọ định mức."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vendor wear estimate is %lld%% of rated endurance."
+          }
+        }
+      }
+    },
+    "issue.nvme.mediaerrors.title": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lỗi toàn vẹn dữ liệu (media errors)"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Media integrity errors"
+          }
+        }
+      }
+    },
+    "issue.nvme.mediaerrors.detail": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đã xảy ra %lld lỗi toàn vẹn dữ liệu không khôi phục được."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld unrecovered data-integrity errors have occurred."
+          }
+        }
+      }
+    },
+    "issue.temp.critical.title": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nhiệt độ chạm mức nguy hiểm"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Temperature at critical level"
+          }
+        }
+      }
+    },
+    "issue.nvme.temp.critical.detail": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nhiệt độ tổng hợp %lld°C đã chạm ngưỡng nguy hiểm %lld°C."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Composite temperature %lld°C reached the critical threshold %lld°C."
+          }
+        }
+      }
+    },
+    "issue.temp.high.title": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nhiệt độ vượt ngưỡng cảnh báo"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Temperature above warning threshold"
+          }
+        }
+      }
+    },
+    "issue.nvme.temp.high.detail": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nhiệt độ tổng hợp %lld°C vượt ngưỡng cảnh báo %lld°C."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Composite temperature %lld°C exceeds the warning threshold %lld°C."
+          }
+        }
+      }
+    },
+    "issue.ata.status.title": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "SMART tổng thể: ĐANG HỎNG"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "SMART overall status: FAILING"
+          }
+        }
+      }
+    },
+    "issue.ata.status.detail": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chính ổ đĩa dự báo sắp hỏng (đã vượt ngưỡng nhà sản xuất). Sao lưu dữ liệu ngay lập tức."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The drive itself predicts failure (vendor thresholds exceeded). Back up your data immediately."
+          }
+        }
+      }
+    },
+    "issue.ata.tripped.title": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ dưới ngưỡng hỏng"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ below failure threshold"
+          }
+        }
+      }
+    },
+    "issue.ata.tripped.detail": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Thuộc tính pre-fail %lld (%@) có giá trị %lld, đã chạm/dưới ngưỡng %lld. Ổ được dự báo sắp hỏng."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pre-fail attribute %lld (%@) value %lld is at or below threshold %lld. Failure is predicted."
+          }
+        }
+      }
+    },
+    "issue.ata.trippedpast.title": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ từng chạm ngưỡng hỏng"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ failed in the past"
+          }
+        }
+      }
+    },
+    "issue.ata.trippedpast.detail": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Thuộc tính pre-fail %lld (%@) từng tụt xuống %lld, chạm/dưới ngưỡng %lld trong quá khứ."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pre-fail attribute %lld (%@) dropped to %lld, at or below threshold %lld, at some point in the past."
+          }
+        }
+      }
+    },
+    "issue.ata.5.title": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Có sector đã cấp phát lại"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reallocated sectors present"
+          }
+        }
+      }
+    },
+    "issue.ata.196.title": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Có sự kiện cấp phát lại sector"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reallocation events recorded"
+          }
+        }
+      }
+    },
+    "issue.ata.realloc.detail": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ đếm được %lld. Defect tăng dần là dấu hiệu bề mặt lưu trữ xuống cấp."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ raw count is %lld. Growing defects indicate media degradation."
+          }
+        }
+      }
+    },
+    "issue.ata.197.title": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sector không ổn định (pending)"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pending (unstable) sectors"
+          }
+        }
+      }
+    },
+    "issue.ata.197.detail": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld sector đang chờ được cấp phát lại. Dữ liệu trong đó có thể không đọc được."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld sectors are waiting to be remapped. Data in them may be unreadable."
+          }
+        }
+      }
+    },
+    "issue.ata.198.title": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sector không sửa được"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Uncorrectable sectors"
+          }
+        }
+      }
+    },
+    "issue.ata.198.detail": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld sector không thể đọc/sửa trong các lần quét offline."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld sectors could not be read or corrected during offline scans."
+          }
+        }
+      }
+    },
+    "issue.ata.187.title": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lỗi không khôi phục được (reported)"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reported uncorrectable errors"
+          }
+        }
+      }
+    },
+    "issue.ata.187.detail": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld lỗi ECC không khôi phục được đã được ghi nhận."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld errors could not be recovered by ECC."
+          }
+        }
+      }
+    },
+    "issue.ata.10.title": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Trục quay phải thử lại"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Spin-up retries"
+          }
+        }
+      }
+    },
+    "issue.ata.10.detail": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Trục quay cần %lld lần thử để đạt tốc độ — có thể do vấn đề cơ khí hoặc nguồn điện."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The spindle needed %lld retries to reach speed — a possible mechanical or power issue."
+          }
+        }
+      }
+    },
+    "issue.ata.184.title": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lỗi End-to-End"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "End-to-End errors"
+          }
+        }
+      }
+    },
+    "issue.ata.184.detail": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld lỗi parity trên đường dữ liệu giữa cache và media."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld data-path parity errors between cache and media."
+          }
+        }
+      }
+    },
+    "issue.ata.188.title": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lệnh bị quá thời gian (timeout)"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Command timeouts"
+          }
+        }
+      }
+    },
+    "issue.ata.188.detail": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld lệnh bị timeout — có thể do cáp hoặc controller có vấn đề."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld commands timed out — possibly cabling or controller trouble."
+          }
+        }
+      }
+    },
+    "issue.ata.199.title": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lỗi CRC giao tiếp"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Interface CRC errors"
+          }
+        }
+      }
+    },
+    "issue.ata.199.detail": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld lỗi CRC trên đường SATA — thường do cáp/đầu nối, không phải bản thân ổ đĩa."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld CRC errors on the SATA link — usually a cable/connector problem, not the drive itself."
+          }
+        }
+      }
+    },
+    "issue.ata.wear.exhausted.detail": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chỉ số hao mòn của SSD báo đã hết tuổi thọ định mức."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The SSD wear indicator reports no rated endurance left."
+          }
+        }
+      }
+    },
+    "issue.ata.wear.high.detail": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Còn khoảng %lld%% tuổi thọ định mức."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "About %lld%% of rated endurance remains."
+          }
+        }
+      }
+    },
+    "issue.ata.temp.detail": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nhiệt độ ổ đĩa là %lld°C."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Drive temperature is %lld°C."
+          }
+        }
+      }
+    },
+    "issue.ata.drivedb.title": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Model ổ này có vấn đề đã biết"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Known issue for this drive model"
+          }
+        }
+      }
+    }
+  },
+  "version": "1.0"
+}

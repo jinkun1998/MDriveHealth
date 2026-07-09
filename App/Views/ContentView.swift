@@ -7,6 +7,7 @@ import SwiftUI
 import MDriveHealthCore
 
 enum SidebarItem: Hashable {
+    case allDrives
     case drive(UInt64)
     case battery
     case sensors
@@ -21,6 +22,10 @@ struct ContentView: View {
     var body: some View {
         NavigationSplitView {
             List(selection: $selection) {
+                Section {
+                    Label("Tất cả ổ đĩa", systemImage: "list.bullet.rectangle")
+                        .tag(SidebarItem.allDrives)
+                }
                 if !store.internalDrives.isEmpty {
                     Section("Ổ trong") {
                         ForEach(store.internalDrives) { snapshot in
@@ -57,6 +62,8 @@ struct ContentView: View {
             }
         } detail: {
             switch selection {
+            case .allDrives:
+                DriveCompareView()
             case .drive(let id):
                 if let snapshot = store.snapshots.first(where: { $0.id == id }) {
                     DriveDetailView(snapshot: snapshot)
@@ -89,19 +96,26 @@ struct ContentView: View {
             }
         }
         .onChange(of: store.snapshots.count) {
-            if selection == nil, let first = store.internalDrives.first
-                ?? store.visibleSnapshots.first {
-                selection = .drive(first.id)
+            if selection == nil {
+                selection = store.visibleSnapshots.isEmpty ? .memory : .allDrives
             }
         }
     }
 
     private var noSelection: some View {
-        ContentUnavailableView(
-            "Chọn một mục",
-            systemImage: "internaldrive",
-            description: Text("Chọn ổ đĩa hoặc mục hệ thống ở thanh bên.")
-        )
+        if let error = store.refreshError {
+            ContentUnavailableView(
+                "Không quét được ổ đĩa",
+                systemImage: "exclamationmark.triangle",
+                description: Text(error)
+            )
+        } else {
+            ContentUnavailableView(
+                "Chọn một mục",
+                systemImage: "internaldrive",
+                description: Text("Chọn ổ đĩa hoặc mục hệ thống ở thanh bên.")
+            )
+        }
     }
 }
 
@@ -125,12 +139,20 @@ private struct DriveRow: View {
             }
             Spacer()
             if let health = snapshot.health {
-                Image(systemName: health.rating.systemImage)
-                    .foregroundStyle(health.rating.color)
+                Text(health.rating.displayName)
+                    .font(.caption2.weight(.bold))
+                    .foregroundStyle(.white)
+                    .padding(.horizontal, 6)
+                    .padding(.vertical, 2)
+                    .background(health.rating.color, in: Capsule())
                     .help("\(health.rating.displayName) — \(health.score)/100")
             } else if snapshot.drive.smartInterface == .unsupported {
-                Image(systemName: "questionmark.circle")
+                Text("n/a")
+                    .font(.caption2.weight(.bold))
                     .foregroundStyle(.secondary)
+                    .padding(.horizontal, 6)
+                    .padding(.vertical, 2)
+                    .background(.quaternary, in: Capsule())
                     .help("SMART không khả dụng qua \(snapshot.drive.interconnect)")
             }
         }

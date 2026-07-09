@@ -3,6 +3,7 @@ import PackageDescription
 
 let package = Package(
     name: "MDriveHealthCore",
+    defaultLocalization: "vi",
     platforms: [.macOS(.v14)],
     products: [
         .library(name: "MDriveHealthCore", targets: ["MDriveHealthCore"]),
@@ -19,7 +20,10 @@ let package = Package(
         .target(
             name: "MDriveHealthCore",
             dependencies: ["CSMART"],
-            resources: [.copy("Resources/drivedb.json")]
+            resources: [
+                .copy("Resources/drivedb.json"),
+                .process("Resources/Localizable.xcstrings"),
+            ]
         ),
         .executableTarget(
             name: "mdrivehealth-cli",

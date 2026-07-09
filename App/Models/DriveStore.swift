@@ -12,6 +12,7 @@ struct DriveSnapshot: Identifiable {
     let drive: DriveInfo
     var reading: DriveReading?
     var health: HealthReport?
+    var previousHistory: HistoryPoint?
     var lastError: String?
     var lastUpdated: Date?
 
@@ -24,6 +25,7 @@ final class DriveStore {
     private(set) var snapshots: [DriveSnapshot] = []
     private(set) var isRefreshing = false
     private(set) var lastRefresh: Date?
+    private(set) var refreshError: String?
     var showVirtualDrives = false
 
     /// Best-effort persistent history; nil when the database cannot be opened.
@@ -52,21 +54,28 @@ final class DriveStore {
 
         let historyStore = history
         let result = await Task.detached(priority: .userInitiated) {
-            () -> [DriveSnapshot] in
-            guard let drives = try? DriveEnumerator().enumerate() else { return [] }
-            return drives.map { drive in
+            () -> (snapshots: [DriveSnapshot], error: String?) in
+            let drives: [DriveInfo]
+            do {
+                drives = try DriveEnumerator().enumerate()
+            } catch {
+                return ([], error.localizedDescription)
+            }
+            let snapshots = drives.map { drive in
                 var snapshot = DriveSnapshot(drive: drive)
                 guard drive.smartInterface != .unsupported, !drive.isVirtual else {
                     return snapshot
                 }
                 do {
                     let reading = try DriveProber.read(drive: drive)
+                    let key = HistoryStore.driveKey(for: drive)
+                    snapshot.previousHistory = try? historyStore?.latest(driveKey: key)
                     snapshot.reading = reading
                     snapshot.health = reading.evaluateHealth()
                     snapshot.lastUpdated = Date()
                     if let health = snapshot.health {
                         try? historyStore?.record(
-                            driveKey: HistoryStore.driveKey(for: drive),
+                            driveKey: key,
                             bsdName: drive.bsdName,
                             reading: reading, health: health)
                     }
@@ -75,12 +84,14 @@ final class DriveStore {
                 }
                 return snapshot
             }
+            return (snapshots, nil)
         }.value
 
-        snapshots = result
+        snapshots = result.snapshots
+        refreshError = result.error
         lastRefresh = Date()
         pruneHistoryOccasionally()
-        refreshIOErrors(for: result.map(\.drive.bsdName))
+        refreshIOErrors(for: result.snapshots.map(\.drive.bsdName))
     }
 
     private var lastIOScan: Date?

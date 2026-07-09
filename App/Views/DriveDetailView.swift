@@ -49,7 +49,6 @@ struct DriveDetailView: View {
             .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
         .navigationTitle(snapshot.drive.model)
-        .navigationSubtitle(snapshot.drive.bsdName)
     }
 
     private var header: some View {

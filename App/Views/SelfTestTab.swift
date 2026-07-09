@@ -41,8 +41,8 @@ struct SelfTestTab: View {
                     .font(.headline)
                 ProgressView(value: Double(100 - (selfTest.percentRemaining ?? 0)),
                              total: 100)
-                Text("Còn khoảng \(selfTest.percentRemaining ?? 0)%. " +
-                     "Bấm Làm mới để cập nhật tiến độ.")
+                Text(String(localized: "selftest.progress",
+                            defaultValue: "Còn khoảng \(selfTest.percentRemaining ?? 0)%. Bấm Làm mới để cập nhật tiến độ."))
                     .font(.callout)
                     .foregroundStyle(.secondary)
             }
@@ -68,8 +68,8 @@ struct SelfTestTab: View {
                 }
             }
             if let startedAt {
-                Text("Đã gửi lệnh lúc \(startedAt.formatted(date: .omitted, time: .standard)). " +
-                     "Theo dõi tiến độ bằng nút Làm mới.")
+                Text(String(localized: "selftest.started",
+                            defaultValue: "Đã gửi lệnh lúc \(startedAt.formatted(date: .omitted, time: .standard)). Theo dõi tiến độ bằng nút Làm mới."))
                     .font(.caption)
                     .foregroundStyle(.green)
             }
@@ -98,7 +98,8 @@ struct SelfTestTab: View {
             startedAt = Date()
             startError = nil
         } catch {
-            startError = "Không chạy được self-test: \(error.localizedDescription)"
+            startError = String(localized: "selftest.error",
+                                defaultValue: "Không chạy được self-test: \(error.localizedDescription)")
         }
     }
 }

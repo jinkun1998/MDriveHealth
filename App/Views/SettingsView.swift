@@ -78,7 +78,8 @@ struct SettingsView: View {
                 LabeledContent("Phiên bản", value: UpdateChecker.currentVersion)
                 LabeledContent("Drive database",
                                value: "smartmontools drivedb \(DriveDB.shared.version)")
-                LabeledContent("Giấy phép", value: "GPL-3.0-or-later — mã nguồn mở")
+                LabeledContent("Giấy phép", value: String(localized: "license.value",
+                    defaultValue: "GPL-3.0-or-later — mã nguồn mở"))
                 HStack {
                     Button("Kiểm tra bản cập nhật…") { checkUpdates() }
                         .disabled(checkingUpdates)
@@ -125,16 +126,20 @@ struct SettingsView: View {
         checkingUpdates = true
         updateStatus = nil
         Task {
-            let release = await UpdateChecker.checkForUpdate()
+            let result = await UpdateChecker.checkForUpdate()
             await MainActor.run {
                 checkingUpdates = false
-                if let release {
+                switch result {
+                case .available(let release):
                     updateStatus = String(localized: "update.available",
                                           defaultValue: "Có bản \(release.version) mới!")
-                    NSWorkspace.shared.open(release.url)
-                } else {
+                    NSWorkspace.shared.open(release.downloadURL ?? release.url)
+                case .upToDate:
                     updateStatus = String(localized: "update.latest",
                                           defaultValue: "Bạn đang dùng bản mới nhất.")
+                case .failed(let message):
+                    updateStatus = String(localized: "update.failed",
+                                          defaultValue: "Không kiểm tra được: \(message)")
                 }
             }
         }
@@ -149,7 +154,8 @@ struct SettingsView: View {
             }
             loginItemError = nil
         } catch {
-            loginItemError = "Không đổi được login item: \(error.localizedDescription)"
+            loginItemError = String(localized: "login.error",
+                defaultValue: "Không đổi được login item: \(error.localizedDescription)")
             launchAtLogin = SMAppService.mainApp.status == .enabled
         }
     }

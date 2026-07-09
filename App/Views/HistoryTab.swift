@@ -41,6 +41,9 @@ struct HistoryTab: View {
     @State private var range: Range = .week
     @State private var points: [HistoryPoint] = []
 
+    private var timeLabel: String { String(localized: "chart.axis.time", defaultValue: "Thời gian") }
+    private var markerLabel: String { String(localized: "chart.axis.marker", defaultValue: "Mốc") }
+
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             HStack {
@@ -66,16 +69,28 @@ struct HistoryTab: View {
                     description: Text("Dữ liệu được ghi lại mỗi lần đọc SMART. Hãy để app chạy nền để tích luỹ lịch sử."))
                     .frame(maxHeight: .infinity)
             } else {
-                Chart(chartData, id: \.date) { item in
-                    LineMark(x: .value("Thời gian", item.date),
-                             y: .value(metric.rawValue, item.value))
-                        .interpolationMethod(.monotone)
-                    AreaMark(x: .value("Thời gian", item.date),
-                             y: .value(metric.rawValue, item.value))
-                        .foregroundStyle(.linearGradient(
-                            colors: [.accentColor.opacity(0.25), .clear],
-                            startPoint: .top, endPoint: .bottom))
-                        .interpolationMethod(.monotone)
+                Chart {
+                    ForEach(chartData, id: \.date) { item in
+                        LineMark(x: .value(timeLabel, item.date),
+                                 y: .value(metric.rawValue, item.value))
+                            .interpolationMethod(.monotone)
+                        AreaMark(x: .value(timeLabel, item.date),
+                                 y: .value(metric.rawValue, item.value))
+                            .foregroundStyle(.linearGradient(
+                                colors: [.accentColor.opacity(0.25), .clear],
+                                startPoint: .top, endPoint: .bottom))
+                            .interpolationMethod(.monotone)
+                    }
+                    ForEach(trendEvents) { event in
+                        RuleMark(x: .value(markerLabel, event.date))
+                            .foregroundStyle(event.color.opacity(0.65))
+                            .lineStyle(StrokeStyle(lineWidth: 1, dash: [4, 4]))
+                            .annotation(position: .top, alignment: .leading) {
+                                Text(event.title)
+                                    .font(.caption2.weight(.semibold))
+                                    .foregroundStyle(event.color)
+                            }
+                    }
                 }
                 .chartYAxisLabel(yLabel)
                 // Percent metrics anchor at 0; measurements (temp, TB, counts)
@@ -110,14 +125,43 @@ struct HistoryTab: View {
         case .temperature: return "°C"
         case .score, .lifetime: return "%"
         case .written: return "TB"
-        case .defects: return "số lượng"
+        case .defects: return String(localized: "chart.unit.count", defaultValue: "số lượng")
         }
+    }
+
+    private struct TrendEvent: Identifiable {
+        let id = UUID()
+        let date: Date
+        let title: LocalizedStringKey
+        let color: Color
+    }
+
+    private var trendEvents: [TrendEvent] {
+        guard points.count > 1 else { return [] }
+        var events: [TrendEvent] = []
+        var previous = points[0]
+        for point in points.dropFirst() {
+            if let old = previous.defectCount, let new = point.defectCount, new > old {
+                events.append(.init(date: point.capturedAt, title: "Lỗi tăng", color: .red))
+            }
+            if let temp = point.temperatureC, temp >= 70,
+               (previous.temperatureC ?? 0) < 70 {
+                events.append(.init(date: point.capturedAt, title: "Nóng", color: .orange))
+            }
+            if let old = previous.healthScore, let new = point.healthScore, old - new >= 5 {
+                events.append(.init(date: point.capturedAt, title: "Health giảm", color: .orange))
+            }
+            previous = point
+        }
+        return Array(events.prefix(12))
     }
 
     private func reload() {
         guard let history = store.history else { return }
         let key = HistoryStore.driveKey(for: snapshot.drive)
+        let since = Date().addingTimeInterval(-range.interval)
+        let bucket = max(1, range.interval / 1_000)
         points = (try? history.history(
-            driveKey: key, since: Date().addingTimeInterval(-range.interval))) ?? []
+            driveKey: key, since: since, bucketInterval: bucket)) ?? []
     }
 }

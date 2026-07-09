@@ -273,6 +273,22 @@
         }
       }
     },
+    "update.failed": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Không kiểm tra được: %@"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Could not check: %@"
+          }
+        }
+      }
+    },
     "notify.degraded.title": {
       "localizations": {
         "vi": {
@@ -401,6 +417,454 @@
         }
       }
     },
+    "risk.actions.title": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Việc nên làm"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Recommended actions"
+          }
+        }
+      }
+    },
+    "risk.backupNow.action.backup": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sao lưu dữ liệu quan trọng ngay lập tức."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Back up important data immediately."
+          }
+        }
+      }
+    },
+    "risk.backupNow.action.limitWrites": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hạn chế ghi thêm dữ liệu lên ổ."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Avoid writing more data to this drive."
+          }
+        }
+      }
+    },
+    "risk.backupNow.action.replace": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chuẩn bị ổ thay thế và kiểm tra lại sau khi backup."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Prepare a replacement drive and recheck after backup."
+          }
+        }
+      }
+    },
+    "risk.backupNow.message": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ổ này có dấu hiệu hỏng nghiêm trọng. Đừng chạy tác vụ nặng trước khi sao lưu dữ liệu quan trọng."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This drive has serious failure signals. Avoid heavy work before backing up important data."
+          }
+        }
+      }
+    },
+    "risk.backupNow.title": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Backup ngay"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Back up now"
+          }
+        }
+      }
+    },
+    "risk.backupSoon.action.backup": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chạy backup đầy đủ trong tuần này."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Run a full backup this week."
+          }
+        }
+      }
+    },
+    "risk.backupSoon.action.replace": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nếu lỗi tiếp tục tăng, thay ổ."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Replace the drive if errors keep increasing."
+          }
+        }
+      }
+    },
+    "risk.backupSoon.action.watch": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Theo dõi sector/media error trong 24-48 giờ."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Watch sector/media errors for the next 24-48 hours."
+          }
+        }
+      }
+    },
+    "risk.backupSoon.message": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ổ đang có cảnh báo SMART hoặc dấu hiệu lỗi tăng. Chưa chắc hỏng ngay, nhưng không nên xem nhẹ."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "SMART is warning or error counters are increasing. It may not fail immediately, but do not ignore it."
+          }
+        }
+      }
+    },
+    "risk.backupSoon.title": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nên backup trong tuần này"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Back up this week"
+          }
+        }
+      }
+    },
+    "risk.healthy.message": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chưa thấy dấu hiệu SMART đáng lo."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No concerning SMART signals detected."
+          }
+        }
+      }
+    },
+    "risk.healthy.title": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ổ đang ổn"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Drive looks good"
+          }
+        }
+      }
+    },
+    "risk.noSmart.action.permission": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kiểm tra quyền truy cập thiết bị lưu trữ."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Check storage device access permissions."
+          }
+        }
+      }
+    },
+    "risk.noSmart.action.refresh": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bấm Làm mới."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Click Refresh."
+          }
+        }
+      }
+    },
+    "risk.noSmart.message": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bấm Làm mới để đọc lại SMART. Nếu vẫn lỗi, xem thông báo lỗi trong tab Tổng quan."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Click Refresh to read SMART again. If it still fails, check the error in the Overview tab."
+          }
+        }
+      }
+    },
+    "risk.noSmart.title": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chưa có dữ liệu SMART"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No SMART data yet"
+          }
+        }
+      }
+    },
+    "risk.temperature.action.airflow": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cải thiện thoáng khí hoặc đổi vị trí ổ ngoài."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Improve airflow or move the external drive."
+          }
+        }
+      }
+    },
+    "risk.temperature.action.recheck": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kiểm tra lại nhiệt độ khi đang copy dữ liệu lớn."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Recheck temperature during a large copy."
+          }
+        }
+      }
+    },
+    "risk.temperature.message": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ổ đang hơi nóng. Nhiệt cao kéo dài có thể làm giảm tuổi thọ và tăng lỗi đọc/ghi."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The drive is running warm. Sustained heat can shorten lifespan and increase read/write errors."
+          }
+        }
+      }
+    },
+    "risk.temperature.title": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Theo dõi nhiệt độ"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Watch temperature"
+          }
+        }
+      }
+    },
+    "risk.unsupported.action.backup": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kiểm tra dữ liệu bằng backup gần nhất."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Verify data against the latest backup."
+          }
+        }
+      }
+    },
+    "risk.unsupported.action.io": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Theo dõi lỗi I/O trong kernel log nếu ổ hay ngắt kết nối."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Watch kernel I/O errors if the drive disconnects often."
+          }
+        }
+      }
+    },
+    "risk.unsupported.action.passthrough": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Thử cáp hoặc hộp ổ khác có SMART passthrough."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Try another cable or enclosure with SMART passthrough."
+          }
+        }
+      }
+    },
+    "risk.unsupported.message": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "macOS không đọc được SMART qua kênh hiện tại. Nếu đây là ổ quan trọng, hãy thử hộp Thunderbolt/NVMe hoặc kết nối SATA trực tiếp."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "macOS cannot read SMART through the current connection. For important drives, try Thunderbolt/NVMe or direct SATA."
+          }
+        }
+      }
+    },
+    "risk.unsupported.title": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "SMART không khả dụng"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "SMART unavailable"
+          }
+        }
+      }
+    },
+    "notify.backup.title": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nhắc backup: %@"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Backup reminder: %@"
+          }
+        }
+      }
+    },
+    "notify.backup.body": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ổ đang ở mức %@. Hãy xác nhận backup gần nhất còn dùng được trước khi tiếp tục ghi dữ liệu quan trọng."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The drive is at %@. Confirm your latest backup is usable before writing more important data."
+          }
+        }
+      }
+    },
     "Ổ trong": {
       "localizations": {
         "vi": {
@@ -509,6 +973,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Scanning drives…"
+          }
+        }
+      }
+    },
+    "Không quét được ổ đĩa": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Không quét được ổ đĩa"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Could not scan drives"
           }
         }
       }
@@ -2573,6 +3053,710 @@
           "stringUnit": {
             "state": "translated",
             "value": "Quit MDriveHealth"
+          }
+        }
+      }
+    },
+    "Tất cả ổ đĩa": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tất cả ổ đĩa"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "All drives"
+          }
+        }
+      }
+    },
+    "%lld ổ": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld ổ"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld drives"
+          }
+        }
+      }
+    },
+    "Chưa phát hiện ổ đĩa": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chưa phát hiện ổ đĩa"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No drives detected"
+          }
+        }
+      }
+    },
+    "Bấm Làm mới để quét lại. Ổ USB không hỗ trợ SMART passthrough vẫn có thể xuất hiện nhưng không có chỉ số sức khoẻ.": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bấm Làm mới để quét lại. Ổ USB không hỗ trợ SMART passthrough vẫn có thể xuất hiện nhưng không có chỉ số sức khoẻ."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Click Refresh to rescan. USB drives without SMART passthrough may still appear but without health metrics."
+          }
+        }
+      }
+    },
+    "Ổ": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ổ"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Drive"
+          }
+        }
+      }
+    },
+    "Sức khoẻ": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sức khoẻ"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Health"
+          }
+        }
+      }
+    },
+    "Chưa đọc": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chưa đọc"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Not read"
+          }
+        }
+      }
+    },
+    "Điểm": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Điểm"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Score"
+          }
+        }
+      }
+    },
+    "Nhiệt": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nhiệt"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Temp"
+          }
+        }
+      }
+    },
+    "Lifetime": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lifetime"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lifetime"
+          }
+        }
+      }
+    },
+    "Power-on": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Power-on"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Power-on"
+          }
+        }
+      }
+    },
+    "Đã ghi": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đã ghi"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Written"
+          }
+        }
+      }
+    },
+    "Lỗi": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lỗi"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Errors"
+          }
+        }
+      }
+    },
+    "SMART n/a": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "SMART n/a"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "SMART n/a"
+          }
+        }
+      }
+    },
+    "SMART không khả dụng qua %@": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "SMART không khả dụng qua %@"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "SMART unavailable over %@"
+          }
+        }
+      }
+    },
+    "Lỗi tăng": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lỗi tăng"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Defects ↑"
+          }
+        }
+      }
+    },
+    "Nóng": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nóng"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hot"
+          }
+        }
+      }
+    },
+    "Health giảm": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Health giảm"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Health ↓"
+          }
+        }
+      }
+    },
+    "chart.unit.count": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "số lượng"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "count"
+          }
+        }
+      }
+    },
+    "pressure.critical": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nghiêm trọng"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Critical"
+          }
+        }
+      }
+    },
+    "pressure.high": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cao"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "High"
+          }
+        }
+      }
+    },
+    "pressure.normal": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bình thường"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Normal"
+          }
+        }
+      }
+    },
+    "Áp lực bộ nhớ NGHIÊM TRỌNG — hãy đóng bớt ứng dụng.": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Áp lực bộ nhớ NGHIÊM TRỌNG — hãy đóng bớt ứng dụng."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "CRITICAL memory pressure — close some apps."
+          }
+        }
+      }
+    },
+    "Áp lực bộ nhớ cao — máy bắt đầu nén/swap nhiều.": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Áp lực bộ nhớ cao — máy bắt đầu nén/swap nhiều."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "High memory pressure — the Mac is compressing/swapping heavily."
+          }
+        }
+      }
+    },
+    "Máy Mac này không có pin (desktop) hoặc không đọc được thông tin pin.": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Máy Mac này không có pin (desktop) hoặc không đọc được thông tin pin."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This Mac has no battery (desktop) or its battery info can't be read."
+          }
+        }
+      }
+    },
+    "%1$lld lỗi I/O liên quan tới %2$@ trong kernel log 24 giờ qua — dấu hiệu cần chú ý ngay cả khi SMART chưa báo.": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$lld lỗi I/O liên quan tới %2$@ trong kernel log 24 giờ qua — dấu hiệu cần chú ý ngay cả khi SMART chưa báo."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$lld I/O errors involving %2$@ in the last 24h of kernel logs — worth attention even before SMART flags it."
+          }
+        }
+      }
+    },
+    "Gợi ý: thử cáp/hộp ổ hỗ trợ SMART passthrough, hoặc theo dõi lỗi I/O nếu ổ hay mất kết nối.": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gợi ý: thử cáp/hộp ổ hỗ trợ SMART passthrough, hoặc theo dõi lỗi I/O nếu ổ hay mất kết nối."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tip: try a cable/enclosure that supports SMART passthrough, or watch for I/O errors if the drive keeps disconnecting."
+          }
+        }
+      }
+    },
+    "menubar.smartNA": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "SMART n/a"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "SMART n/a"
+          }
+        }
+      }
+    },
+    "menubar.reading": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "MDriveHealth · Đang đọc SMART"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "MDriveHealth · Reading SMART"
+          }
+        }
+      }
+    },
+    "menubar.noData": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "MDriveHealth · Chưa có dữ liệu"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "MDriveHealth · No data yet"
+          }
+        }
+      }
+    },
+    "menubar.checkedAt": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "kiểm tra %@"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "checked %@"
+          }
+        }
+      }
+    },
+    "menubar.notChecked": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "chưa kiểm tra"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "not checked yet"
+          }
+        }
+      }
+    },
+    "menubar.subtitle": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$lld ổ · %2$@"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$lld drives · %2$@"
+          }
+        }
+      }
+    },
+    "update.error.url": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Repository URL không hợp lệ."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Invalid repository URL."
+          }
+        }
+      }
+    },
+    "update.error.response": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Phản hồi cập nhật không hợp lệ."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Invalid update response."
+          }
+        }
+      }
+    },
+    "update.error.http": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "GitHub trả HTTP %lld."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "GitHub returned HTTP %lld."
+          }
+        }
+      }
+    },
+    "update.error.metadata": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Không đọc được metadata bản phát hành."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Couldn't read release metadata."
+          }
+        }
+      }
+    },
+    "selftest.progress": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Còn khoảng %lld%%. Bấm Làm mới để cập nhật tiến độ."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "About %lld%% remaining. Click Refresh to update progress."
+          }
+        }
+      }
+    },
+    "selftest.started": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đã gửi lệnh lúc %@. Theo dõi tiến độ bằng nút Làm mới."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Command sent at %@. Track progress with Refresh."
+          }
+        }
+      }
+    },
+    "selftest.error": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Không chạy được self-test: %@"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Couldn't start the self-test: %@"
+          }
+        }
+      }
+    },
+    "license.value": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "GPL-3.0-or-later — mã nguồn mở"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "GPL-3.0-or-later — open source"
+          }
+        }
+      }
+    },
+    "login.error": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Không đổi được login item: %@"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Couldn't change the login item: %@"
+          }
+        }
+      }
+    },
+    "chart.axis.time": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Thời gian"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Time"
+          }
+        }
+      }
+    },
+    "chart.axis.marker": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mốc"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Marker"
           }
         }
       }

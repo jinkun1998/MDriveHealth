@@ -95,4 +95,23 @@ final class ATAParsingTests: XCTestCase {
         XCTAssertEqual(split.value, 5)
         XCTAssertEqual(split.display, "5/1")
     }
+
+    func testATABytesWrittenHonorsAttributeUnits() {
+        func attribute(name: String, raw: UInt64) -> ATAAttribute {
+            ATAAttribute(
+                attributeID: 241, name: name, flags: 0, current: 100, worst: 100,
+                threshold: nil, rawBytes: [], rawValue: raw, rawDisplay: "\(raw)")
+        }
+        func reading(name: String, raw: UInt64) -> DriveReading {
+            .ata(ATASMARTReading(
+                capturedAt: Date(), identify: nil,
+                attributes: [attribute(name: name, raw: raw)],
+                overallFailurePredicted: nil, selfTest: nil,
+                driveFamily: nil, driveWarning: nil))
+        }
+
+        XCTAssertEqual(reading(name: "Total_LBAs_Written", raw: 2).bytesWritten, 1_024)
+        XCTAssertEqual(reading(name: "Host_Writes_GiB", raw: 3).bytesWritten, 3_221_225_472)
+        XCTAssertNil(reading(name: "Vendor_Specific_Counter", raw: 99).bytesWritten)
+    }
 }
