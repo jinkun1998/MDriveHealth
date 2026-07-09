@@ -45,11 +45,11 @@ struct HistoryTab: View {
         VStack(alignment: .leading, spacing: 10) {
             HStack {
                 Picker("Chỉ số", selection: $metric) {
-                    ForEach(Metric.allCases) { Text($0.rawValue).tag($0) }
+                    ForEach(Metric.allCases) { Text(LocalizedStringKey($0.rawValue)).tag($0) }
                 }
                 .frame(maxWidth: 220)
                 Picker("Khoảng", selection: $range) {
-                    ForEach(Range.allCases) { Text($0.rawValue).tag($0) }
+                    ForEach(Range.allCases) { Text(LocalizedStringKey($0.rawValue)).tag($0) }
                 }
                 .pickerStyle(.segmented)
                 .frame(maxWidth: 320)

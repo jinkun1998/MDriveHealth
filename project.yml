@@ -4,6 +4,7 @@ options:
   deploymentTarget:
     macOS: "14.0"
   createIntermediateGroups: true
+  developmentLanguage: vi
 
 packages:
   MDriveHealthCore:
@@ -22,6 +23,7 @@ targets:
       path: App/Info.plist
       properties:
         CFBundleDisplayName: MDriveHealth
+        CFBundleDevelopmentRegion: vi
         CFBundleShortVersionString: "0.1.0"
         CFBundleVersion: "1"
         LSApplicationCategoryType: public.app-category.utilities

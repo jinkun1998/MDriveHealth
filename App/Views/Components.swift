@@ -9,11 +9,11 @@ import MDriveHealthCore
 extension HealthRating {
     var displayName: String {
         switch self {
-        case .good: return "Tốt"
-        case .ok: return "Ổn"
-        case .warning: return "Cảnh báo"
-        case .failing: return "Đang hỏng"
-        case .failed: return "Hỏng"
+        case .good: return String(localized: "rating.good", defaultValue: "Tốt")
+        case .ok: return String(localized: "rating.ok", defaultValue: "Ổn")
+        case .warning: return String(localized: "rating.warning", defaultValue: "Cảnh báo")
+        case .failing: return String(localized: "rating.failing", defaultValue: "Đang hỏng")
+        case .failed: return String(localized: "rating.failed", defaultValue: "Hỏng")
         }
     }
 
@@ -50,10 +50,10 @@ extension IssueSeverity {
 
     var displayName: String {
         switch self {
-        case .info: return "Thông tin"
-        case .advisory: return "Lưu ý"
-        case .warning: return "Cảnh báo"
-        case .critical: return "Nghiêm trọng"
+        case .info: return String(localized: "severity.info", defaultValue: "Thông tin")
+        case .advisory: return String(localized: "severity.advisory", defaultValue: "Lưu ý")
+        case .warning: return String(localized: "severity.warning", defaultValue: "Cảnh báo")
+        case .critical: return String(localized: "severity.critical", defaultValue: "Nghiêm trọng")
         }
     }
 }
@@ -75,7 +75,7 @@ struct HealthBadge: View {
 struct RingGauge: View {
     let value: Double // 0...1
     let label: String
-    let caption: String
+    let caption: LocalizedStringKey
     var color: Color = .green
 
     var body: some View {
@@ -100,7 +100,7 @@ struct RingGauge: View {
 }
 
 struct StatCard: View {
-    let title: String
+    let title: LocalizedStringKey
     let value: String
     var systemImage: String?
 
@@ -133,6 +133,10 @@ enum Format {
     }
 
     static func hours(_ value: UInt64) -> String {
-        value >= 48 ? "\(value) giờ (≈\(value / 24) ngày)" : "\(value) giờ"
+        if value >= 48 {
+            return String(localized: "format.hours.days",
+                          defaultValue: "\(value) giờ (≈\(value / 24) ngày)")
+        }
+        return String(localized: "format.hours", defaultValue: "\(value) giờ")
     }
 }

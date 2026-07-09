@@ -94,7 +94,7 @@ struct SensorsView: View {
                         ForEach(groups.prefix(4), id: \.group) { item in
                             RingGauge(value: min(1, item.celsius / 100),
                                       label: String(format: "%.0f°C", item.celsius),
-                                      caption: item.group,
+                                      caption: LocalizedStringKey(item.group),
                                       color: item.celsius >= 80 ? .red :
                                              item.celsius >= 60 ? .orange : .teal)
                         }
