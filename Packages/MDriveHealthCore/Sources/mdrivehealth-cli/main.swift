@@ -91,6 +91,44 @@ func reportNVMe(_ drive: DriveInfo) {
     }
 }
 
+func reportATA(_ drive: DriveInfo) {
+    do {
+        let reading = try ATASMARTProvider(drive: drive).read()
+        let model = reading.identify?.model ?? drive.model
+        print("── \(drive.bsdName): \(model) " + String(repeating: "─", count: max(0, 40 - model.count)))
+        if let identify = reading.identify {
+            print("  Serial:               \(identify.serialNumber)")
+            print("  Firmware:             \(identify.firmwareRevision)")
+            print("  Medium:               \(identify.isSolidState ? "SSD" : identify.rpm.map { "HDD \($0) rpm" } ?? "HDD")")
+        }
+        if let family = reading.driveFamily {
+            print("  Model family:         \(family)")
+        }
+        if let warning = reading.driveWarning {
+            print("  ⚠️ drivedb warning:    \(warning)")
+        }
+        if let failing = reading.overallFailurePredicted {
+            print("  SMART overall:        \(failing ? "FAILING — thresholds exceeded ⚠️" : "PASSED")")
+        }
+        if let selfTest = reading.selfTest, selfTest.inProgress {
+            print("  Self-test:            đang chạy, còn \(selfTest.percentRemaining ?? 0)%")
+        }
+        print("")
+        print("  ID# ATTRIBUTE_NAME             FLAG  VALUE WORST THRESH TYPE     RAW")
+        for attr in reading.attributes {
+            let name = attr.name.padding(toLength: 26, withPad: " ", startingAt: 0)
+            let flag = String(format: "0x%04x", attr.flags)
+            let type = attr.isPrefail ? "Pre-fail" : "Old_age "
+            let thresh = attr.threshold.map { String(format: "%5d", Int($0)) } ?? "    —"
+            let marker = attr.failedNow ? "  ← FAILING NOW" : (attr.failedEver ? "  ← failed in past" : "")
+            print("  \(String(format: "%3d", Int(attr.attributeID))) \(name) \(flag) \(String(format: "%5d", Int(attr.current))) \(String(format: "%5d", Int(attr.worst))) \(thresh) \(type) \(attr.rawDisplay)\(marker)")
+        }
+        print("")
+    } catch {
+        print("── \(drive.bsdName): \(drive.model) — LỖI: \(error.localizedDescription)\n")
+    }
+}
+
 func reportSMART(matching bsdName: String?) {
     do {
         let drives = try DriveEnumerator().enumerate()
@@ -106,7 +144,7 @@ func reportSMART(matching bsdName: String?) {
             case .nvme:
                 reportNVMe(drive)
             case .ata:
-                print("── \(drive.bsdName): \(drive.model) — ATA SMART (sẽ hỗ trợ ở M3)\n")
+                reportATA(drive)
             case .unsupported:
                 print("── \(drive.bsdName): \(drive.model) — SMART không khả dụng qua \(drive.interconnect)\n")
             }
