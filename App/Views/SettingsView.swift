@@ -14,6 +14,8 @@ struct SettingsView: View {
     @AppStorage(SettingsKeys.showMenuBar) private var showMenuBar = true
     @State private var launchAtLogin = SMAppService.mainApp.status == .enabled
     @State private var loginItemError: String?
+    @State private var checkingUpdates = false
+    @State private var updateStatus: String?
 
     var body: some View {
         Form {
@@ -54,9 +56,20 @@ struct SettingsView: View {
             }
 
             Section {
+                LabeledContent("Phiên bản", value: UpdateChecker.currentVersion)
                 LabeledContent("Drive database",
                                value: "smartmontools drivedb \(DriveDB.shared.version)")
                 LabeledContent("Giấy phép", value: "GPL-3.0-or-later — mã nguồn mở")
+                HStack {
+                    Button("Kiểm tra bản cập nhật…") { checkUpdates() }
+                        .disabled(checkingUpdates)
+                    if checkingUpdates { ProgressView().controlSize(.small) }
+                    if let updateStatus {
+                        Text(updateStatus)
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                }
             } header: {
                 Text("Về MDriveHealth")
             } footer: {
@@ -67,6 +80,23 @@ struct SettingsView: View {
         .formStyle(.grouped)
         .frame(width: 440)
         .fixedSize()
+    }
+
+    private func checkUpdates() {
+        checkingUpdates = true
+        updateStatus = nil
+        Task {
+            let release = await UpdateChecker.checkForUpdate()
+            await MainActor.run {
+                checkingUpdates = false
+                if let release {
+                    updateStatus = "Có bản \(release.version) mới!"
+                    NSWorkspace.shared.open(release.url)
+                } else {
+                    updateStatus = "Bạn đang dùng bản mới nhất."
+                }
+            }
+        }
     }
 
     private func updateLoginItem(enable: Bool) {

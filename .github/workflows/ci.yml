@@ -1,0 +1,25 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  build-and-test:
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Core unit tests
+        working-directory: Packages/MDriveHealthCore
+        run: swift test
+
+      - name: Install XcodeGen
+        run: brew install xcodegen
+
+      - name: Build app
+        run: |
+          xcodegen generate
+          xcodebuild -project MDriveHealth.xcodeproj -scheme MDriveHealth \
+            -configuration Release build CODE_SIGNING_ALLOWED=NO
