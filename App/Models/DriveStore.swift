@@ -29,6 +29,9 @@ final class DriveStore {
     /// Best-effort persistent history; nil when the database cannot be opened.
     let history: HistoryStore? = try? HistoryStore()
 
+    /// Kernel-log I/O errors seen in the last 24h, keyed by BSD name.
+    private(set) var ioErrorCounts: [String: Int] = [:]
+
     /// Snapshots the sidebar shows, honoring the virtual-drive filter.
     var visibleSnapshots: [DriveSnapshot] {
         showVirtualDrives ? snapshots : snapshots.filter { !$0.drive.isVirtual }
@@ -77,6 +80,23 @@ final class DriveStore {
         snapshots = result
         lastRefresh = Date()
         pruneHistoryOccasionally()
+        refreshIOErrors(for: result.map(\.drive.bsdName))
+    }
+
+    /// Scans the unified log off the main thread; failures leave counts empty.
+    private func refreshIOErrors(for bsdNames: [String]) {
+        Task.detached(priority: .background) {
+            let events = IOErrorWatcher.recentErrors(withinMinutes: 24 * 60)
+            guard !events.isEmpty else { return }
+            var counts: [String: Int] = [:]
+            for name in bsdNames where !name.isEmpty {
+                counts[name] = events.filter { $0.message.contains(name) }.count
+            }
+            let result = counts
+            await MainActor.run { [weak self] in
+                self?.ioErrorCounts = result
+            }
+        }
     }
 
     private var lastPrune: Date?

@@ -185,9 +185,40 @@ func reportSMART(matching bsdName: String?) {
     }
 }
 
+func reportSystem() {
+    if let battery = BatteryReader.read() {
+        print("── PIN " + String(repeating: "─", count: 40))
+        print("  Sức khoẻ:             \(battery.healthPercent)% (\(battery.maxCapacitymAh)/\(battery.designCapacitymAh) mAh)")
+        print("  Chu kỳ sạc:           \(battery.cycleCount)")
+        print("  Mức pin:              \(battery.chargePercent)%\(battery.isCharging ? " (đang sạc)" : "")")
+        if let temp = battery.temperatureCelsius {
+            print("  Nhiệt độ pin:         \(String(format: "%.1f", temp))°C")
+        }
+    } else {
+        print("── PIN: không có (desktop?)")
+    }
+    print("")
+    let sensors = SensorsReader.readTemperatures()
+    print("── CẢM BIẾN NHIỆT (\(sensors.count)) " + String(repeating: "─", count: 24))
+    for (group, celsius) in SensorsReader.summarize(sensors) {
+        print("  \(group.padding(toLength: 12, withPad: " ", startingAt: 0)) \(String(format: "%5.1f", celsius))°C")
+    }
+    print("")
+    if let memory = MemoryReader.read() {
+        print("── BỘ NHỚ " + String(repeating: "─", count: 37))
+        print("  Tổng RAM:             \(formatBytes(memory.totalBytes))")
+        print("  Đang dùng:            \(formatBytes(memory.usedBytes)) (\(Int(memory.usedFraction * 100))%)")
+        print("  Nén:                  \(formatBytes(memory.compressedBytes))")
+        print("  Swap:                 \(formatBytes(memory.swapUsedBytes)) / \(formatBytes(memory.swapTotalBytes))")
+        print("  Áp lực:               \(memory.pressureLevel >= 4 ? "NGHIÊM TRỌNG" : memory.pressureLevel >= 2 ? "Cao" : "Bình thường")")
+    }
+}
+
 switch arguments.first {
 case nil, "smart":
     reportSMART(matching: arguments.count > 1 ? arguments[1] : nil)
+case "system":
+    reportSystem()
 case "list":
     do {
         listDrives(try DriveEnumerator().enumerate())

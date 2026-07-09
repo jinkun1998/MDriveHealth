@@ -16,6 +16,8 @@
 #include <stdbool.h>
 #include <IOKit/IOKitLib.h>
 
+#include "CHIDSensors.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif

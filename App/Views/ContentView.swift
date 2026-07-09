@@ -1,14 +1,22 @@
 /*
- * ContentView.swift — main split view: drive sidebar + detail.
+ * ContentView.swift — main split view: drive/system sidebar + detail.
  * This file is part of MDriveHealth, licensed under GPL-3.0-or-later.
  */
 
 import SwiftUI
 import MDriveHealthCore
 
+enum SidebarItem: Hashable {
+    case drive(UInt64)
+    case battery
+    case sensors
+    case memory
+}
+
 struct ContentView: View {
     @Environment(DriveStore.self) private var store
-    @State private var selection: UInt64?
+    @State private var selection: SidebarItem?
+    @State private var hasBattery = BatteryReader.read() != nil
 
     var body: some View {
         NavigationSplitView {
@@ -16,16 +24,28 @@ struct ContentView: View {
                 if !store.internalDrives.isEmpty {
                     Section("Ổ trong") {
                         ForEach(store.internalDrives) { snapshot in
-                            DriveRow(snapshot: snapshot).tag(snapshot.id)
+                            DriveRow(snapshot: snapshot)
+                                .tag(SidebarItem.drive(snapshot.id))
                         }
                     }
                 }
                 if !store.externalDrives.isEmpty {
                     Section("Ổ ngoài / khác") {
                         ForEach(store.externalDrives) { snapshot in
-                            DriveRow(snapshot: snapshot).tag(snapshot.id)
+                            DriveRow(snapshot: snapshot)
+                                .tag(SidebarItem.drive(snapshot.id))
                         }
                     }
+                }
+                Section("Hệ thống") {
+                    if hasBattery {
+                        Label("Pin", systemImage: "battery.75")
+                            .tag(SidebarItem.battery)
+                    }
+                    Label("Cảm biến nhiệt", systemImage: "thermometer.medium")
+                        .tag(SidebarItem.sensors)
+                    Label("Bộ nhớ (RAM)", systemImage: "memorychip")
+                        .tag(SidebarItem.memory)
                 }
             }
             .navigationSplitViewColumnWidth(min: 230, ideal: 260)
@@ -36,15 +56,21 @@ struct ContentView: View {
                 }
             }
         } detail: {
-            if let id = selection,
-               let snapshot = store.snapshots.first(where: { $0.id == id }) {
-                DriveDetailView(snapshot: snapshot)
-            } else {
-                ContentUnavailableView(
-                    "Chọn một ổ đĩa",
-                    systemImage: "internaldrive",
-                    description: Text("Chọn ổ đĩa ở thanh bên để xem tình trạng sức khoẻ.")
-                )
+            switch selection {
+            case .drive(let id):
+                if let snapshot = store.snapshots.first(where: { $0.id == id }) {
+                    DriveDetailView(snapshot: snapshot)
+                } else {
+                    noSelection
+                }
+            case .battery:
+                BatteryView()
+            case .sensors:
+                SensorsView()
+            case .memory:
+                MemoryView()
+            case nil:
+                noSelection
             }
         }
         .toolbar {
@@ -63,10 +89,19 @@ struct ContentView: View {
             }
         }
         .onChange(of: store.snapshots.count) {
-            if selection == nil {
-                selection = store.internalDrives.first?.id ?? store.visibleSnapshots.first?.id
+            if selection == nil, let first = store.internalDrives.first
+                ?? store.visibleSnapshots.first {
+                selection = .drive(first.id)
             }
         }
+    }
+
+    private var noSelection: some View {
+        ContentUnavailableView(
+            "Chọn một mục",
+            systemImage: "internaldrive",
+            description: Text("Chọn ổ đĩa hoặc mục hệ thống ở thanh bên.")
+        )
     }
 }
 

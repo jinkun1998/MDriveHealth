@@ -8,6 +8,7 @@ import MDriveHealthCore
 
 struct OverviewTab: View {
     let snapshot: DriveSnapshot
+    @Environment(DriveStore.self) private var store
 
     var body: some View {
         ScrollView {
@@ -16,6 +17,15 @@ struct OverviewTab: View {
                     errorBanner(error)
                 } else if snapshot.drive.smartInterface == .unsupported {
                     unsupportedBanner
+                }
+
+                if let ioErrors = store.ioErrorCounts[snapshot.drive.bsdName],
+                   ioErrors > 0 {
+                    Label("\(ioErrors) lỗi I/O liên quan tới \(snapshot.drive.bsdName) trong kernel log 24 giờ qua — dấu hiệu cần chú ý ngay cả khi SMART chưa báo.",
+                          systemImage: "exclamationmark.triangle.fill")
+                        .padding(10)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .background(.red.opacity(0.12), in: RoundedRectangle(cornerRadius: 8))
                 }
 
                 if let health = snapshot.health, let reading = snapshot.reading {
