@@ -26,6 +26,9 @@ final class DriveStore {
     private(set) var lastRefresh: Date?
     var showVirtualDrives = false
 
+    /// Best-effort persistent history; nil when the database cannot be opened.
+    let history: HistoryStore? = try? HistoryStore()
+
     /// Snapshots the sidebar shows, honoring the virtual-drive filter.
     var visibleSnapshots: [DriveSnapshot] {
         showVirtualDrives ? snapshots : snapshots.filter { !$0.drive.isVirtual }
@@ -44,6 +47,7 @@ final class DriveStore {
         isRefreshing = true
         defer { isRefreshing = false }
 
+        let historyStore = history
         let result = await Task.detached(priority: .userInitiated) {
             () -> [DriveSnapshot] in
             guard let drives = try? DriveEnumerator().enumerate() else { return [] }
@@ -57,6 +61,12 @@ final class DriveStore {
                     snapshot.reading = reading
                     snapshot.health = reading.evaluateHealth()
                     snapshot.lastUpdated = Date()
+                    if let health = snapshot.health {
+                        try? historyStore?.record(
+                            driveKey: HistoryStore.driveKey(for: drive),
+                            bsdName: drive.bsdName,
+                            reading: reading, health: health)
+                    }
                 } catch {
                     snapshot.lastError = error.localizedDescription
                 }
@@ -66,5 +76,15 @@ final class DriveStore {
 
         snapshots = result
         lastRefresh = Date()
+        pruneHistoryOccasionally()
+    }
+
+    private var lastPrune: Date?
+
+    private func pruneHistoryOccasionally() {
+        // Keep 12 months of history; prune at most once per app day.
+        if let lastPrune, Date().timeIntervalSince(lastPrune) < 86_400 { return }
+        lastPrune = Date()
+        try? history?.pruneOlderThan(Date().addingTimeInterval(-365 * 86_400))
     }
 }

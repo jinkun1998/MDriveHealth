@@ -12,6 +12,7 @@ struct DriveDetailView: View {
     private enum Tab: String, CaseIterable, Identifiable {
         case overview = "Tổng quan"
         case attributes = "Thuộc tính SMART"
+        case history = "Lịch sử"
         case info = "Thiết bị"
         var id: String { rawValue }
     }
@@ -36,6 +37,8 @@ struct DriveDetailView: View {
                     OverviewTab(snapshot: snapshot)
                 case .attributes:
                     AttributesTab(snapshot: snapshot)
+                case .history:
+                    HistoryTab(snapshot: snapshot)
                 case .info:
                     DeviceInfoTab(snapshot: snapshot)
                 }
