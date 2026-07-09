@@ -43,6 +43,34 @@ func listDrives(_ drives: [DriveInfo]) {
     }
 }
 
+func ratingLabel(_ rating: HealthRating) -> String {
+    switch rating {
+    case .good: return "TỐT ✅"
+    case .ok: return "ỔN 🙂"
+    case .warning: return "CẢNH BÁO ⚠️"
+    case .failing: return "ĐANG HỎNG ‼️"
+    case .failed: return "HỎNG ❌"
+    }
+}
+
+func printHealth(_ report: HealthReport) {
+    print("  ┌─ SỨC KHOẺ TỔNG THỂ: \(ratingLabel(report.rating)) — \(report.score)/100")
+    if let lifetime = report.lifetimeLeftPercent {
+        print("  │  SSD lifetime còn lại: \(lifetime)%")
+    }
+    for issue in report.issues {
+        let icon: String
+        switch issue.severity {
+        case .critical: icon = "‼️"
+        case .warning: icon = "⚠️"
+        case .advisory: icon = "ℹ️"
+        case .info: icon = "·"
+        }
+        print("  │  \(icon) \(issue.title): \(issue.detail)")
+    }
+    print("  └─")
+}
+
 func reportNVMe(_ drive: DriveInfo) {
     do {
         let reading = try NVMeSMARTProvider(drive: drive).read()
@@ -50,6 +78,7 @@ func reportNVMe(_ drive: DriveInfo) {
         let smart = reading.smart
 
         print("── \(drive.bsdName): \(controller.model) " + String(repeating: "─", count: max(0, 40 - controller.model.count)))
+        printHealth(HealthEvaluator.evaluate(nvme: reading))
         print("  Serial:               \(controller.serialNumber)")
         print("  Firmware:             \(controller.firmwareRevision)")
         print("  NVMe spec:            \(controller.specVersion ?? "—")")
@@ -96,6 +125,7 @@ func reportATA(_ drive: DriveInfo) {
         let reading = try ATASMARTProvider(drive: drive).read()
         let model = reading.identify?.model ?? drive.model
         print("── \(drive.bsdName): \(model) " + String(repeating: "─", count: max(0, 40 - model.count)))
+        printHealth(HealthEvaluator.evaluate(ata: reading))
         if let identify = reading.identify {
             print("  Serial:               \(identify.serialNumber)")
             print("  Firmware:             \(identify.firmwareRevision)")
