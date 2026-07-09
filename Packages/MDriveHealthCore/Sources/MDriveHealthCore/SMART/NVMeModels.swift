@@ -41,6 +41,24 @@ public struct NVMeControllerInfo: Sendable, Codable, Hashable {
     /// Critical composite temperature threshold (Kelvin); 0 when not reported.
     public let criticalTempKelvin: UInt16
     public let namespaceCount: UInt32
+
+    public init(model: String, serialNumber: String, firmwareRevision: String,
+                ieeeOUI: String, controllerID: UInt16, specVersion: String?,
+                totalCapacityBytes: UInt64, unallocatedCapacityBytes: UInt64,
+                warningTempKelvin: UInt16, criticalTempKelvin: UInt16,
+                namespaceCount: UInt32) {
+        self.model = model
+        self.serialNumber = serialNumber
+        self.firmwareRevision = firmwareRevision
+        self.ieeeOUI = ieeeOUI
+        self.controllerID = controllerID
+        self.specVersion = specVersion
+        self.totalCapacityBytes = totalCapacityBytes
+        self.unallocatedCapacityBytes = unallocatedCapacityBytes
+        self.warningTempKelvin = warningTempKelvin
+        self.criticalTempKelvin = criticalTempKelvin
+        self.namespaceCount = namespaceCount
+    }
 }
 
 /// Decoded NVMe SMART / Health Information log (log page 02h).
@@ -74,10 +92,46 @@ public struct NVMeSMARTSnapshot: Sendable, Codable, Hashable {
     public var temperatureCelsius: Int { Int(temperatureKelvin) - 273 }
     public var bytesRead: UInt64 { dataUnitsRead &* 512_000 }
     public var bytesWritten: UInt64 { dataUnitsWritten &* 512_000 }
+
+    public init(capturedAt: Date, criticalWarning: NVMeCriticalWarning,
+                temperatureKelvin: UInt16, availableSpare: UInt8,
+                availableSpareThreshold: UInt8, percentageUsed: UInt8,
+                dataUnitsRead: UInt64, dataUnitsWritten: UInt64,
+                hostReadCommands: UInt64, hostWriteCommands: UInt64,
+                controllerBusyTimeMinutes: UInt64, powerCycles: UInt64,
+                powerOnHours: UInt64, unsafeShutdowns: UInt64,
+                mediaErrors: UInt64, errorLogEntries: UInt64,
+                warningTempTimeMinutes: UInt32, criticalTempTimeMinutes: UInt32,
+                temperatureSensorsKelvin: [UInt16]) {
+        self.capturedAt = capturedAt
+        self.criticalWarning = criticalWarning
+        self.temperatureKelvin = temperatureKelvin
+        self.availableSpare = availableSpare
+        self.availableSpareThreshold = availableSpareThreshold
+        self.percentageUsed = percentageUsed
+        self.dataUnitsRead = dataUnitsRead
+        self.dataUnitsWritten = dataUnitsWritten
+        self.hostReadCommands = hostReadCommands
+        self.hostWriteCommands = hostWriteCommands
+        self.controllerBusyTimeMinutes = controllerBusyTimeMinutes
+        self.powerCycles = powerCycles
+        self.powerOnHours = powerOnHours
+        self.unsafeShutdowns = unsafeShutdowns
+        self.mediaErrors = mediaErrors
+        self.errorLogEntries = errorLogEntries
+        self.warningTempTimeMinutes = warningTempTimeMinutes
+        self.criticalTempTimeMinutes = criticalTempTimeMinutes
+        self.temperatureSensorsKelvin = temperatureSensorsKelvin
+    }
 }
 
 /// A complete NVMe probe result.
 public struct NVMeReading: Sendable, Codable, Hashable {
     public let controller: NVMeControllerInfo
     public let smart: NVMeSMARTSnapshot
+
+    public init(controller: NVMeControllerInfo, smart: NVMeSMARTSnapshot) {
+        self.controller = controller
+        self.smart = smart
+    }
 }
