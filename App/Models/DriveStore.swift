@@ -83,8 +83,13 @@ final class DriveStore {
         refreshIOErrors(for: result.map(\.drive.bsdName))
     }
 
+    private var lastIOScan: Date?
+
     /// Scans the unified log off the main thread; failures leave counts empty.
+    /// `log show` over 24h is expensive, so scan at most every 30 minutes.
     private func refreshIOErrors(for bsdNames: [String]) {
+        if let lastIOScan, Date().timeIntervalSince(lastIOScan) < 1_800 { return }
+        lastIOScan = Date()
         Task.detached(priority: .background) {
             let events = IOErrorWatcher.recentErrors(withinMinutes: 24 * 60)
             guard !events.isEmpty else { return }

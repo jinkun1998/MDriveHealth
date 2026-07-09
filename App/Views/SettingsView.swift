@@ -16,6 +16,8 @@ struct SettingsView: View {
     @State private var loginItemError: String?
     @State private var checkingUpdates = false
     @State private var updateStatus: String?
+    @AppStorage("appLanguage") private var appLanguage = "system"
+    @State private var languageNeedsRestart = false
 
     var body: some View {
         Form {
@@ -53,6 +55,23 @@ struct SettingsView: View {
                         .font(.caption)
                         .foregroundStyle(.red)
                 }
+                Picker("Ngôn ngữ / Language", selection: $appLanguage) {
+                    Text("Theo hệ thống / System").tag("system")
+                    Text("Tiếng Việt").tag("vi")
+                    Text("English").tag("en")
+                }
+                .onChange(of: appLanguage) { _, choice in
+                    applyLanguage(choice)
+                }
+                if languageNeedsRestart {
+                    HStack {
+                        Text("Khởi động lại app để áp dụng ngôn ngữ mới.")
+                            .font(.caption)
+                            .foregroundStyle(.orange)
+                        Button("Khởi động lại ngay") { relaunchApp() }
+                            .controlSize(.small)
+                    }
+                }
             }
 
             Section {
@@ -82,6 +101,26 @@ struct SettingsView: View {
         .fixedSize()
     }
 
+    /// Standard per-app language override: set AppleLanguages and relaunch.
+    private func applyLanguage(_ choice: String) {
+        if choice == "system" {
+            UserDefaults.standard.removeObject(forKey: "AppleLanguages")
+        } else {
+            UserDefaults.standard.set([choice], forKey: "AppleLanguages")
+        }
+        languageNeedsRestart = true
+    }
+
+    private func relaunchApp() {
+        let configuration = NSWorkspace.OpenConfiguration()
+        configuration.createsNewApplicationInstance = true
+        NSWorkspace.shared.openApplication(at: Bundle.main.bundleURL,
+                                           configuration: configuration) { _, _ in }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
+            NSApp.terminate(nil)
+        }
+    }
+
     private func checkUpdates() {
         checkingUpdates = true
         updateStatus = nil
@@ -90,10 +129,12 @@ struct SettingsView: View {
             await MainActor.run {
                 checkingUpdates = false
                 if let release {
-                    updateStatus = "Có bản \(release.version) mới!"
+                    updateStatus = String(localized: "update.available",
+                                          defaultValue: "Có bản \(release.version) mới!")
                     NSWorkspace.shared.open(release.url)
                 } else {
-                    updateStatus = "Bạn đang dùng bản mới nhất."
+                    updateStatus = String(localized: "update.latest",
+                                          defaultValue: "Bạn đang dùng bản mới nhất.")
                 }
             }
         }

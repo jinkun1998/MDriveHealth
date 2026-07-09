@@ -153,9 +153,7 @@ struct OverviewTab: View {
         VStack(alignment: .leading, spacing: 6) {
             Label("SMART không khả dụng cho ổ này", systemImage: "info.circle")
                 .font(.headline)
-            Text("macOS không cho phép đọc SMART qua cầu USB mass-storage. " +
-                 "Hạn chế này áp dụng cho mọi ứng dụng (kể cả DriveDX khi chưa cài driver riêng). " +
-                 "Ổ cắm qua Thunderbolt hoặc khe NVMe/SATA nội bộ vẫn đọc được bình thường.")
+            Text("macOS không cho phép đọc SMART qua cầu USB mass-storage — đây là hạn chế của hệ điều hành, áp dụng cho mọi ứng dụng. Ổ cắm qua Thunderbolt hoặc khe NVMe/SATA nội bộ vẫn đọc được bình thường.")
                 .foregroundStyle(.secondary)
                 .fixedSize(horizontal: false, vertical: true)
         }

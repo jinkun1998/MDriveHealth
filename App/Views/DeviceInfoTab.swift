@@ -15,8 +15,12 @@ struct DeviceInfoTab: View {
             ("BSD name", snapshot.drive.bsdName),
             ("Dung lượng", Format.bytes(snapshot.drive.sizeBytes)),
             ("Giao tiếp", snapshot.drive.interconnect),
-            ("Vị trí", snapshot.drive.location == "Internal" ? "Trong máy" : snapshot.drive.location),
-            ("Loại", snapshot.drive.isSolidState ? "SSD (thể rắn)" : "HDD (cơ)"),
+            ("Vị trí", snapshot.drive.location == "Internal"
+                ? String(localized: "device.internal", defaultValue: "Trong máy")
+                : snapshot.drive.location),
+            ("Loại", snapshot.drive.isSolidState
+                ? String(localized: "device.ssd", defaultValue: "SSD (thể rắn)")
+                : String(localized: "device.hdd", defaultValue: "HDD (cơ)")),
         ]
         if let serial = snapshot.drive.serialNumber {
             result.append(("Số serial", serial))
@@ -30,7 +34,9 @@ struct DeviceInfoTab: View {
             result.append(("Model (NVMe identify)", c.model))
             result.append(("Serial (NVMe identify)", c.serialNumber))
             result.append(("Firmware (NVMe identify)", c.firmwareRevision))
-            result.append(("IEEE OUI", c.ieeeOUI))
+            if c.ieeeOUI != "00-00-00" {
+                result.append(("IEEE OUI", c.ieeeOUI))
+            }
             if let version = c.specVersion {
                 result.append(("Chuẩn NVMe", version))
             }
@@ -70,7 +76,9 @@ struct DeviceInfoTab: View {
         List {
             ForEach(rows, id: \.0) { name, value in
                 HStack {
-                    Text(name)
+                    // Keys are the Vietnamese literals; the string catalog
+                    // supplies the English translations.
+                    Text(LocalizedStringKey(name))
                     Spacer()
                     Text(value)
                         .foregroundStyle(.secondary)

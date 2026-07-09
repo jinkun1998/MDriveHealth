@@ -64,7 +64,7 @@ public struct HealthIssue: Sendable, Codable, Hashable, Identifiable {
     }
 }
 
-/// DriveDX-style overall verdict for one drive.
+/// Overall health verdict for one drive.
 public struct HealthReport: Sendable, Codable, Hashable {
     /// 0...100, higher is healthier.
     public let score: Int

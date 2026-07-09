@@ -177,6 +177,230 @@
         }
       }
     },
+    "format.minutes": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld phút"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld minutes"
+          }
+        }
+      }
+    },
+    "device.internal": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Trong máy"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Internal"
+          }
+        }
+      }
+    },
+    "device.ssd": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "SSD (thể rắn)"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "SSD (solid state)"
+          }
+        }
+      }
+    },
+    "device.hdd": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "HDD (cơ)"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "HDD (rotational)"
+          }
+        }
+      }
+    },
+    "update.available": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Có bản %@ mới!"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Version %@ is available!"
+          }
+        }
+      }
+    },
+    "update.latest": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bạn đang dùng bản mới nhất."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "You're on the latest version."
+          }
+        }
+      }
+    },
+    "notify.degraded.title": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sức khoẻ ổ đĩa giảm: %@"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Drive health degraded: %@"
+          }
+        }
+      }
+    },
+    "notify.degraded.body": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tình trạng chuyển từ “%@” xuống “%@” (%lld/100). Hãy sao lưu dữ liệu và kiểm tra chi tiết trong MDriveHealth."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Status changed from “%@” to “%@” (%lld/100). Back up your data and check the details in MDriveHealth."
+          }
+        }
+      }
+    },
+    "notify.defects.title": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Phát hiện lỗi mới: %@"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "New defects detected: %@"
+          }
+        }
+      }
+    },
+    "notify.defects.body": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Số sector lỗi/media error tăng từ %lld lên %lld. Đây là dấu hiệu bề mặt lưu trữ đang xuống cấp."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Defective sectors/media errors increased from %lld to %lld — a sign the storage media is degrading."
+          }
+        }
+      }
+    },
+    "notify.temp.title": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nhiệt độ cao: %@"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "High temperature: %@"
+          }
+        }
+      }
+    },
+    "notify.temp.body": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ổ đĩa đạt %lld°C, vượt ngưỡng cảnh báo %lld°C."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The drive reached %lld°C, above the %lld°C alert threshold."
+          }
+        }
+      }
+    },
+    "notify.failing.title": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ổ đĩa đang hỏng: %@"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Drive is failing: %@"
+          }
+        }
+      }
+    },
+    "notify.failing.body": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tình trạng: %@ (%lld/100). Sao lưu dữ liệu ngay lập tức!"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Status: %@ (%lld/100). Back up your data immediately!"
+          }
+        }
+      }
+    },
     "Ổ trong": {
       "localizations": {
         "vi": {
@@ -641,18 +865,18 @@
         }
       }
     },
-    "macOS không cho phép đọc SMART qua cầu USB mass-storage. Hạn chế này áp dụng cho mọi ứng dụng (kể cả DriveDX khi chưa cài driver riêng). Ổ cắm qua Thunderbolt hoặc khe NVMe/SATA nội bộ vẫn đọc được bình thường.": {
+    "macOS không cho phép đọc SMART qua cầu USB mass-storage — đây là hạn chế của hệ điều hành, áp dụng cho mọi ứng dụng. Ổ cắm qua Thunderbolt hoặc khe NVMe/SATA nội bộ vẫn đọc được bình thường.": {
       "localizations": {
         "vi": {
           "stringUnit": {
             "state": "translated",
-            "value": "macOS không cho phép đọc SMART qua cầu USB mass-storage. Hạn chế này áp dụng cho mọi ứng dụng (kể cả DriveDX khi chưa cài driver riêng). Ổ cắm qua Thunderbolt hoặc khe NVMe/SATA nội bộ vẫn đọc được bình thường."
+            "value": "macOS không cho phép đọc SMART qua cầu USB mass-storage — đây là hạn chế của hệ điều hành, áp dụng cho mọi ứng dụng. Ổ cắm qua Thunderbolt hoặc khe NVMe/SATA nội bộ vẫn đọc được bình thường."
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "macOS cannot read SMART through USB mass-storage bridges. This limitation applies to every app (including DriveDX without its custom driver). Drives attached via Thunderbolt or internal NVMe/SATA slots work normally."
+            "value": "macOS cannot read SMART through USB mass-storage bridges — an operating-system limitation that applies to every app. Drives attached via Thunderbolt or internal NVMe/SATA slots work normally."
           }
         }
       }
@@ -797,6 +1021,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Failed before"
+          }
+        }
+      }
+    },
+    "NVMe SMART / Health Information Log": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "NVMe SMART / Health Information Log"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "NVMe SMART / Health Information Log"
           }
         }
       }
@@ -1105,6 +1345,22 @@
         }
       }
     },
+    "Giao diện NVMe của macOS không cho phép ứng dụng gửi lệnh Device Self-test — hạn chế của hệ điều hành, áp dụng với mọi công cụ. Các chỉ số SMART ở tab Tổng quan vẫn phản ánh đầy đủ tình trạng ổ.": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Giao diện NVMe của macOS không cho phép ứng dụng gửi lệnh Device Self-test — hạn chế của hệ điều hành, áp dụng với mọi công cụ. Các chỉ số SMART ở tab Tổng quan vẫn phản ánh đầy đủ tình trạng ổ."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The macOS NVMe interface does not let applications issue Device Self-test commands — an operating-system limitation that applies to every tool. The SMART metrics on the Overview tab still fully reflect the drive's condition."
+          }
+        }
+      }
+    },
     "Không khả dụng": {
       "localizations": {
         "vi": {
@@ -1133,6 +1389,342 @@
           "stringUnit": {
             "state": "translated",
             "value": "This drive has no SMART channel, so self-tests cannot run."
+          }
+        }
+      }
+    },
+    "Model": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Model"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Model"
+          }
+        }
+      }
+    },
+    "BSD name": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "BSD name"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "BSD name"
+          }
+        }
+      }
+    },
+    "Dung lượng": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dung lượng"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Capacity"
+          }
+        }
+      }
+    },
+    "Giao tiếp": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Giao tiếp"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Interconnect"
+          }
+        }
+      }
+    },
+    "Vị trí": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vị trí"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Location"
+          }
+        }
+      }
+    },
+    "Số serial": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Số serial"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Serial number"
+          }
+        }
+      }
+    },
+    "Firmware (IOKit)": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Firmware (IOKit)"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Firmware (IOKit)"
+          }
+        }
+      }
+    },
+    "Model (NVMe identify)": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Model (NVMe identify)"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Model (NVMe identify)"
+          }
+        }
+      }
+    },
+    "Serial (NVMe identify)": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Serial (NVMe identify)"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Serial (NVMe identify)"
+          }
+        }
+      }
+    },
+    "Firmware (NVMe identify)": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Firmware (NVMe identify)"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Firmware (NVMe identify)"
+          }
+        }
+      }
+    },
+    "IEEE OUI": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "IEEE OUI"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "IEEE OUI"
+          }
+        }
+      }
+    },
+    "Chuẩn NVMe": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chuẩn NVMe"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "NVMe spec"
+          }
+        }
+      }
+    },
+    "Ngưỡng nhiệt cảnh báo": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ngưỡng nhiệt cảnh báo"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Warning temp threshold"
+          }
+        }
+      }
+    },
+    "Ngưỡng nhiệt nguy hiểm": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ngưỡng nhiệt nguy hiểm"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Critical temp threshold"
+          }
+        }
+      }
+    },
+    "Số namespace": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Số namespace"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Namespaces"
+          }
+        }
+      }
+    },
+    "Model (IDENTIFY)": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Model (IDENTIFY)"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Model (IDENTIFY)"
+          }
+        }
+      }
+    },
+    "Serial (IDENTIFY)": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Serial (IDENTIFY)"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Serial (IDENTIFY)"
+          }
+        }
+      }
+    },
+    "Firmware (IDENTIFY)": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Firmware (IDENTIFY)"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Firmware (IDENTIFY)"
+          }
+        }
+      }
+    },
+    "Tốc độ quay": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tốc độ quay"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rotation rate"
+          }
+        }
+      }
+    },
+    "SMART overall status": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "SMART overall status"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "SMART overall status"
+          }
+        }
+      }
+    },
+    "Cập nhật lần cuối": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cập nhật lần cuối"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Last updated"
           }
         }
       }
@@ -1713,6 +2305,102 @@
         }
       }
     },
+    "Ngôn ngữ / Language": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ngôn ngữ / Language"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Language"
+          }
+        }
+      }
+    },
+    "Theo hệ thống / System": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Theo hệ thống / System"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "System default"
+          }
+        }
+      }
+    },
+    "Tiếng Việt": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tiếng Việt"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tiếng Việt"
+          }
+        }
+      }
+    },
+    "English": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "English"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "English"
+          }
+        }
+      }
+    },
+    "Khởi động lại app để áp dụng ngôn ngữ mới.": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Khởi động lại app để áp dụng ngôn ngữ mới."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Restart the app to apply the new language."
+          }
+        }
+      }
+    },
+    "Khởi động lại ngay": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Khởi động lại ngay"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Restart now"
+          }
+        }
+      }
+    },
     "Về MDriveHealth": {
       "localizations": {
         "vi": {
@@ -1725,6 +2413,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "About MDriveHealth"
+          }
+        }
+      }
+    },
+    "Phiên bản": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Phiên bản"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Version"
           }
         }
       }
@@ -1757,6 +2461,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "License"
+          }
+        }
+      }
+    },
+    "Kiểm tra bản cập nhật…": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kiểm tra bản cập nhật…"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Check for updates…"
           }
         }
       }

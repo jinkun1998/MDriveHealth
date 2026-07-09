@@ -16,7 +16,7 @@
 | 🇻🇳 | 🇬🇧 |
 |---|---|
 | Đọc **SMART** ổ NVMe (kể cả SSD Apple / Apple Silicon) và SATA, không cần quyền root, không cần kext | Reads **SMART** from NVMe (including Apple SSDs on Apple Silicon) and SATA drives — no root, no kext |
-| **Chấm điểm sức khoẻ** kiểu DriveDX: điểm 0–100, xếp hạng Tốt→Hỏng, danh sách chỉ báo với mức độ nghiêm trọng | DriveDX-style **health scoring**: 0–100 score, Good→Failed rating, severity-ranked indicator list |
+| **Chấm điểm sức khoẻ**: điểm 0–100, xếp hạng Tốt→Hỏng, danh sách chỉ báo với mức độ nghiêm trọng | **Health scoring**: 0–100 score, Good→Failed rating, severity-ranked indicator list |
 | **SSD lifetime**, nhiệt độ, sector lỗi/pending, tổng dữ liệu đã ghi, giờ hoạt động… | **SSD lifetime**, temperature, reallocated/pending sectors, total bytes written, power-on hours… |
 | Bảng **thuộc tính SMART đầy đủ** với tên/cách decode theo từng model ổ (database 589 dòng ổ từ smartmontools) | Full **SMART attribute table** with per-model names/decoding (589-entry database from smartmontools) |
 | **Lịch sử & biểu đồ** (SQLite + Swift Charts): nhiệt độ, điểm, wear theo thời gian | **History & charts** (SQLite + Swift Charts): temperature, score, wear over time |
@@ -60,7 +60,7 @@ scripts/release.sh          # archive → sign → notarize → DMG
 
 ## Giới hạn đã biết / Known limitations
 
-- **Ổ USB**: macOS không có driver SAT nên *không app nào* đọc được SMART qua cầu USB mass-storage từ userspace (DriveDX phải cài kext riêng — đã bị Apple deprecate). Ổ Thunderbolt/NVMe nội bộ hoạt động đầy đủ. / No SMART over USB mass-storage bridges on macOS (OS limitation).
+- **Ổ USB**: macOS không có driver SAT nên *không app nào* đọc được SMART qua cầu USB mass-storage từ userspace — hạn chế của hệ điều hành. Ổ Thunderbolt/NVMe nội bộ hoạt động đầy đủ. / No SMART over USB mass-storage bridges on macOS (OS limitation).
 - **NVMe self-test**: giao diện NVMe của macOS không hỗ trợ — áp dụng với mọi công cụ. / Not supported by macOS NVMe interface (applies to all tools).
 - Nội dung chi tiết của chỉ báo sức khoẻ hiện hiển thị tiếng Anh. / Health-issue detail strings are currently English.
 

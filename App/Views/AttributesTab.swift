@@ -88,7 +88,7 @@ private struct NVMeFieldList: View {
             ("Data Units Written", "\(smart.dataUnitsWritten) (\(Format.bytes(smart.bytesWritten)))", false),
             ("Host Read Commands", "\(smart.hostReadCommands)", false),
             ("Host Write Commands", "\(smart.hostWriteCommands)", false),
-            ("Controller Busy Time", "\(smart.controllerBusyTimeMinutes) phút", false),
+            ("Controller Busy Time", Format.minutes(smart.controllerBusyTimeMinutes), false),
             ("Power Cycles", "\(smart.powerCycles)", false),
             ("Power On Hours", "\(smart.powerOnHours)", false),
             ("Unsafe Shutdowns", "\(smart.unsafeShutdowns)", false),

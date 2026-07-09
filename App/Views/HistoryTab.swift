@@ -63,8 +63,7 @@ struct HistoryTab: View {
                 ContentUnavailableView(
                     "Chưa có dữ liệu lịch sử",
                     systemImage: "chart.xyaxis.line",
-                    description: Text("Dữ liệu được ghi lại mỗi lần đọc SMART. " +
-                                      "Hãy để app chạy nền để tích luỹ lịch sử."))
+                    description: Text("Dữ liệu được ghi lại mỗi lần đọc SMART. Hãy để app chạy nền để tích luỹ lịch sử."))
                     .frame(maxHeight: .infinity)
             } else {
                 Chart(chartData, id: \.date) { item in
@@ -79,6 +78,10 @@ struct HistoryTab: View {
                         .interpolationMethod(.monotone)
                 }
                 .chartYAxisLabel(yLabel)
+                // Percent metrics anchor at 0; measurements (temp, TB, counts)
+                // zoom to their actual range so small trends stay visible.
+                .chartYScale(domain: .automatic(
+                    includesZero: metric == .score || metric == .lifetime))
                 .frame(maxHeight: .infinity)
             }
         }

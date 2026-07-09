@@ -21,10 +21,7 @@ struct SelfTestTab: View {
                 case .nvme:
                     infoBox(
                         title: "NVMe self-test không khả dụng trên macOS",
-                        message: "Giao diện NVMe của macOS không cho phép ứng dụng " +
-                        "gửi lệnh Device Self-test (hạn chế hệ điều hành, áp dụng với " +
-                        "mọi công cụ kể cả smartctl và DriveDX). Các chỉ số SMART ở tab " +
-                        "Tổng quan vẫn phản ánh đầy đủ tình trạng ổ.")
+                        message: "Giao diện NVMe của macOS không cho phép ứng dụng gửi lệnh Device Self-test — hạn chế của hệ điều hành, áp dụng với mọi công cụ. Các chỉ số SMART ở tab Tổng quan vẫn phản ánh đầy đủ tình trạng ổ.")
                 case .unsupported:
                     infoBox(title: "Không khả dụng",
                             message: "Ổ này không có kênh SMART nên không chạy được self-test.")
@@ -55,8 +52,7 @@ struct SelfTestTab: View {
 
         VStack(alignment: .leading, spacing: 10) {
             Text("Chạy self-test").font(.headline)
-            Text("Self-test do chính firmware ổ đĩa thực hiện, an toàn với dữ liệu " +
-                 "và có thể dùng ổ bình thường trong lúc chạy (tốc độ có thể giảm nhẹ).")
+            Text("Self-test do chính firmware ổ đĩa thực hiện, an toàn với dữ liệu và có thể dùng ổ bình thường trong lúc chạy (tốc độ có thể giảm nhẹ).")
                 .font(.callout)
                 .foregroundStyle(.secondary)
             HStack {
@@ -85,7 +81,7 @@ struct SelfTestTab: View {
         }
     }
 
-    private func infoBox(title: String, message: String) -> some View {
+    private func infoBox(title: LocalizedStringKey, message: LocalizedStringKey) -> some View {
         VStack(alignment: .leading, spacing: 6) {
             Label(title, systemImage: "info.circle").font(.headline)
             Text(message)

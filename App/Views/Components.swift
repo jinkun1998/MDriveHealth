@@ -71,7 +71,7 @@ struct HealthBadge: View {
     }
 }
 
-/// Circular gauge for scores/percentages, DriveDX-style.
+/// Circular gauge for scores/percentages.
 struct RingGauge: View {
     let value: Double // 0...1
     let label: String
@@ -138,5 +138,9 @@ enum Format {
                           defaultValue: "\(value) giờ (≈\(value / 24) ngày)")
         }
         return String(localized: "format.hours", defaultValue: "\(value) giờ")
+    }
+
+    static func minutes(_ value: UInt64) -> String {
+        String(localized: "format.minutes", defaultValue: "\(Int(clamping: value)) phút")
     }
 }

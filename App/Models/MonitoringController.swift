@@ -89,23 +89,32 @@ final class MonitoringController {
             let overTemp = (reading.temperatureCelsius ?? 0) >= threshold && threshold > 0
             let previous = alertedState[key]
 
+            let model = snapshot.drive.model
             if let previous {
                 if health.rating > previous.rating, health.rating >= .warning {
-                    notify(title: "Sức khoẻ ổ đĩa giảm: \(snapshot.drive.model)",
-                           body: "Tình trạng chuyển từ \"\(previous.rating.displayName)\" xuống \"\(health.rating.displayName)\" (\(health.score)/100). Hãy sao lưu dữ liệu và kiểm tra chi tiết trong MDriveHealth.")
+                    notify(title: String(localized: "notify.degraded.title",
+                                         defaultValue: "Sức khoẻ ổ đĩa giảm: \(model)"),
+                           body: String(localized: "notify.degraded.body",
+                                        defaultValue: "Tình trạng chuyển từ “\(previous.rating.displayName)” xuống “\(health.rating.displayName)” (\(health.score)/100). Hãy sao lưu dữ liệu và kiểm tra chi tiết trong MDriveHealth."))
                 }
                 if defects > previous.defects {
-                    notify(title: "Phát hiện lỗi mới: \(snapshot.drive.model)",
-                           body: "Số sector lỗi/media error tăng từ \(previous.defects) lên \(defects). Đây là dấu hiệu bề mặt lưu trữ đang xuống cấp.")
+                    notify(title: String(localized: "notify.defects.title",
+                                         defaultValue: "Phát hiện lỗi mới: \(model)"),
+                           body: String(localized: "notify.defects.body",
+                                        defaultValue: "Số sector lỗi/media error tăng từ \(Int(clamping: previous.defects)) lên \(Int(clamping: defects)). Đây là dấu hiệu bề mặt lưu trữ đang xuống cấp."))
                 }
                 if overTemp, !previous.overTemp {
-                    notify(title: "Nhiệt độ cao: \(snapshot.drive.model)",
-                           body: "Ổ đĩa đạt \(reading.temperatureCelsius ?? 0)°C, vượt ngưỡng cảnh báo \(threshold)°C.")
+                    notify(title: String(localized: "notify.temp.title",
+                                         defaultValue: "Nhiệt độ cao: \(model)"),
+                           body: String(localized: "notify.temp.body",
+                                        defaultValue: "Ổ đĩa đạt \(reading.temperatureCelsius ?? 0)°C, vượt ngưỡng cảnh báo \(threshold)°C."))
                 }
             } else if health.rating >= .failing {
                 // First sighting of an already-failing drive still deserves an alert.
-                notify(title: "Ổ đĩa đang hỏng: \(snapshot.drive.model)",
-                       body: "Tình trạng: \(health.rating.displayName) (\(health.score)/100). Sao lưu dữ liệu ngay lập tức!")
+                notify(title: String(localized: "notify.failing.title",
+                                     defaultValue: "Ổ đĩa đang hỏng: \(model)"),
+                       body: String(localized: "notify.failing.body",
+                                    defaultValue: "Tình trạng: \(health.rating.displayName) (\(health.score)/100). Sao lưu dữ liệu ngay lập tức!"))
             }
 
             alertedState[key] = AlertState(rating: health.rating, defects: defects,

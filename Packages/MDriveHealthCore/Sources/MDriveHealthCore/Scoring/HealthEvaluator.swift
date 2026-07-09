@@ -1,5 +1,5 @@
 /*
- * HealthEvaluator.swift — deterministic DriveDX-style drive health scoring.
+ * HealthEvaluator.swift — deterministic drive health scoring.
  * This file is part of MDriveHealth, licensed under GPL-3.0-or-later.
  */
 

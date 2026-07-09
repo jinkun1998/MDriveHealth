@@ -37,7 +37,7 @@ targets:
         MARKETING_VERSION: "0.1.0"
         CURRENT_PROJECT_VERSION: "1"
         # SMART IOKit plug-ins are unavailable to sandboxed processes, so the
-        # app ships outside the App Store without the sandbox (like DriveDX).
+        # app ships outside the App Store without the sandbox.
         ENABLE_APP_SANDBOX: NO
         ENABLE_HARDENED_RUNTIME: YES
         CODE_SIGN_STYLE: Automatic
