@@ -4,10 +4,14 @@
  */
 
 import SwiftUI
+import AppKit
+import UniformTypeIdentifiers
 import MDriveHealthCore
 
 struct DriveDetailView: View {
     let snapshot: DriveSnapshot
+    @Environment(DriveStore.self) private var store
+    @State private var reportCopied = false
 
     private enum Tab: String, CaseIterable, Identifiable {
         case overview = "Tổng quan"
@@ -49,6 +53,54 @@ struct DriveDetailView: View {
             .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
         .navigationTitle(snapshot.drive.model)
+        .toolbar {
+            ToolbarItem {
+                Menu {
+                    Button {
+                        copyReport()
+                    } label: {
+                        Label("Sao chép báo cáo", systemImage: "doc.on.doc")
+                    }
+                    Button {
+                        saveReport()
+                    } label: {
+                        Label("Lưu báo cáo ra file…", systemImage: "square.and.arrow.down")
+                    }
+                } label: {
+                    Label(reportCopied ? "Đã sao chép!" : "Báo cáo",
+                          systemImage: reportCopied ? "checkmark" : "square.and.arrow.up")
+                }
+                .help("Xuất báo cáo text để đăng lên group hoặc gửi khi cần trợ giúp")
+            }
+        }
+    }
+
+    private var reportText: String {
+        ReportGenerator.text(for: snapshot,
+                             ioErrors24h: store.ioErrorCounts[snapshot.drive.bsdName])
+    }
+
+    private func copyReport() {
+        let pasteboard = NSPasteboard.general
+        pasteboard.clearContents()
+        pasteboard.setString(reportText, forType: .string)
+        reportCopied = true
+        Task {
+            try? await Task.sleep(for: .seconds(2))
+            reportCopied = false
+        }
+    }
+
+    private func saveReport() {
+        let panel = NSSavePanel()
+        let model = snapshot.drive.model.replacingOccurrences(of: " ", with: "-")
+        panel.nameFieldStringValue = "MDriveHealth-\(model).txt"
+        panel.allowedContentTypes = [.plainText]
+        let report = reportText
+        panel.begin { response in
+            guard response == .OK, let url = panel.url else { return }
+            try? report.write(to: url, atomically: true, encoding: .utf8)
+        }
     }
 
     private var header: some View {

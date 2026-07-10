@@ -53,6 +53,10 @@ public final class HistoryStore: @unchecked Sendable {
         guard sqlite3_open(url.path, &db) == SQLITE_OK else {
             throw HistoryError.sqlite(String(cString: sqlite3_errmsg(db)))
         }
+        // WAL keeps readers unblocked during inserts; busy_timeout covers the
+        // rare second process (CLI) touching the same database.
+        try? execute("PRAGMA journal_mode=WAL")
+        try? execute("PRAGMA busy_timeout=3000")
         try execute("""
             CREATE TABLE IF NOT EXISTS drive_snapshots (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -70,6 +74,8 @@ public final class HistoryStore: @unchecked Sendable {
             );
             CREATE INDEX IF NOT EXISTS idx_snapshots_drive_time
                 ON drive_snapshots(drive_key, captured_at);
+            CREATE INDEX IF NOT EXISTS idx_snapshots_time
+                ON drive_snapshots(captured_at);
             """)
     }
 
@@ -90,19 +96,25 @@ public final class HistoryStore: @unchecked Sendable {
 
     public func record(driveKey: String, bsdName: String,
                        reading: DriveReading, health: HealthReport) throws {
-        var defects: UInt64?
-        var pending: UInt64?
-        switch reading {
-        case .nvme(let nvme):
-            defects = nvme.smart.mediaErrors
-        case .ata(let ata):
-            defects = (ata.attribute(5)?.rawValue ?? 0)
-                &+ (ata.attribute(187)?.rawValue ?? 0)
-                &+ (ata.attribute(198)?.rawValue ?? 0)
-            pending = ata.attribute(197)?.rawValue
-        }
+        let defects: UInt64? = reading.defectCount
+        let pending: UInt64? = reading.pendingSectors
 
         try queue.sync {
+            // Identical consecutive snapshots are skipped (frequent polling
+            // otherwise fills the database with duplicates); one heartbeat
+            // row still lands every 6 hours so charts show coverage.
+            if let last = try latest_locked(driveKey: driveKey),
+               reading.capturedAt.timeIntervalSince(last.capturedAt) < 6 * 3_600,
+               last.temperatureC == reading.temperatureCelsius,
+               last.healthScore == health.score,
+               last.rating == health.rating.rawValue,
+               last.lifetimeLeftPercent == health.lifetimeLeftPercent,
+               last.powerOnHours == reading.powerOnHours,
+               last.bytesWritten == reading.bytesWritten,
+               last.defectCount == defects,
+               last.pendingSectors == pending {
+                return
+            }
             let sql = """
                 INSERT INTO drive_snapshots
                 (drive_key, bsd_name, captured_at, temperature_c, health_score,
@@ -198,30 +210,40 @@ public final class HistoryStore: @unchecked Sendable {
 
     /// Latest recorded point per drive key (for change detection in monitoring).
     public func latest(driveKey: String) throws -> HistoryPoint? {
+        try queue.sync { try latest_locked(driveKey: driveKey) }
+    }
+
+    private func latest_locked(driveKey: String) throws -> HistoryPoint? {
+        let sql = """
+            SELECT captured_at, temperature_c, health_score, rating,
+                   lifetime_left, power_on_hours, bytes_written,
+                   defect_count, pending_sectors
+            FROM drive_snapshots
+            WHERE drive_key = ?
+            ORDER BY captured_at DESC
+            LIMIT 1
+            """
+        var statement: OpaquePointer?
+        guard sqlite3_prepare_v2(db, sql, -1, &statement, nil) == SQLITE_OK else {
+            throw HistoryError.sqlite(String(cString: sqlite3_errmsg(db)))
+        }
+        defer { sqlite3_finalize(statement) }
+        sqlite3_bind_text(statement, 1, driveKey, -1, SQLITE_TRANSIENT)
+        return sqlite3_step(statement) == SQLITE_ROW ? point(from: statement) : nil
+    }
+
+    public func pruneOlderThan(_ date: Date) throws {
         try queue.sync {
-            let sql = """
-                SELECT captured_at, temperature_c, health_score, rating,
-                       lifetime_left, power_on_hours, bytes_written,
-                       defect_count, pending_sectors
-                FROM drive_snapshots
-                WHERE drive_key = ?
-                ORDER BY captured_at DESC
-                LIMIT 1
-                """
+            let sql = "DELETE FROM drive_snapshots WHERE captured_at < ?"
             var statement: OpaquePointer?
             guard sqlite3_prepare_v2(db, sql, -1, &statement, nil) == SQLITE_OK else {
                 throw HistoryError.sqlite(String(cString: sqlite3_errmsg(db)))
             }
             defer { sqlite3_finalize(statement) }
-            sqlite3_bind_text(statement, 1, driveKey, -1, SQLITE_TRANSIENT)
-            return sqlite3_step(statement) == SQLITE_ROW ? point(from: statement) : nil
-        }
-    }
-
-    public func pruneOlderThan(_ date: Date) throws {
-        try queue.sync {
-            try execute_locked(
-                "DELETE FROM drive_snapshots WHERE captured_at < \(date.timeIntervalSince1970)")
+            sqlite3_bind_double(statement, 1, date.timeIntervalSince1970)
+            guard sqlite3_step(statement) == SQLITE_DONE else {
+                throw HistoryError.sqlite(String(cString: sqlite3_errmsg(db)))
+            }
         }
     }
 

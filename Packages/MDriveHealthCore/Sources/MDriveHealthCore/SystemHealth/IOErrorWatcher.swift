@@ -9,6 +9,32 @@ import Foundation
 public struct IOErrorEvent: Sendable, Codable, Hashable {
     public let date: Date
     public let message: String
+
+    public init(date: Date, message: String) {
+        self.date = date
+        self.message = message
+    }
+
+    /// True when the message references the device itself or one of its
+    /// partitions ("disk1", "disk1s2") — but not a longer device name that
+    /// merely shares the prefix ("disk10"), nor a substring like "rdisk1".
+    /// The single definition of "this log line concerns this BSD device",
+    /// used both to narrow the log query and to count per device.
+    public func mentions(_ bsdName: String) -> Bool {
+        guard !bsdName.isEmpty else { return false }
+        var search = message.startIndex..<message.endIndex
+        while let found = message.range(of: bsdName, range: search) {
+            let followedByDigit = found.upperBound < message.endIndex
+                && message[found.upperBound].isNumber
+            let precededByAlphanumeric = found.lowerBound > message.startIndex && {
+                let previous = message[message.index(before: found.lowerBound)]
+                return previous.isLetter || previous.isNumber
+            }()
+            if !followedByDigit, !precededByAlphanumeric { return true }
+            search = found.upperBound..<message.endIndex
+        }
+        return false
+    }
 }
 
 public enum IOErrorWatcher {
@@ -61,8 +87,14 @@ public enum IOErrorWatcher {
                   let dict = object as? [String: Any],
                   let message = dict["eventMessage"] as? String
             else { continue }
-            let date = (dict["timestamp"] as? String).flatMap(formatter.date(from:))
-            events.append(IOErrorEvent(date: date ?? Date(), message: message))
+            let event = IOErrorEvent(
+                date: (dict["timestamp"] as? String).flatMap(formatter.date(from:)) ?? Date(),
+                message: message)
+            // The log predicate's CONTAINS narrows cheaply but matches
+            // "disk10" for "disk1"; apply the exact device match here so the
+            // filtered form agrees with per-device counting.
+            if let bsdName, !bsdName.isEmpty, !event.mentions(bsdName) { continue }
+            events.append(event)
         }
         return events
     }

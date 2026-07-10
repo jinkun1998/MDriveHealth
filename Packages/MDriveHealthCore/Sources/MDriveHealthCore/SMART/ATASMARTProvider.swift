@@ -83,6 +83,23 @@ public struct ATASMARTProvider: Sendable {
         }
     }
 
+    /// Reads the SMART self-test log (past results, newest first). Some
+    /// drives/bridges reject READ LOG while serving attribute data — callers
+    /// should treat failures as "history unavailable", not as a drive fault.
+    public func readSelfTestLog() throws -> [ATASelfTestLogEntry] {
+        try withSession { session in
+            _ = MDATASMARTEnable(session)
+            var data = [UInt8](repeating: 0, count: 512)
+            let result = data.withUnsafeMutableBufferPointer {
+                MDATAReadLogAtAddress(session, 0x06, $0.baseAddress, 512)
+            }
+            guard result == KERN_SUCCESS else {
+                throw SMARTError.ioKit(result, "MDATAReadLogAtAddress")
+            }
+            return ATAParser.parseSelfTestLog(data)
+        }
+    }
+
     private func withSession<T>(_ body: (OpaquePointer) throws -> T) throws -> T {
         let service = IOServiceGetMatchingService(
             kIOMainPortDefault, IORegistryEntryIDMatching(registryEntryID))

@@ -5,12 +5,52 @@
 
 import SwiftUI
 import AppKit
+import UserNotifications
 import MDriveHealthCore
 
-final class AppDelegate: NSObject, NSApplicationDelegate {
+final class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDelegate {
+    func applicationDidFinishLaunching(_ notification: Notification) {
+        UNUserNotificationCenter.current().delegate = self
+    }
+
     // The menu bar extra keeps monitoring alive after the window closes.
     func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
         false
+    }
+
+    /// Alerts stay visible even while the app is frontmost.
+    func userNotificationCenter(_ center: UNUserNotificationCenter,
+                                willPresent notification: UNNotification)
+        async -> UNNotificationPresentationOptions {
+        [.banner, .sound]
+    }
+
+    /// Tapping a drive alert routes through the app's URL scheme, which
+    /// reopens the main window if needed and selects the drive
+    /// (ContentView.onOpenURL).
+    func userNotificationCenter(_ center: UNUserNotificationCenter,
+                                didReceive response: UNNotificationResponse) async {
+        let userInfo = response.notification.request.content.userInfo
+        guard let idString = userInfo["driveRegistryEntryID"] as? String,
+              let url = URL(string: "mdrivehealth://drive/\(idString)") else { return }
+        await MainActor.run {
+            NSWorkspace.shared.open(url)
+        }
+    }
+}
+
+/// What to show beside the menu bar icon. Raw values persist via @AppStorage;
+/// the exhaustive switch means a new case can't silently fall through to icon.
+enum MenuBarDisplay: String, CaseIterable, Identifiable {
+    case icon, temp, score
+
+    var id: String { rawValue }
+    var label: LocalizedStringKey {
+        switch self {
+        case .icon: return "Không có gì"
+        case .temp: return "Nhiệt độ ổ nóng nhất"
+        case .score: return "Điểm sức khoẻ thấp nhất"
+        }
     }
 }
 
@@ -20,6 +60,7 @@ struct MDriveHealthApp: App {
     @State private var store: DriveStore
     @State private var monitor: MonitoringController
     @AppStorage(SettingsKeys.showMenuBar) private var showMenuBar = true
+    @AppStorage(SettingsKeys.menuBarDisplay) private var menuBarDisplay = MenuBarDisplay.icon
 
     init() {
         SettingsKeys.registerDefaults()
@@ -45,12 +86,37 @@ struct MDriveHealthApp: App {
             MenuBarView()
                 .environment(store)
         } label: {
-            Image(systemName: menuBarSymbol)
+            menuBarLabel
         }
         .menuBarExtraStyle(.window)
 
         Settings {
             SettingsView()
+        }
+    }
+
+    private var menuBarLabel: some View {
+        HStack(spacing: 2) {
+            Image(systemName: menuBarSymbol)
+            if let value = menuBarValue {
+                Text(verbatim: value)
+            }
+        }
+    }
+
+    /// Optional text next to the menu bar icon, per the display setting.
+    private var menuBarValue: String? {
+        switch menuBarDisplay {
+        case .icon:
+            return nil
+        case .temp:
+            return store.visibleSnapshots
+                .compactMap { $0.reading?.temperatureCelsius }.max()
+                .map { "\($0)°" }
+        case .score:
+            return store.visibleSnapshots
+                .compactMap { $0.health?.score }.min()
+                .map { "\($0)" }
         }
     }
 

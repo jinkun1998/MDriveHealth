@@ -102,18 +102,6 @@ enum RiskAdvisor {
             actions: [])
     }
 
-    static func dangerousCounter(reading: DriveReading) -> UInt64 {
-        switch reading {
-        case .nvme(let nvme):
-            return nvme.smart.mediaErrors
-        case .ata(let ata):
-            return (ata.attribute(5)?.rawValue ?? 0)
-                &+ (ata.attribute(187)?.rawValue ?? 0)
-                &+ (ata.attribute(197)?.rawValue ?? 0)
-                &+ (ata.attribute(198)?.rawValue ?? 0)
-        }
-    }
-
     private static func hasCriticalMediaIssue(_ snapshot: DriveSnapshot) -> Bool {
         guard let reading = snapshot.reading else { return false }
         switch reading {
@@ -129,7 +117,6 @@ enum RiskAdvisor {
     }
 
     private static func hasGrowingDefects(_ snapshot: DriveSnapshot) -> Bool {
-        guard let reading = snapshot.reading else { return false }
-        return dangerousCounter(reading: reading) > 0
+        (snapshot.reading?.dangerousDefectTotal ?? 0) > 0
     }
 }

@@ -59,7 +59,8 @@ final class HistoryStoreTests: XCTestCase {
     func testSinceFilterAndOrdering() throws {
         let base = Date(timeIntervalSince1970: 1_700_000_000)
         for offset in [0.0, 100, 200, 300] {
-            let reading = sampleReading(capturedAt: base.addingTimeInterval(offset))
+            let reading = sampleReading(capturedAt: base.addingTimeInterval(offset),
+                                        mediaErrors: UInt64(offset))
             try store.record(driveKey: "TEST#1", bsdName: "disk0",
                              reading: reading, health: reading.evaluateHealth())
         }
@@ -67,6 +68,35 @@ final class HistoryStoreTests: XCTestCase {
                                        since: base.addingTimeInterval(150))
         XCTAssertEqual(points.count, 2)
         XCTAssertTrue(points[0].capturedAt < points[1].capturedAt)
+    }
+
+    func testIdenticalConsecutiveSnapshotsAreDeduplicated() throws {
+        let base = Date(timeIntervalSince1970: 1_700_000_000)
+        for offset in [0.0, 300, 600] {
+            let reading = sampleReading(capturedAt: base.addingTimeInterval(offset))
+            try store.record(driveKey: "TEST#1", bsdName: "disk0",
+                             reading: reading, health: reading.evaluateHealth())
+        }
+        XCTAssertEqual(try store.history(driveKey: "TEST#1", since: .distantPast).count, 1,
+                       "identical back-to-back snapshots should collapse into one row")
+
+        let changed = sampleReading(capturedAt: base.addingTimeInterval(900),
+                                    mediaErrors: 3)
+        try store.record(driveKey: "TEST#1", bsdName: "disk0",
+                         reading: changed, health: changed.evaluateHealth())
+        XCTAssertEqual(try store.history(driveKey: "TEST#1", since: .distantPast).count, 2,
+                       "a changed value must still be recorded")
+    }
+
+    func testIdenticalSnapshotStillRecordedAsHeartbeatAfterSixHours() throws {
+        let base = Date(timeIntervalSince1970: 1_700_000_000)
+        let first = sampleReading(capturedAt: base)
+        try store.record(driveKey: "TEST#1", bsdName: "disk0",
+                         reading: first, health: first.evaluateHealth())
+        let later = sampleReading(capturedAt: base.addingTimeInterval(7 * 3_600))
+        try store.record(driveKey: "TEST#1", bsdName: "disk0",
+                         reading: later, health: later.evaluateHealth())
+        XCTAssertEqual(try store.history(driveKey: "TEST#1", since: .distantPast).count, 2)
     }
 
     func testLatestUsesMostRecentPoint() throws {

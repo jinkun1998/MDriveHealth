@@ -9,6 +9,7 @@ import MDriveHealthCore
 struct OverviewTab: View {
     let snapshot: DriveSnapshot
     @Environment(DriveStore.self) private var store
+    @State private var wearTrend: WearTrendEstimate?
 
     var body: some View {
         ScrollView {
@@ -16,7 +17,7 @@ struct OverviewTab: View {
                 riskSummary
 
                 if let error = snapshot.lastError {
-                    errorBanner(error)
+                    errorBanner(staleAwareMessage(for: error))
                 } else if snapshot.drive.smartInterface == .unsupported {
                     unsupportedBanner
                 }
@@ -33,12 +34,28 @@ struct OverviewTab: View {
                 if let health = snapshot.health, let reading = snapshot.reading {
                     gaugeRow(health: health, reading: reading)
                     quickStats(reading: reading)
+                }
+
+                if !snapshot.volumes.isEmpty {
+                    capacitySection
+                }
+
+                if let health = snapshot.health {
                     issuesSection(health: health)
+                }
+
+                if let updated = snapshot.lastUpdated {
+                    Text(String(localized: "overview.updatedAt",
+                                defaultValue: "Cập nhật \(updated.formatted(date: .omitted, time: .shortened))"))
+                        .font(.caption2)
+                        .foregroundStyle(.tertiary)
+                        .frame(maxWidth: .infinity, alignment: .trailing)
                 }
             }
             .padding()
             .frame(maxWidth: .infinity, alignment: .leading)
         }
+        .task(id: snapshot.lastUpdated) { await loadWearTrend() }
     }
 
     @ViewBuilder
@@ -145,7 +162,58 @@ struct OverviewTab: View {
                 StatCard(title: "Dòng ổ (drivedb)", value: family,
                          systemImage: "tag")
             }
+            if let rate = wearTrend?.bytesWrittenPerDay, rate > 0 {
+                StatCard(title: "Ghi trung bình mỗi ngày",
+                         value: String(localized: "format.perDay",
+                                       defaultValue: "\(Format.bytes(UInt64(rate)))/ngày"),
+                         systemImage: "chart.line.uptrend.xyaxis")
+            }
+            if let exhaustion = wearTrend?.estimatedExhaustionDate {
+                StatCard(title: "Dự kiến cạn lifetime",
+                         value: exhaustion.formatted(.dateTime.month(.wide).year()),
+                         systemImage: "hourglass")
+            }
         }
+    }
+
+    private var capacitySection: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text("Dung lượng")
+                .font(.headline)
+            ForEach(VolumeUsageReader.capacityGroups(snapshot.volumes)) { group in
+                VStack(alignment: .leading, spacing: 4) {
+                    HStack {
+                        Text(verbatim: group.displayName)
+                            .font(.callout.weight(.medium))
+                            .lineLimit(1)
+                        Spacer()
+                        Text(verbatim: "\(Format.bytes(group.usedBytes)) / \(Format.bytes(group.totalBytes)) (\(Int(group.usedFraction * 100))%)")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                            .monospacedDigit()
+                    }
+                    ProgressView(value: group.usedFraction)
+                        .tint(group.usedFraction >= 0.95 ? .red
+                              : group.usedFraction >= 0.85 ? .orange : .accentColor)
+                }
+                .padding(10)
+                .background(.quaternary.opacity(0.35),
+                            in: RoundedRectangle(cornerRadius: 8))
+            }
+        }
+    }
+
+    private func loadWearTrend() async {
+        guard let history = store.history, snapshot.health != nil else { return }
+        let key = HistoryStore.driveKey(for: snapshot.drive)
+        let estimate = await Task.detached(priority: .utility) {
+            () -> WearTrendEstimate in
+            let since = Date().addingTimeInterval(-90 * 86_400)
+            let points = (try? history.history(driveKey: key, since: since,
+                                               bucketInterval: 3_600)) ?? []
+            return WearTrend.estimate(from: points)
+        }.value
+        wearTrend = estimate
     }
 
     @ViewBuilder
@@ -196,6 +264,17 @@ struct OverviewTab: View {
             .padding(10)
             .frame(maxWidth: .infinity, alignment: .leading)
             .background(.yellow.opacity(0.15), in: RoundedRectangle(cornerRadius: 8))
+    }
+
+    /// When old data is carried over after a failed probe, say so — the
+    /// gauges below reflect the previous successful reading.
+    private func staleAwareMessage(for error: String) -> String {
+        guard snapshot.isStale, let lastUpdated = snapshot.lastUpdated else {
+            return error
+        }
+        let time = lastUpdated.formatted(date: .abbreviated, time: .shortened)
+        return String(localized: "overview.stale.banner",
+                      defaultValue: "Lần đọc mới nhất thất bại: \(error) — đang hiển thị dữ liệu đọc lúc \(time).")
     }
 
     private var unsupportedBanner: some View {

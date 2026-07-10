@@ -2961,18 +2961,18 @@
         }
       }
     },
-    "Miễn phí cho cộng đồng Maclife 🇻🇳": {
+    "Made with ♥ for [Maclife & Đồng Bọn](https://www.facebook.com/groups/maclife.vn)": {
       "localizations": {
         "vi": {
           "stringUnit": {
             "state": "translated",
-            "value": "Miễn phí cho cộng đồng Maclife 🇻🇳"
+            "value": "Made with ♥ for [Maclife & Đồng Bọn](https://www.facebook.com/groups/maclife.vn)"
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Free for the Maclife community 🇻🇳"
+            "value": "Made with ♥ for [Maclife & Đồng Bọn](https://www.facebook.com/groups/maclife.vn)"
           }
         }
       }
@@ -3654,13 +3654,13 @@
         "vi": {
           "stringUnit": {
             "state": "translated",
-            "value": "Còn khoảng %lld%%. Bấm Làm mới để cập nhật tiến độ."
+            "value": "Còn khoảng %lld%%. Tiến độ tự cập nhật mỗi 30 giây."
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "About %lld%% remaining. Click Refresh to update progress."
+            "value": "About %lld%% remaining. Progress refreshes automatically every 30 seconds."
           }
         }
       }
@@ -3670,13 +3670,13 @@
         "vi": {
           "stringUnit": {
             "state": "translated",
-            "value": "Đã gửi lệnh lúc %@. Theo dõi tiến độ bằng nút Làm mới."
+            "value": "Đã gửi lệnh lúc %@. Tiến độ sẽ tự cập nhật khi tab này đang mở."
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Command sent at %@. Track progress with Refresh."
+            "value": "Command sent at %@. Progress updates automatically while this tab is open."
           }
         }
       }
@@ -3833,6 +3833,966 @@
           "stringUnit": {
             "state": "translated",
             "value": "Quit"
+          }
+        }
+      }
+    },
+    "update.download": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tải bản %@"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Download %@"
+          }
+        }
+      }
+    },
+    "overview.stale.banner": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lần đọc mới nhất thất bại: %1$@ — đang hiển thị dữ liệu đọc lúc %2$@."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The latest probe failed: %1$@ — showing data captured at %2$@."
+          }
+        }
+      }
+    },
+    "Ghi trung bình mỗi ngày": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ghi trung bình mỗi ngày"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Average writes per day"
+          }
+        }
+      }
+    },
+    "Dự kiến cạn lifetime": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dự kiến cạn lifetime"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Estimated lifetime exhaustion"
+          }
+        }
+      }
+    },
+    "Lịch sử self-test": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lịch sử self-test"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Self-test history"
+          }
+        }
+      }
+    },
+    "Chưa có self-test nào được ghi nhận trên ổ này.": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chưa có self-test nào được ghi nhận trên ổ này."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No self-tests recorded on this drive yet."
+          }
+        }
+      }
+    },
+    "Ổ này không cho đọc nhật ký self-test (thường do cầu nối/bridge chặn lệnh READ LOG).": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ổ này không cho đọc nhật ký self-test (thường do cầu nối/bridge chặn lệnh READ LOG)."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This drive does not allow reading the self-test log (bridges often block READ LOG)."
+          }
+        }
+      }
+    },
+    "Test mở rộng": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Test mở rộng"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Extended test"
+          }
+        }
+      }
+    },
+    "Test ngắn": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Test ngắn"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Short test"
+          }
+        }
+      }
+    },
+    "Sao chép báo cáo": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sao chép báo cáo"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Copy report"
+          }
+        }
+      }
+    },
+    "Lưu báo cáo ra file…": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lưu báo cáo ra file…"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Save report to file…"
+          }
+        }
+      }
+    },
+    "Đã sao chép!": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đã sao chép!"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Copied!"
+          }
+        }
+      }
+    },
+    "Báo cáo": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Báo cáo"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Report"
+          }
+        }
+      }
+    },
+    "Xuất báo cáo text để đăng lên group hoặc gửi khi cần trợ giúp": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Xuất báo cáo text để đăng lên group hoặc gửi khi cần trợ giúp"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Export a text report to post in the group or share when asking for help"
+          }
+        }
+      }
+    },
+    "Mở chi tiết": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mở chi tiết"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Open details"
+          }
+        }
+      }
+    },
+    "Nhiệt độ 24 giờ": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nhiệt độ 24 giờ"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "24-hour temperature"
+          }
+        }
+      }
+    },
+    "24h": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "24h"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "24h"
+          }
+        }
+      }
+    },
+    "Cảnh báo khi quá nhiệt": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cảnh báo khi quá nhiệt"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Alert on overheating"
+          }
+        }
+      }
+    },
+    "Hiển thị cạnh biểu tượng": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hiển thị cạnh biểu tượng"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Show next to icon"
+          }
+        }
+      }
+    },
+    "Không có gì": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Không có gì"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nothing"
+          }
+        }
+      }
+    },
+    "Nhiệt độ ổ nóng nhất": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nhiệt độ ổ nóng nhất"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hottest drive temperature"
+          }
+        }
+      }
+    },
+    "Điểm sức khoẻ thấp nhất": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Điểm sức khoẻ thấp nhất"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lowest health score"
+          }
+        }
+      }
+    },
+    "overview.updatedAt": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cập nhật %@"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Updated %@"
+          }
+        }
+      }
+    },
+    "format.perDay": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@/ngày"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@/day"
+          }
+        }
+      }
+    },
+    "selftest.log.hours": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lúc ổ chạy được %lld giờ"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "At %lld drive hours"
+          }
+        }
+      }
+    },
+    "selftest.log.running": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đang chạy (%lld%% còn lại)"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Running (%lld%% left)"
+          }
+        }
+      }
+    },
+    "selftest.log.passed": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đạt"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Passed"
+          }
+        }
+      }
+    },
+    "selftest.log.aborted": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đã huỷ"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aborted"
+          }
+        }
+      }
+    },
+    "selftest.log.failed": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "LỖI"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "FAILED"
+          }
+        }
+      }
+    },
+    "notify.selftest.title": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Self-test hoàn tất: %@"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Self-test finished: %@"
+          }
+        }
+      }
+    },
+    "notify.selftest.passed": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kết quả: ĐẠT — không phát hiện lỗi khi ổ tự kiểm tra."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Result: PASSED — the drive found no faults during its self-check."
+          }
+        }
+      }
+    },
+    "notify.selftest.failed": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kết quả: CÓ VẤN ĐỀ — mở tab Self-test để xem chi tiết và sao lưu dữ liệu sớm."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Result: PROBLEM FOUND — open the Self-test tab for details and back up soon."
+          }
+        }
+      }
+    },
+    "report.title": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Báo cáo ổ đĩa"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Drive report"
+          }
+        }
+      }
+    },
+    "report.generatedAt": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tạo lúc: %1$@ · MDriveHealth %2$@"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Generated: %1$@ · MDriveHealth %2$@"
+          }
+        }
+      }
+    },
+    "report.drive": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ổ đĩa"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Drive"
+          }
+        }
+      }
+    },
+    "report.bus": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kết nối"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Interface"
+          }
+        }
+      }
+    },
+    "report.kind": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Loại"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Type"
+          }
+        }
+      }
+    },
+    "report.internal": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ổ trong"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "internal"
+          }
+        }
+      }
+    },
+    "report.external": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ổ ngoài"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "external"
+          }
+        }
+      }
+    },
+    "report.serial": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Serial"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Serial"
+          }
+        }
+      }
+    },
+    "report.firmware": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Firmware"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Firmware"
+          }
+        }
+      }
+    },
+    "report.health": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "SỨC KHOẺ"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "HEALTH"
+          }
+        }
+      }
+    },
+    "report.score": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Điểm"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Score"
+          }
+        }
+      }
+    },
+    "report.lifetime": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "SSD lifetime"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "SSD lifetime"
+          }
+        }
+      }
+    },
+    "report.lifetimeLeft": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "còn %lld%%"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld%% left"
+          }
+        }
+      }
+    },
+    "report.temperature": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nhiệt độ"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Temperature"
+          }
+        }
+      }
+    },
+    "report.powerOn": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Power-on"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Power-on"
+          }
+        }
+      }
+    },
+    "report.written": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đã ghi"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Written"
+          }
+        }
+      }
+    },
+    "report.defects": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Defect/pending"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Defects/pending"
+          }
+        }
+      }
+    },
+    "report.stale": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "⚠ Dữ liệu từ lần đọc %@ (lần đọc mới nhất thất bại)"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "⚠ Data from the reading at %@ (latest probe failed)"
+          }
+        }
+      }
+    },
+    "report.issues": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "CHỈ BÁO"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "INDICATORS"
+          }
+        }
+      }
+    },
+    "report.noIssues": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Không phát hiện vấn đề nào."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No issues detected."
+          }
+        }
+      }
+    },
+    "report.noSmart": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "SMART không khả dụng qua cầu nối này (hạn chế của macOS với USB mass-storage)."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "SMART is unavailable over this bridge (a macOS limitation with USB mass-storage)."
+          }
+        }
+      }
+    },
+    "report.readError": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Không đọc được SMART: %@"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Could not read SMART: %@"
+          }
+        }
+      }
+    },
+    "report.ioErrors": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "⚠ %lld lỗi I/O trong kernel log 24 giờ qua"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "⚠ %lld I/O errors in the last 24h of kernel logs"
+          }
+        }
+      }
+    },
+    "report.capacity": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "DUNG LƯỢNG"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "STORAGE"
+          }
+        }
+      }
+    },
+    "report.attributes": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "THUỘC TÍNH SMART"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "SMART ATTRIBUTES"
+          }
+        }
+      }
+    },
+    "report.nvmeLog": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "NVMe SMART / HEALTH LOG"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "NVMe SMART / HEALTH LOG"
+          }
+        }
+      }
+    },
+    "report.footer": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "— Tạo bởi MDriveHealth, công cụ mã nguồn mở miễn phí cho cộng đồng Maclife —"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "— Generated by MDriveHealth, the free open-source tool for the Maclife community —"
+          }
+        }
+      }
+    },
+    "Volume đã mount": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Volume đã mount"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mounted volumes"
           }
         }
       }

@@ -30,6 +30,10 @@ targets:
         LSApplicationCategoryType: public.app-category.utilities
         NSHumanReadableCopyright: "© 2026 Maclife community — GPL-3.0-or-later"
         LSMinimumSystemVersion: "14.0"
+        # Deep link used by notification taps: mdrivehealth://drive/<id>
+        CFBundleURLTypes:
+          - CFBundleURLName: com.maclife.MDriveHealth
+            CFBundleURLSchemes: [mdrivehealth]
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.maclife.MDriveHealth

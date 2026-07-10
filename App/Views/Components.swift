@@ -68,6 +68,7 @@ struct HealthBadge: View {
             .padding(.horizontal, 10)
             .padding(.vertical, 4)
             .background(rating.color, in: Capsule())
+            .accessibilityLabel(Text(verbatim: rating.displayName))
     }
 }
 
@@ -78,13 +79,15 @@ struct RingGauge: View {
     let caption: LocalizedStringKey
     var color: Color = .green
 
+    @State private var animatedValue: Double = 0
+
     var body: some View {
         VStack(spacing: 6) {
             ZStack {
                 Circle()
                     .stroke(Color.primary.opacity(0.08), lineWidth: 10)
                 Circle()
-                    .trim(from: 0, to: max(0.02, min(1, value)))
+                    .trim(from: 0, to: max(0.02, min(1, animatedValue)))
                     .stroke(color, style: StrokeStyle(lineWidth: 10, lineCap: .round))
                     .rotationEffect(.degrees(-90))
                 Text(label)
@@ -95,6 +98,15 @@ struct RingGauge: View {
             Text(caption)
                 .font(.caption)
                 .foregroundStyle(.secondary)
+        }
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(Text(caption))
+        .accessibilityValue(Text(label))
+        .onAppear {
+            withAnimation(.easeOut(duration: 0.7)) { animatedValue = value }
+        }
+        .onChange(of: value) { _, newValue in
+            withAnimation(.easeOut(duration: 0.4)) { animatedValue = newValue }
         }
     }
 }

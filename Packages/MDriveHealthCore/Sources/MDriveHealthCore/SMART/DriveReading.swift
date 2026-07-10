@@ -59,6 +59,44 @@ public enum DriveReading: Sendable, Codable, Hashable {
         case .ata(let reading): return reading.capturedAt
         }
     }
+
+    /// Permanent media defects: NVMe media errors; ATA reallocated sectors (5)
+    /// + reported uncorrectable (187) + offline uncorrectable (198).
+    public var defectCount: UInt64 {
+        switch self {
+        case .nvme(let reading):
+            return reading.smart.mediaErrors
+        case .ata(let reading):
+            return (reading.attribute(5)?.rawValue ?? 0)
+                &+ (reading.attribute(187)?.rawValue ?? 0)
+                &+ (reading.attribute(198)?.rawValue ?? 0)
+        }
+    }
+
+    /// Sectors awaiting reallocation (ATA attribute 197); nil for NVMe.
+    public var pendingSectors: UInt64? {
+        switch self {
+        case .nvme: return nil
+        case .ata(let reading): return reading.attribute(197)?.rawValue
+        }
+    }
+
+    /// The "growing defects" signal used by alerts and risk assessment:
+    /// permanent defects plus sectors currently pending reallocation.
+    public var dangerousDefectTotal: UInt64 {
+        defectCount &+ (pendingSectors ?? 0)
+    }
+
+    /// Self-test execution status; nil for NVMe (macOS cannot run NVMe
+    /// self-tests) and for ATA drives that did not report one.
+    public var ataSelfTest: ATASelfTestStatus? {
+        if case .ata(let reading) = self { return reading.selfTest }
+        return nil
+    }
+
+    public var selfTestInProgress: Bool {
+        ataSelfTest?.inProgress == true
+    }
 }
 
 private extension DriveReading {
@@ -82,6 +120,13 @@ private extension DriveReading {
     }
 }
 
+/// Outcome of a power-aware probe.
+public enum DriveProbeResult: Sendable {
+    case reading(DriveReading)
+    /// A rotational drive was left spun down instead of being woken.
+    case skippedAsleep
+}
+
 /// Probes a drive using whichever SMART transport it supports.
 public enum DriveProber {
     public static func read(drive: DriveInfo) throws -> DriveReading {
@@ -93,5 +138,19 @@ public enum DriveProber {
         case .unsupported:
             throw SMARTError.unsupportedTransport
         }
+    }
+
+    /// Probes honoring a power policy. When `avoidWakingIdle` is true, a
+    /// rotational (non-SSD) drive that IOKit reports as spun down is left
+    /// asleep rather than being woken by a SMART command — reading the
+    /// registry power state never wakes the device, unlike a SMART read.
+    /// SSDs and drives of unknown power state are always read.
+    public static func probe(drive: DriveInfo,
+                             avoidWakingIdle: Bool) throws -> DriveProbeResult {
+        if avoidWakingIdle, !drive.isSolidState,
+           DrivePower.isLikelyAsleep(registryEntryID: drive.registryEntryID) == true {
+            return .skippedAsleep
+        }
+        return .reading(try read(drive: drive))
     }
 }

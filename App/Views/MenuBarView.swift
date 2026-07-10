@@ -22,7 +22,11 @@ struct MenuBarView: View {
                 ScrollView {
                     VStack(spacing: 6) {
                         ForEach(store.visibleSnapshots) { snapshot in
-                            DriveMenuCard(snapshot: snapshot) { openMainWindow() }
+                            DriveMenuCard(snapshot: snapshot) {
+                                // Select the tapped drive in the main window.
+                                store.pendingSelection = snapshot.id
+                                openMainWindow()
+                            }
                         }
                     }
                     .padding(10)

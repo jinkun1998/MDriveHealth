@@ -12,10 +12,12 @@ struct SettingsView: View {
     @AppStorage(SettingsKeys.alertTempThreshold) private var tempThreshold = 60
     @AppStorage(SettingsKeys.monitoringEnabled) private var monitoringEnabled = true
     @AppStorage(SettingsKeys.showMenuBar) private var showMenuBar = true
+    @AppStorage(SettingsKeys.menuBarDisplay) private var menuBarDisplay = MenuBarDisplay.icon
     @State private var launchAtLogin = SMAppService.mainApp.status == .enabled
     @State private var loginItemError: String?
     @State private var checkingUpdates = false
     @State private var updateStatus: String?
+    @State private var availableRelease: UpdateChecker.Release?
     @AppStorage("appLanguage") private var appLanguage = "system"
     @State private var languageNeedsRestart = false
 
@@ -31,21 +33,35 @@ struct SettingsView: View {
                     Text("60 phút").tag(60)
                 }
                 .disabled(!monitoringEnabled)
-                LabeledContent("Ngưỡng cảnh báo nhiệt độ") {
-                    HStack {
-                        Slider(value: Binding(
-                            get: { Double(tempThreshold) },
-                            set: { tempThreshold = Int($0) }
-                        ), in: 45...85, step: 5)
-                        Text("\(tempThreshold)°C").monospacedDigit()
-                            .frame(width: 44, alignment: .trailing)
-                    }
-                }
+                Toggle("Cảnh báo khi quá nhiệt", isOn: Binding(
+                    get: { tempThreshold > 0 },
+                    set: { tempThreshold = $0 ? 60 : 0 }
+                ))
                 .disabled(!monitoringEnabled)
+                if tempThreshold > 0 {
+                    LabeledContent("Ngưỡng cảnh báo nhiệt độ") {
+                        HStack {
+                            Slider(value: Binding(
+                                get: { Double(tempThreshold) },
+                                set: { tempThreshold = Int($0) }
+                            ), in: 45...85, step: 5)
+                            Text("\(tempThreshold)°C").monospacedDigit()
+                                .frame(width: 44, alignment: .trailing)
+                        }
+                    }
+                    .disabled(!monitoringEnabled)
+                }
             }
 
             Section("Hệ thống") {
                 Toggle("Hiện biểu tượng trên thanh menu", isOn: $showMenuBar)
+                if showMenuBar {
+                    Picker("Hiển thị cạnh biểu tượng", selection: $menuBarDisplay) {
+                        ForEach(MenuBarDisplay.allCases) { option in
+                            Text(option.label).tag(option)
+                        }
+                    }
+                }
                 Toggle("Tự chạy khi đăng nhập", isOn: $launchAtLogin)
                     .onChange(of: launchAtLogin) { _, enable in
                         updateLoginItem(enable: enable)
@@ -84,6 +100,17 @@ struct SettingsView: View {
                     Button("Kiểm tra bản cập nhật…") { checkUpdates() }
                         .disabled(checkingUpdates)
                     if checkingUpdates { ProgressView().controlSize(.small) }
+                    if let release = availableRelease {
+                        Button {
+                            NSWorkspace.shared.open(release.downloadURL ?? release.url)
+                        } label: {
+                            Label(String(localized: "update.download",
+                                         defaultValue: "Tải bản \(release.version)"),
+                                  systemImage: "arrow.down.circle")
+                        }
+                        .buttonStyle(.borderedProminent)
+                        .controlSize(.small)
+                    }
                     if let updateStatus {
                         Text(updateStatus)
                             .font(.caption)
@@ -93,8 +120,11 @@ struct SettingsView: View {
             } header: {
                 Text("Về MDriveHealth")
             } footer: {
-                Text("Miễn phí cho cộng đồng Maclife 🇻🇳")
+                // Markdown link renders clickable; "Maclife & Đồng Bọn" opens
+                // the community Facebook group.
+                Text("Made with ♥ for [Maclife & Đồng Bọn](https://www.facebook.com/groups/maclife.vn)")
                     .foregroundStyle(.secondary)
+                    .tint(.accentColor)
             }
         }
         .formStyle(.grouped)
@@ -131,13 +161,15 @@ struct SettingsView: View {
                 checkingUpdates = false
                 switch result {
                 case .available(let release):
+                    availableRelease = release
                     updateStatus = String(localized: "update.available",
                                           defaultValue: "Có bản \(release.version) mới!")
-                    NSWorkspace.shared.open(release.downloadURL ?? release.url)
                 case .upToDate:
+                    availableRelease = nil
                     updateStatus = String(localized: "update.latest",
                                           defaultValue: "Bạn đang dùng bản mới nhất.")
                 case .failed(let message):
+                    availableRelease = nil
                     updateStatus = String(localized: "update.failed",
                                           defaultValue: "Không kiểm tra được: \(message)")
                 }

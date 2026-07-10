@@ -50,6 +50,36 @@ public struct ATASelfTestStatus: Sendable, Codable, Hashable {
         inProgress ? Int(rawByte & 0x0F) * 10 : nil
     }
     public var statusCode: UInt8 { rawByte >> 4 }
+    /// Same status-nibble semantics as ATASelfTestLogEntry.
+    public var passed: Bool { statusCode == 0 }
+    /// Aborted by host or interrupted by reset — not a drive fault.
+    public var wasAborted: Bool { statusCode == 1 || statusCode == 2 }
+}
+
+/// One entry of the SMART self-test log (log address 0x06), newest first.
+public struct ATASelfTestLogEntry: Sendable, Codable, Hashable, Identifiable {
+    /// 1 = most recent. Stable within one log read.
+    public let index: Int
+    /// Self-test number: 1 = short offline, 2 = extended offline,
+    /// 0x81/0x82 = captive variants.
+    public let testType: UInt8
+    /// Raw status: high nibble = result code, low nibble = remaining %/10.
+    public let statusByte: UInt8
+    /// Drive power-on hours when the test finished (16-bit lifetime stamp,
+    /// wraps at 65 536 h).
+    public let powerOnHours: UInt64
+    /// First failing LBA — only meaningful when the read element failed.
+    public let failingLBA: UInt64?
+
+    public var id: Int { index }
+    public var statusCode: UInt8 { statusByte >> 4 }
+    public var passed: Bool { statusCode == 0 }
+    public var inProgress: Bool { statusCode == 0xF }
+    /// Remaining share when still running, 0-90 percent in tens.
+    public var percentRemaining: Int { Int(statusByte & 0x0F) * 10 }
+    /// Aborted by host or interrupted by reset.
+    public var wasAborted: Bool { statusCode == 1 || statusCode == 2 }
+    public var isExtended: Bool { testType & 0x7F == 2 }
 }
 
 /// Decoded ATA IDENTIFY DEVICE data (the subset MDriveHealth uses).

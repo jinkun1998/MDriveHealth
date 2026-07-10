@@ -6,6 +6,18 @@
 import SwiftUI
 import MDriveHealthCore
 
+/// Live-page polling loop: reload immediately, then every 5s until the
+/// hosting `.task` is cancelled (view disappears).
+@MainActor
+private func periodicReload(_ reload: () -> Void) async {
+    reload()
+    while !Task.isCancelled {
+        try? await Task.sleep(for: .seconds(5))
+        guard !Task.isCancelled else { return }
+        reload()
+    }
+}
+
 struct BatteryView: View {
     @Environment(DriveStore.self) private var store
     @State private var battery: BatteryInfo?
@@ -68,8 +80,7 @@ struct BatteryView: View {
             .frame(maxWidth: .infinity, alignment: .leading)
         }
         .navigationTitle("Pin")
-        .task { reload() }
-        .onChange(of: store.lastRefresh) { reload() }
+        .task { await periodicReload { reload() } }
     }
 
     private func reload() { battery = BatteryReader.read() }
@@ -124,8 +135,7 @@ struct SensorsView: View {
             .frame(maxWidth: .infinity, alignment: .leading)
         }
         .navigationTitle("Cảm biến nhiệt")
-        .task { reload() }
-        .onChange(of: store.lastRefresh) { reload() }
+        .task { await periodicReload { reload() } }
     }
 
     private func reload() { sensors = SensorsReader.readTemperatures() }
@@ -183,8 +193,7 @@ struct MemoryView: View {
             .frame(maxWidth: .infinity, alignment: .leading)
         }
         .navigationTitle("Bộ nhớ")
-        .task { reload() }
-        .onChange(of: store.lastRefresh) { reload() }
+        .task { await periodicReload { reload() } }
     }
 
     private func reload() { memory = MemoryReader.read() }

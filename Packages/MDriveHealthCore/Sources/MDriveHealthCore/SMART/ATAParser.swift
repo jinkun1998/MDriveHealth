@@ -52,6 +52,39 @@ public enum ATAParser {
         return ATASelfTestStatus(rawByte: data[363])
     }
 
+    /// Parses the 512-byte SMART self-test log (log address 0x06): 21
+    /// descriptors of 24 bytes from offset 2, written as a ring buffer whose
+    /// most-recent slot index (1-21, 0 = empty log) sits at byte 508.
+    /// Returns entries newest-first.
+    public static func parseSelfTestLog(_ data: [UInt8]) -> [ATASelfTestLogEntry] {
+        precondition(data.count >= 512)
+        let mostRecent = Int(data[508])
+        guard (1...21).contains(mostRecent) else { return [] }
+
+        var entries: [ATASelfTestLogEntry] = []
+        for back in 0..<21 {
+            let slot = (mostRecent - 1 - back + 21) % 21
+            let offset = 2 + slot * 24
+            let testType = data[offset]
+            let status = data[offset + 1]
+            let hours = UInt64(data[offset + 2]) | (UInt64(data[offset + 3]) << 8)
+            guard testType != 0 || status != 0 || hours != 0 else { continue }
+
+            var lba: UInt64 = 0
+            for byte in 0..<4 {
+                lba |= UInt64(data[offset + 5 + byte]) << (8 * byte)
+            }
+            let readElementFailed = (status >> 4) == 7
+            entries.append(ATASelfTestLogEntry(
+                index: back + 1,
+                testType: testType,
+                statusByte: status,
+                powerOnHours: hours,
+                failingLBA: readElementFailed ? lba : nil))
+        }
+        return entries
+    }
+
     /// Parses ATA IDENTIFY DEVICE data (512 bytes, 256 little-endian words;
     /// string bytes are swapped within each word).
     public static func parseIdentify(_ data: [UInt8]) -> ATAIdentifyInfo {

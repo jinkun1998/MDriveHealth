@@ -178,11 +178,22 @@ func reportSMART(matching bsdName: String?) {
             case .unsupported:
                 print("── \(drive.bsdName): \(drive.model) — SMART không khả dụng qua \(drive.interconnect)\n")
             }
+            printVolumes(of: drive)
         }
     } catch {
         FileHandle.standardError.write(Data("Lỗi: \(error.localizedDescription)\n".utf8))
         exit(1)
     }
+}
+
+func printVolumes(of drive: DriveInfo) {
+    let volumes = VolumeUsageReader.volumes(forDriveRegistryEntryID: drive.registryEntryID)
+    guard !volumes.isEmpty else { return }
+    print("  Volume:")
+    for group in VolumeUsageReader.capacityGroups(volumes) {
+        print("    \(group.displayName): \(formatBytes(group.usedBytes)) / \(formatBytes(group.totalBytes)) (\(Int(group.usedFraction * 100))%)")
+    }
+    print("")
 }
 
 func reportSystem() {

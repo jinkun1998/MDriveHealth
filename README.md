@@ -21,7 +21,9 @@
 | Bảng **thuộc tính SMART đầy đủ** với tên/cách decode theo từng model ổ (database 589 dòng ổ từ smartmontools) | Full **SMART attribute table** with per-model names/decoding (589-entry database from smartmontools) |
 | **Lịch sử & biểu đồ** (SQLite + Swift Charts): nhiệt độ, điểm, wear theo thời gian | **History & charts** (SQLite + Swift Charts): temperature, score, wear over time |
 | **Theo dõi nền + cảnh báo**: icon menu bar, thông báo khi sức khoẻ giảm / có sector lỗi mới / quá nhiệt | **Background monitoring + alerts**: menu bar icon, notifications on degradation / new defects / over-temp |
-| **Self-test** ngắn & mở rộng cho ổ SATA; quét kernel log tìm lỗi I/O | Short & extended **self-tests** for SATA drives; kernel-log I/O error scan |
+| **Self-test** ngắn & mở rộng cho ổ SATA (kèm lịch sử kết quả, tự theo dõi tiến độ); quét kernel log tìm lỗi I/O | Short & extended **self-tests** for SATA drives (with result history & auto progress); kernel-log I/O error scan |
+| **Dung lượng volume** trên từng ổ; ước tính **GB ghi/ngày** và dự phóng ngày cạn tuổi thọ SSD | Per-drive **volume usage**; **writes/day** estimate and SSD lifetime exhaustion projection |
+| **Xuất báo cáo text** (copy/lưu file) để đăng lên group khi cần trợ giúp | **Text report export** (copy/save) for sharing when asking for help |
 | **System Health**: pin (chu kỳ, % sức khoẻ), ~40 cảm biến nhiệt Apple Silicon, RAM/swap/áp lực bộ nhớ | **System Health**: battery (cycles, health %), ~40 Apple Silicon thermal sensors, RAM/swap/memory pressure |
 | Giao diện tiếng Việt + English | Vietnamese + English UI |
 
@@ -62,7 +64,6 @@ scripts/release.sh          # archive → sign → notarize → DMG
 
 - **Ổ USB**: macOS không có driver SAT nên *không app nào* đọc được SMART qua cầu USB mass-storage từ userspace — hạn chế của hệ điều hành. Ổ Thunderbolt/NVMe nội bộ hoạt động đầy đủ. / No SMART over USB mass-storage bridges on macOS (OS limitation).
 - **NVMe self-test**: giao diện NVMe của macOS không hỗ trợ — áp dụng với mọi công cụ. / Not supported by macOS NVMe interface (applies to all tools).
-- Nội dung chi tiết của chỉ báo sức khoẻ hiện hiển thị tiếng Anh. / Health-issue detail strings are currently English.
 
 ## Giấy phép / License
 

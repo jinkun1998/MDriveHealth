@@ -40,6 +40,7 @@ struct HistoryTab: View {
     @State private var metric: Metric = .temperature
     @State private var range: Range = .week
     @State private var points: [HistoryPoint] = []
+    @State private var hoverDate: Date?
 
     private var timeLabel: String { String(localized: "chart.axis.time", defaultValue: "Thời gian") }
     private var markerLabel: String { String(localized: "chart.axis.marker", defaultValue: "Mốc") }
@@ -91,12 +92,39 @@ struct HistoryTab: View {
                                     .foregroundStyle(event.color)
                             }
                     }
+                    if let hovered = hoveredPoint {
+                        RuleMark(x: .value(timeLabel, hovered.date))
+                            .foregroundStyle(.secondary.opacity(0.6))
+                            .lineStyle(StrokeStyle(lineWidth: 1))
+                        PointMark(x: .value(timeLabel, hovered.date),
+                                  y: .value(metric.rawValue, hovered.value))
+                            .symbolSize(60)
+                            .annotation(
+                                position: .top, spacing: 6,
+                                overflowResolution: .init(x: .fit(to: .chart),
+                                                          y: .disabled)
+                            ) {
+                                VStack(alignment: .leading, spacing: 1) {
+                                    Text(formattedValue(hovered.value))
+                                        .font(.caption.weight(.bold))
+                                        .monospacedDigit()
+                                    Text(hovered.date.formatted(
+                                        date: .abbreviated, time: .shortened))
+                                        .font(.caption2)
+                                        .foregroundStyle(.secondary)
+                                }
+                                .padding(6)
+                                .background(.regularMaterial,
+                                            in: RoundedRectangle(cornerRadius: 6))
+                            }
+                    }
                 }
                 .chartYAxisLabel(yLabel)
                 // Percent metrics anchor at 0; measurements (temp, TB, counts)
                 // zoom to their actual range so small trends stay visible.
                 .chartYScale(domain: .automatic(
                     includesZero: metric == .score || metric == .lifetime))
+                .chartXSelection(value: $hoverDate)
                 .frame(maxHeight: .infinity)
             }
         }
@@ -126,6 +154,25 @@ struct HistoryTab: View {
         case .score, .lifetime: return "%"
         case .written: return "TB"
         case .defects: return String(localized: "chart.unit.count", defaultValue: "số lượng")
+        }
+    }
+
+    /// Data point nearest to the hovered X position.
+    private var hoveredPoint: (date: Date, value: Double)? {
+        guard let hoverDate else { return nil }
+        return chartData.min {
+            abs($0.date.timeIntervalSince(hoverDate))
+                < abs($1.date.timeIntervalSince(hoverDate))
+        }
+    }
+
+    private func formattedValue(_ value: Double) -> String {
+        switch metric {
+        case .temperature: return "\(Int(value))°C"
+        case .score: return "\(Int(value))/100"
+        case .lifetime: return "\(Int(value))%"
+        case .written: return String(format: "%.2f TB", value)
+        case .defects: return "\(Int(value))"
         }
     }
 

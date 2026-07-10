@@ -86,6 +86,19 @@ struct DeviceInfoTab: View {
                         .multilineTextAlignment(.trailing)
                 }
             }
+            if !snapshot.volumes.isEmpty {
+                Section("Volume đã mount") {
+                    ForEach(snapshot.volumes) { volume in
+                        HStack {
+                            Text(verbatim: volume.name)
+                            Spacer()
+                            Text(verbatim: "\(volume.bsdName) · \(volume.mountPoint)")
+                                .foregroundStyle(.secondary)
+                                .textSelection(.enabled)
+                        }
+                    }
+                }
+            }
         }
     }
 }
