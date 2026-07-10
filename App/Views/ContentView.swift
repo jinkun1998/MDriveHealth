@@ -125,8 +125,8 @@ private struct DriveRow: View {
     var body: some View {
         HStack {
             Image(systemName: snapshot.drive.isInternal
-                  ? "internaldrive" : "externaldrive")
-                .foregroundStyle(.secondary)
+                  ? "internaldrive.fill" : "externaldrive.fill")
+                .foregroundStyle(snapshot.health?.rating.color ?? .secondary)
             VStack(alignment: .leading, spacing: 2) {
                 Text(snapshot.drive.model)
                     .lineLimit(1)

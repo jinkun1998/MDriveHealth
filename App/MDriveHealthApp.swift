@@ -47,6 +47,7 @@ struct MDriveHealthApp: App {
         } label: {
             Image(systemName: menuBarSymbol)
         }
+        .menuBarExtraStyle(.window)
 
         Settings {
             SettingsView()

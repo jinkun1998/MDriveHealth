@@ -12,84 +12,191 @@ struct MenuBarView: View {
     @Environment(\.openWindow) private var openWindow
 
     var body: some View {
-        Group {
-            VStack(alignment: .leading, spacing: 2) {
-                Text(summaryTitle)
+        VStack(alignment: .leading, spacing: 0) {
+            header
+            Divider()
+
+            if store.visibleSnapshots.isEmpty {
+                emptyState
+            } else {
+                ScrollView {
+                    VStack(spacing: 6) {
+                        ForEach(store.visibleSnapshots) { snapshot in
+                            DriveMenuCard(snapshot: snapshot) { openMainWindow() }
+                        }
+                    }
+                    .padding(10)
+                }
+                .frame(maxHeight: 264)
+            }
+
+            Divider()
+            footer
+        }
+        .frame(width: 300)
+    }
+
+    private var header: some View {
+        HStack(spacing: 10) {
+            ZStack {
+                RoundedRectangle(cornerRadius: 8, style: .continuous)
+                    .fill((store.worstRating?.color ?? .accentColor).gradient)
+                    .frame(width: 34, height: 34)
+                Image(systemName: "waveform.path.ecg")
+                    .font(.system(size: 17, weight: .bold))
+                    .foregroundStyle(.white)
+            }
+            VStack(alignment: .leading, spacing: 1) {
+                Text(verbatim: "MDriveHealth")
                     .font(.headline)
                 Text(summarySubtitle)
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
-            .padding(.vertical, 4)
+            Spacer()
+            if let worst = store.worstRating {
+                HealthBadge(rating: worst)
+                    .controlSize(.small)
+            }
+        }
+        .padding(12)
+    }
 
-            Divider()
+    private var emptyState: some View {
+        HStack(spacing: 8) {
+            Image(systemName: "internaldrive")
+                .foregroundStyle(.secondary)
+            Text(store.isRefreshing ? "Đang quét ổ đĩa…" : "Chưa phát hiện ổ đĩa")
+                .foregroundStyle(.secondary)
+        }
+        .font(.callout)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(12)
+    }
 
-            ForEach(store.visibleSnapshots) { snapshot in
-                let health = snapshot.health
-                let temp = snapshot.reading?.temperatureCelsius
+    private var footer: some View {
+        VStack(spacing: 8) {
+            HStack(spacing: 8) {
+                Button {
+                    Task { await store.refresh() }
+                } label: {
+                    Label(store.isRefreshing ? "Đang đọc SMART…" : "Làm mới",
+                          systemImage: "arrow.clockwise")
+                        .frame(maxWidth: .infinity)
+                }
+                .disabled(store.isRefreshing)
+                .keyboardShortcut("r")
+
                 Button {
                     openMainWindow()
                 } label: {
-                    HStack {
-                        Image(systemName: health?.rating.systemImage ?? "questionmark.circle")
-                        Text(menuLine(snapshot: snapshot, health: health, temp: temp))
-                    }
+                    Label("Mở", systemImage: "macwindow")
+                        .frame(maxWidth: .infinity)
                 }
-            }
-
-            Divider()
-
-            Button("Mở MDriveHealth") { openMainWindow() }
                 .keyboardShortcut("o")
-            Button(store.isRefreshing ? "Đang đọc SMART…" : "Làm mới ngay") {
-                Task { await store.refresh() }
             }
-            .disabled(store.isRefreshing)
-            .keyboardShortcut("r")
+            .buttonStyle(.borderedProminent)
 
-            Divider()
-
-            SettingsLink { Text("Cài đặt…") }
+            HStack(spacing: 8) {
+                SettingsLink {
+                    Label("Cài đặt…", systemImage: "gearshape")
+                        .frame(maxWidth: .infinity)
+                }
                 .keyboardShortcut(",")
-            Button("Thoát MDriveHealth") { NSApp.terminate(nil) }
+
+                Button {
+                    NSApp.terminate(nil)
+                } label: {
+                    Label("Thoát", systemImage: "power")
+                        .frame(maxWidth: .infinity)
+                }
                 .keyboardShortcut("q")
+            }
+            .buttonStyle(.bordered)
         }
-    }
-
-    private func menuLine(snapshot: DriveSnapshot, health: HealthReport?,
-                          temp: Int?) -> String {
-        var parts = [snapshot.drive.bsdName.isEmpty
-                     ? snapshot.drive.model : snapshot.drive.bsdName]
-        if let temp { parts.append("\(temp)°C") }
-        if let health { parts.append("\(health.rating.displayName) \(health.score)") }
-        else { parts.append(String(localized: "menubar.smartNA", defaultValue: "SMART n/a")) }
-        return parts.joined(separator: " · ")
-    }
-
-    private var summaryTitle: String {
-        if let worst = store.worstRating {
-            return "MDriveHealth · \(worst.displayName)"
-        }
-        if store.isRefreshing {
-            return String(localized: "menubar.reading",
-                          defaultValue: "MDriveHealth · Đang đọc SMART")
-        }
-        return String(localized: "menubar.noData",
-                      defaultValue: "MDriveHealth · Chưa có dữ liệu")
+        .controlSize(.regular)
+        .padding(12)
     }
 
     private var summarySubtitle: String {
-        let count = store.visibleSnapshots.count
-        let checked = store.lastRefresh.map {
-            String(localized: "menubar.checkedAt",
-                   defaultValue: "kiểm tra \($0.formatted(date: .omitted, time: .shortened))")
-        } ?? String(localized: "menubar.notChecked", defaultValue: "chưa kiểm tra")
-        return String(localized: "menubar.subtitle",
-                      defaultValue: "\(count) ổ · \(checked)")
+        // "menubar.driveCount" carries plural variations (1 drive / n drives).
+        let drives = String(localized: "menubar.driveCount",
+                            defaultValue: "\(store.visibleSnapshots.count) ổ")
+        let status: String
+        if store.isRefreshing {
+            status = String(localized: "menubar.readingShort", defaultValue: "đang đọc…")
+        } else if let last = store.lastRefresh {
+            status = String(localized: "menubar.checkedAt",
+                            defaultValue: "kiểm tra \(last.formatted(date: .omitted, time: .shortened))")
+        } else {
+            status = String(localized: "menubar.notChecked", defaultValue: "chưa kiểm tra")
+        }
+        return "\(drives) · \(status)"
     }
 
     private func openMainWindow() {
         openWindow(id: "main")
         NSApp.activate(ignoringOtherApps: true)
+    }
+}
+
+/// One drive row in the menu bar popover.
+private struct DriveMenuCard: View {
+    let snapshot: DriveSnapshot
+    let onTap: () -> Void
+
+    var body: some View {
+        Button(action: onTap) {
+            HStack(spacing: 10) {
+                Circle()
+                    .fill(dotColor)
+                    .frame(width: 9, height: 9)
+                    .shadow(color: dotColor.opacity(0.5), radius: 2)
+
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(snapshot.drive.model)
+                        .font(.callout.weight(.medium))
+                        .lineLimit(1)
+                    HStack(spacing: 8) {
+                        Text(snapshot.drive.bsdName)
+                        if let temp = snapshot.reading?.temperatureCelsius {
+                            Label("\(temp)°C", systemImage: "thermometer.medium")
+                        }
+                        if let life = snapshot.health?.lifetimeLeftPercent {
+                            Label("\(life)%", systemImage: "bolt.heart")
+                        }
+                    }
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                }
+
+                Spacer(minLength: 4)
+
+                if let health = snapshot.health {
+                    VStack(alignment: .trailing, spacing: 2) {
+                        Text(health.rating.displayName)
+                            .font(.caption.weight(.bold))
+                            .foregroundStyle(health.rating.color)
+                        Text("\(health.score)")
+                            .font(.caption2)
+                            .foregroundStyle(.secondary)
+                            .monospacedDigit()
+                    }
+                } else {
+                    Text(snapshot.drive.smartInterface == .unsupported ? "SMART n/a" : "…")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+            }
+            .padding(.horizontal, 10)
+            .padding(.vertical, 8)
+            .background(.quaternary.opacity(0.4), in: RoundedRectangle(cornerRadius: 8))
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+    }
+
+    private var dotColor: Color {
+        snapshot.health?.rating.color ?? .gray
     }
 }

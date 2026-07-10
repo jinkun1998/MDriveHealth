@@ -104,7 +104,17 @@ struct OverviewTab: View {
             }
             Spacer()
         }
-        .padding(.vertical, 4)
+        .padding(18)
+        .frame(maxWidth: .infinity)
+        .background(
+            LinearGradient(
+                colors: [health.rating.color.opacity(0.14),
+                         health.rating.color.opacity(0.03)],
+                startPoint: .topLeading, endPoint: .bottomTrailing),
+            in: RoundedRectangle(cornerRadius: 14))
+        .overlay(
+            RoundedRectangle(cornerRadius: 14)
+                .strokeBorder(health.rating.color.opacity(0.22), lineWidth: 1))
     }
 
     @ViewBuilder
