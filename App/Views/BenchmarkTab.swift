@@ -12,38 +12,58 @@ struct BenchmarkTab: View {
     let snapshot: DriveSnapshot
     @Environment(DriveStore.self) private var store
     @Environment(BenchmarkRunner.self) private var runner
+    @Environment(CapacityVerifyRunner.self) private var capacityRunner
 
+    private enum Mode: String, CaseIterable, Identifiable {
+        case speed = "Tốc độ đọc/ghi"
+        case capacity = "Dung lượng thật"
+        var id: String { rawValue }
+    }
+
+    @State private var mode: Mode = .speed
     @State private var selectedVolumeID: String?
     @State private var fileSize: UInt64 = BenchmarkConfig.defaultFileSize
     @State private var includeRandom = false
+    @State private var queueDepth = 1
     @State private var history: [BenchmarkResult] = []
     @State private var previousForDelta: BenchmarkResult?
+    @State private var shareURL: URL?
+    @State private var capacityShareURL: URL?
 
     private var selectedVolume: VolumeUsage? {
         snapshot.volumes.first { $0.bsdName == selectedVolumeID } ?? snapshot.volumes.first
     }
 
     private var config: BenchmarkConfig {
-        BenchmarkConfig(fileSizeBytes: fileSize, includeRandomPhases: includeRandom)
+        BenchmarkConfig(fileSizeBytes: fileSize, includeRandomPhases: includeRandom,
+                        queueDepth: queueDepth)
     }
 
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 18) {
+                Picker("Chế độ", selection: $mode) {
+                    ForEach(Mode.allCases) { Text(LocalizedStringKey($0.rawValue)).tag($0) }
+                }
+                .pickerStyle(.segmented)
+                .labelsHidden()
+
                 if snapshot.volumes.isEmpty {
                     ContentUnavailableView(
                         "Không có volume nào mount trên ổ này",
                         systemImage: "externaldrive.badge.questionmark",
                         description: Text("Benchmark cần một volume đã mount và ghi được. Ổ chưa định dạng hoặc chưa mount thì không đo được."))
                         .frame(maxWidth: .infinity)
-                } else if runner.isBusyElsewhere(driveID: snapshot.id) {
+                } else if runner.isBusyElsewhere(driveID: snapshot.id)
+                            || capacityRunner.isBusyElsewhere(driveID: snapshot.id) {
                     busyElsewhereBox
-                } else {
+                } else if mode == .speed {
                     content
-                }
-
-                if !history.isEmpty {
-                    historySection
+                    if !history.isEmpty {
+                        historySection
+                    }
+                } else {
+                    capacityContent
                 }
             }
             .padding()
@@ -121,6 +141,12 @@ struct BenchmarkTab: View {
 
             Toggle("Đo thêm Random 4K (~16 giây)", isOn: $includeRandom)
 
+            Picker("Độ sâu hàng đợi", selection: $queueDepth) {
+                Text("Tiêu chuẩn (QD1)").tag(1)
+                Text("Cao (QD8)").tag(8)
+            }
+            .pickerStyle(.segmented)
+
             if let volume = selectedVolume,
                volume.availableBytes < config.requiredFreeBytes {
                 Label(String(localized: "benchmark.notEnoughSpace",
@@ -148,7 +174,7 @@ struct BenchmarkTab: View {
     }
 
     private var canStart: Bool {
-        guard let volume = selectedVolume else { return false }
+        guard let volume = selectedVolume, !capacityRunner.isRunning else { return false }
         return volume.availableBytes >= config.requiredFreeBytes
     }
 
@@ -254,22 +280,35 @@ struct BenchmarkTab: View {
                 }
             }
 
-            Text(String(localized: "benchmark.result.caption",
-                        defaultValue: "\(result.volumeName) · \(Format.bytes(result.fileSizeBytes)) · \(result.capturedAt.formatted(date: .abbreviated, time: .shortened))"))
+            Text(String(localized: "benchmark.result.caption.qd",
+                        defaultValue: "\(result.volumeName) · \(Format.bytes(result.fileSizeBytes)) · QD\(result.queueDepth) · \(result.capturedAt.formatted(date: .abbreviated, time: .shortened))"))
                 .font(.caption)
                 .foregroundStyle(.secondary)
 
-            if live {
-                Button {
-                    runner.reset()
-                } label: {
-                    Label("Chạy lại", systemImage: "arrow.clockwise")
+            HStack {
+                if live {
+                    Button {
+                        runner.reset()
+                    } label: {
+                        Label("Chạy lại", systemImage: "arrow.clockwise")
+                    }
+                    .buttonStyle(.borderedProminent)
                 }
-                .buttonStyle(.borderedProminent)
+                if let shareURL {
+                    ShareLink(item: shareURL) {
+                        Label("Chia sẻ ảnh", systemImage: "square.and.arrow.up")
+                    }
+                }
             }
         }
         .padding(14)
         .cardBackground(cornerRadius: 12)
+        .task(id: result) {
+            shareURL = ShareCardRenderer.pngURL(
+                for: BenchmarkShareCard(drive: snapshot.drive,
+                                        health: snapshot.health, result: result),
+                name: "MDriveHealth-Speed")
+        }
     }
 
     private func resultCard(_ title: LocalizedStringKey, _ bytesPerSec: Double,
@@ -366,6 +405,7 @@ struct BenchmarkTab: View {
         previousForDelta = history.last { previous in
             previous.volumeBSDName == volume.bsdName
                 && previous.fileSizeBytes == runConfig.fileSizeBytes
+                && previous.queueDepth == runConfig.queueDepth
                 && (previous.randomWriteBytesPerSec != nil) == runConfig.includeRandomPhases
         }
         runner.start(snapshot: snapshot, volume: volume, config: runConfig)
@@ -380,6 +420,157 @@ struct BenchmarkTab: View {
         }
         let key = HistoryStore.driveKey(for: snapshot.drive)
         history = (try? await store.history?.benchmarks(driveKey: key, since: .distantPast)) ?? []
+    }
+
+    // MARK: - Capacity verification (fake-drive check)
+
+    @ViewBuilder
+    private var capacityContent: some View {
+        switch capacityRunner.state {
+        case .idle:
+            capacityConfigCard
+        case .running(let phase):
+            capacityRunningView(phase)
+        case .finished(let result) where capacityRunner.ownerDriveID == snapshot.id:
+            capacityResultView(result)
+        case .failed(let message) where capacityRunner.ownerDriveID == snapshot.id:
+            failedBanner(message)
+            capacityConfigCard
+        case .finished, .failed:
+            capacityConfigCard
+        }
+    }
+
+    private var capacityConfigCard: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            Text("Kiểm tra dung lượng thật")
+                .font(.headline)
+            Text("Phát hiện ổ fake dung lượng (USB/SSD \"2TB giá rẻ\"): ghi kín chỗ trống bằng dữ liệu kiểm tra rồi đọc lại so khớp từng byte. Ổ gian lận sẽ lộ ra đúng mốc dung lượng thật.")
+                .font(.callout)
+                .foregroundStyle(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
+
+            Picker("Volume", selection: $selectedVolumeID) {
+                ForEach(snapshot.volumes) { volume in
+                    Text(String(localized: "benchmark.volumeOption",
+                                defaultValue: "\(volume.name) — trống \(Format.bytes(volume.availableBytes))"))
+                        .tag(Optional(volume.bsdName))
+                }
+            }
+
+            HStack {
+                Button {
+                    startCapacityVerify()
+                } label: {
+                    Label("Bắt đầu kiểm tra", systemImage: "checkmark.shield")
+                }
+                .buttonStyle(.borderedProminent)
+                .disabled(selectedVolume == nil || runner.isRunning)
+                Spacer()
+            }
+
+            VStack(alignment: .leading, spacing: 6) {
+                if let volume = selectedVolume {
+                    Label(String(localized: "capacity.warn.size",
+                                 defaultValue: "Sẽ ghi ~\(Format.bytes(volume.availableBytes)) rồi đọc lại toàn bộ — ổ càng lớn càng lâu (có thể hàng giờ với ổ chậm)."),
+                          systemImage: "clock")
+                }
+                Label("Dữ liệu sẵn có KHÔNG bị ảnh hưởng — chỉ ghi vào chỗ trống và tự xoá sạch sau khi xong (kể cả khi huỷ).",
+                      systemImage: "checkmark.shield")
+                Label("Đừng ghi thêm dữ liệu vào ổ trong lúc kiểm tra.",
+                      systemImage: "hand.raised")
+            }
+            .font(.caption)
+            .foregroundStyle(.secondary)
+        }
+        .padding(14)
+        .cardBackground(cornerRadius: 12)
+    }
+
+    private func capacityRunningView(_ phase: CapacityVerifyPhase) -> some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Text(phase == .filling
+                     ? "Đang ghi dữ liệu kiểm tra…"
+                     : "Đang đọc lại & so khớp…")
+                    .font(.headline)
+                Spacer()
+                Text(Format.speed(capacityRunner.progress?.instantaneousBytesPerSecond ?? 0))
+                    .font(.title3.weight(.semibold).monospacedDigit())
+            }
+            ProgressView(value: capacityRunner.progress?.fractionCompleted ?? 0)
+            if let progress = capacityRunner.progress {
+                Text(String(localized: "capacity.progress",
+                            defaultValue: "\(Format.bytes(progress.bytesProcessed)) / \(Format.bytes(progress.totalBytes))"))
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .monospacedDigit()
+            }
+            Button(role: .cancel) {
+                capacityRunner.cancel()
+            } label: {
+                Label("Huỷ", systemImage: "stop.fill")
+            }
+        }
+        .padding(14)
+        .cardBackground(cornerRadius: 12)
+    }
+
+    private func capacityResultView(_ result: CapacityVerifyResult) -> some View {
+        VStack(alignment: .leading, spacing: 12) {
+            switch result.verdict {
+            case .genuine:
+                Label("DUNG LƯỢNG THẬT — không phát hiện gian lận", systemImage: "checkmark.seal.fill")
+                    .font(.title3.weight(.bold))
+                    .foregroundStyle(.green)
+                Text(String(localized: "capacity.genuine.detail",
+                            defaultValue: "Đã ghi và xác minh \(Format.bytes(result.bytesWritten)) — toàn bộ dữ liệu đọc lại khớp từng byte."))
+                    .fixedSize(horizontal: false, vertical: true)
+            case .fake:
+                Label("PHÁT HIỆN Ổ FAKE DUNG LƯỢNG", systemImage: "xmark.seal.fill")
+                    .font(.title3.weight(.bold))
+                    .foregroundStyle(.red)
+                Text(String(localized: "capacity.fake.detail",
+                            defaultValue: "Chỉ ~\(Format.bytes(result.firstCorruptionOffset ?? 0)) lưu được thật sự. Dữ liệu ghi sau mốc này bị hỏng (\(result.corruptedBlocks) block lỗi). ĐỪNG lưu dữ liệu quan trọng lên ổ này — hãy đòi hoàn tiền."))
+                    .fixedSize(horizontal: false, vertical: true)
+            case .inconclusive:
+                Label("Chưa kết luận được — có lỗi I/O giữa chừng", systemImage: "questionmark.diamond.fill")
+                    .font(.title3.weight(.bold))
+                    .foregroundStyle(.orange)
+            }
+
+            Text(String(localized: "capacity.result.caption",
+                        defaultValue: "\(result.volumeName) · ghi \(Format.speed(result.writeBytesPerSec)) · đọc \(Format.speed(result.readBytesPerSec)) · \(result.capturedAt.formatted(date: .abbreviated, time: .shortened))"))
+                .font(.caption)
+                .foregroundStyle(.secondary)
+
+            HStack {
+                Button {
+                    capacityRunner.reset()
+                } label: {
+                    Label("Chạy lại", systemImage: "arrow.clockwise")
+                }
+                .buttonStyle(.borderedProminent)
+                if let capacityShareURL {
+                    ShareLink(item: capacityShareURL) {
+                        Label("Chia sẻ ảnh", systemImage: "square.and.arrow.up")
+                    }
+                }
+            }
+        }
+        .padding(14)
+        .cardBackground(cornerRadius: 12)
+        .accessibilityElement(children: .combine)
+        .task(id: result) {
+            capacityShareURL = ShareCardRenderer.pngURL(
+                for: CapacityShareCard(drive: snapshot.drive, result: result),
+                name: "MDriveHealth-Capacity")
+        }
+    }
+
+    private func startCapacityVerify() {
+        guard let volume = selectedVolume else { return }
+        capacityRunner.start(snapshot: snapshot, volume: volume)
     }
 
     private func deltaText(_ change: Double) -> String {

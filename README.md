@@ -22,7 +22,9 @@
 | **Lịch sử & biểu đồ** (SQLite + Swift Charts): nhiệt độ, điểm, wear theo thời gian | **History & charts** (SQLite + Swift Charts): temperature, score, wear over time |
 | **Theo dõi nền + cảnh báo**: icon menu bar, thông báo khi sức khoẻ giảm / có sector lỗi mới / quá nhiệt | **Background monitoring + alerts**: menu bar icon, notifications on degradation / new defects / over-temp |
 | **Self-test** ngắn & mở rộng cho ổ SATA (kèm lịch sử kết quả, tự theo dõi tiến độ); quét kernel log tìm lỗi I/O | Short & extended **self-tests** for SATA drives (with result history & auto progress); kernel-log I/O error scan |
-| **Đo tốc độ** đọc/ghi (tuần tự + Random 4K, bypass cache) kèm lịch sử & so sánh | **Speed benchmark** (sequential + Random 4K, cache-bypassing) with history & comparison |
+| **Đo tốc độ** đọc/ghi (tuần tự + Random 4K, QD1/QD8, bypass cache) kèm lịch sử, so sánh & **xuất ảnh chia sẻ** | **Speed benchmark** (sequential + Random 4K, QD1/QD8, cache-bypassing) with history, comparison & **shareable image export** |
+| **Kiểm tra dung lượng thật** kiểu H2testw — bắt ổ USB/SSD fake dung lượng | **Real-capacity verification** (H2testw-style) — catches fake-capacity drives |
+| **Cầu nối USB**: chip, tốc độ link thực tế, UASP; **TRIM status**; nút **Đẩy an toàn** chỉ ra app đang giữ ổ | **USB bridge** details (chip, negotiated speed, UASP); **TRIM status**; **safe-eject** that names blocking apps |
 | **Dung lượng volume** trên từng ổ; ước tính **GB ghi/ngày** và dự phóng ngày cạn tuổi thọ SSD | Per-drive **volume usage**; **writes/day** estimate and SSD lifetime exhaustion projection |
 | **Xuất báo cáo text** (copy/lưu file) để đăng lên group khi cần trợ giúp | **Text report export** (copy/save) for sharing when asking for help |
 | **System Health**: pin (chu kỳ, % sức khoẻ), ~40 cảm biến nhiệt Apple Silicon, RAM/swap/áp lực bộ nhớ | **System Health**: battery (cycles, health %), ~40 Apple Silicon thermal sensors, RAM/swap/memory pressure |

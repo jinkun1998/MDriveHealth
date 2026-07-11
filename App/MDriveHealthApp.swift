@@ -60,6 +60,7 @@ struct MDriveHealthApp: App {
     @State private var store: DriveStore
     @State private var monitor: MonitoringController
     @State private var benchmark: BenchmarkRunner
+    @State private var capacityVerify: CapacityVerifyRunner
     @AppStorage(SettingsKeys.showMenuBar) private var showMenuBar = true
     @AppStorage(SettingsKeys.menuBarDisplay) private var menuBarDisplay = MenuBarDisplay.icon
 
@@ -69,6 +70,7 @@ struct MDriveHealthApp: App {
         _store = State(initialValue: store)
         _monitor = State(initialValue: MonitoringController(store: store))
         _benchmark = State(initialValue: BenchmarkRunner(store: store))
+        _capacityVerify = State(initialValue: CapacityVerifyRunner(store: store))
     }
 
     var body: some Scene {
@@ -76,6 +78,7 @@ struct MDriveHealthApp: App {
             ContentView()
                 .environment(store)
                 .environment(benchmark)
+                .environment(capacityVerify)
                 .frame(minWidth: 860, minHeight: 560)
                 .task {
                     monitor.start()

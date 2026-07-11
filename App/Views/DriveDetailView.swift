@@ -12,6 +12,9 @@ struct DriveDetailView: View {
     let snapshot: DriveSnapshot
     @Environment(DriveStore.self) private var store
     @State private var reportCopied = false
+    @State private var isEjecting = false
+    @State private var ejectBlockers: [String]?
+    @State private var ejectError: String?
 
     private enum Tab: String, CaseIterable, Identifiable {
         case overview = "Tổng quan"
@@ -57,6 +60,21 @@ struct DriveDetailView: View {
         }
         .navigationTitle(snapshot.drive.model)
         .toolbar {
+            if !snapshot.drive.isInternal, !snapshot.volumes.isEmpty {
+                ToolbarItem {
+                    Button {
+                        eject(force: false)
+                    } label: {
+                        if isEjecting {
+                            ProgressView().controlSize(.small)
+                        } else {
+                            Label("Đẩy an toàn", systemImage: "eject")
+                        }
+                    }
+                    .disabled(isEjecting || store.benchmarkInProgress)
+                    .help("Unmount toàn bộ volume của ổ này; nếu bị kẹt sẽ chỉ ra app nào đang giữ file")
+                }
+            }
             ToolbarItem {
                 Menu {
                     Button {
@@ -74,6 +92,45 @@ struct DriveDetailView: View {
                           systemImage: reportCopied ? "checkmark" : "square.and.arrow.up")
                 }
                 .help("Xuất báo cáo text để đăng lên group hoặc gửi khi cần trợ giúp")
+            }
+        }
+        .confirmationDialog(
+            "Không đẩy được — có ứng dụng đang giữ file trên ổ",
+            isPresented: Binding(get: { ejectBlockers != nil },
+                                 set: { if !$0 { ejectBlockers = nil } }),
+            titleVisibility: .visible
+        ) {
+            Button("Đẩy mạnh (force)", role: .destructive) {
+                eject(force: true)
+            }
+            Button("Huỷ", role: .cancel) {}
+        } message: {
+            Text(String(localized: "eject.blockers",
+                        defaultValue: "Đang giữ file: \((ejectBlockers ?? []).joined(separator: ", ")). Đóng các app này rồi thử lại, hoặc đẩy mạnh (có thể mất dữ liệu chưa lưu của chính các app đó)."))
+        }
+        .alert("Không đẩy được ổ",
+               isPresented: Binding(get: { ejectError != nil },
+                                    set: { if !$0 { ejectError = nil } })) {
+            Button("OK", role: .cancel) {}
+        } message: {
+            Text(ejectError ?? "")
+        }
+    }
+
+    private func eject(force: Bool) {
+        isEjecting = true
+        Task {
+            let outcome = await EjectService.eject(drive: snapshot.drive,
+                                                   volumes: snapshot.volumes,
+                                                   force: force)
+            isEjecting = false
+            switch outcome {
+            case .ejected:
+                await store.refresh()
+            case .blocked(let names):
+                ejectBlockers = names
+            case .failed(let message):
+                ejectError = message
             }
         }
     }

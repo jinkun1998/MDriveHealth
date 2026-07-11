@@ -179,10 +179,10 @@ final class BenchmarkRunner {
     }
 }
 
-/// Thread-safe cancellation flag shared between the MainActor runner and the
-/// dedicated benchmark thread (Task.isCancelled has no meaning on a raw
-/// Thread).
-private final class CancelBox: @unchecked Sendable {
+/// Thread-safe cancellation flag shared between a MainActor runner and its
+/// dedicated worker thread (Task.isCancelled has no meaning on a raw Thread).
+/// Used by both BenchmarkRunner and CapacityVerifyRunner.
+final class CancelBox: @unchecked Sendable {
     private let lock = NSLock()
     private var flag = false
 

@@ -176,6 +176,33 @@ final class DiskBenchmarkTests: XCTestCase {
         XCTAssertNil(result.randomWriteBytesPerSec)
         XCTAssertNil(result.randomReadBytesPerSec)
     }
+    func testConfigValidationRejectsBadQueueDepth() {
+        XCTAssertThrowsError(try BenchmarkConfig(queueDepth: 0).validate())
+        XCTAssertThrowsError(try BenchmarkConfig(queueDepth: 17).validate())
+        XCTAssertNoThrow(try BenchmarkConfig(queueDepth: 8).validate())
+    }
+
+    func testConcurrentFullRunCompletesAndTagsDepth() throws {
+        let url = FileManager.default.temporaryDirectory
+            .appendingPathComponent("mdrivehealth-bench-\(UUID().uuidString).tmp")
+        var config = tinyConfig()
+        config.queueDepth = 4
+        let engine = DiskBenchmarkEngine()
+        let result: BenchmarkResult
+        do {
+            result = try engine.run(testFileURL: url, volume: volume(mountPoint: "/tmp"),
+                                    config: config, isCancelled: { false },
+                                    progress: { _ in })
+        } catch {
+            throw XCTSkip("environment cannot run the benchmark: \(error)")
+        }
+        XCTAssertEqual(result.queueDepth, 4)
+        XCTAssertGreaterThan(result.sequentialWriteBytesPerSec, 0)
+        XCTAssertGreaterThan(result.sequentialReadBytesPerSec, 0)
+        XCTAssertGreaterThan(result.randomReadBytesPerSec ?? 0, 0)
+        XCTAssertFalse(FileManager.default.fileExists(atPath: url.path))
+    }
+
 }
 
 // MARK: - Thread-safe test collectors

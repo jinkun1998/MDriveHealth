@@ -36,6 +36,13 @@ func runBenchmarkCommand(arguments: [String]) {
             config.includeRandomPhases = false
         case "--no-record":
             record = false
+        case "--depth":
+            index += 1
+            guard index < arguments.count, let depth = Int(arguments[index]),
+                  (1...16).contains(depth) else {
+                FileHandle.standardError.write(Data("--depth cần 1-16\n".utf8)); exit(2)
+            }
+            config.queueDepth = depth
         default:
             FileHandle.standardError.write(Data("Tham số lạ: \(arg)\n".utf8)); exit(2)
         }
@@ -91,6 +98,79 @@ func runBenchmarkCommand(arguments: [String]) {
         }
     } catch let error as BenchmarkError where error == .cancelled {
         print("\nĐã huỷ.")
+        exit(130)
+    } catch {
+        FileHandle.standardError.write(Data("\nLỗi: \(error.localizedDescription)\n".utf8))
+        exit(1)
+    }
+}
+
+// MARK: - Capacity verification
+
+func runVerifyCapacityCommand(arguments: [String]) {
+    guard let target = arguments.first, !target.hasPrefix("-") else {
+        FileHandle.standardError.write(Data(
+            "Cần chỉ định volume: mdrivehealth-cli verify-capacity </Volumes/X | diskNsM> [--max 8g]\n".utf8))
+        exit(2)
+    }
+    var config = CapacityVerifyConfig()
+    var index = 1
+    while index < arguments.count {
+        switch arguments[index] {
+        case "--max":
+            index += 1
+            guard index < arguments.count, let size = parseSize(arguments[index]) else {
+                FileHandle.standardError.write(Data("--max cần 512m|1g|2g|5g\n".utf8)); exit(2)
+            }
+            config.maxBytes = size
+        default:
+            FileHandle.standardError.write(Data("Tham số lạ: \(arguments[index])\n".utf8)); exit(2)
+        }
+        index += 1
+    }
+
+    guard let (volume, _) = resolveVolume(target: target) else {
+        FileHandle.standardError.write(Data("Không tìm thấy volume \"\(target)\".\n".utf8))
+        exit(1)
+    }
+
+    print("Kiểm tra dung lượng thật: \(volume.name) tại \(volume.mountPoint)")
+    print("Ghi kín chỗ trống rồi đọc lại so khớp — Ctrl-C để huỷ (file test tự xoá).\n")
+
+    let cancel = CancelFlag()
+    var signalSources: [DispatchSourceSignal] = []
+    for sig in [SIGINT, SIGTERM, SIGHUP] {
+        signal(sig, SIG_IGN)
+        let source = DispatchSource.makeSignalSource(signal: sig, queue: .global())
+        source.setEventHandler { cancel.trip() }
+        source.resume()
+        signalSources.append(source)
+    }
+    _ = signalSources
+
+    do {
+        let result = try CapacityVerifier().run(
+            volume: volume, config: config,
+            isCancelled: { cancel.isSet },
+            progress: { p in
+                let label = p.phase == .filling ? "Ghi " : "Đọc+so"
+                print("\r\(label)  \(Int(p.fractionCompleted * 100))%  \(String(format: "%7.1f", p.instantaneousBytesPerSecond / 1e6)) MB/s      ",
+                      terminator: "")
+                fflush(stdout)
+            })
+        print("\r\u{1B}[K", terminator: "")
+        switch result.verdict {
+        case .genuine:
+            print("✅ DUNG LƯỢNG THẬT — đã xác minh \(formatBytes(result.bytesWritten)), dữ liệu khớp 100%.")
+        case .fake:
+            print("❌ Ổ FAKE — chỉ ~\(formatBytes(result.firstCorruptionOffset ?? 0)) lưu được thật (\(result.corruptedBlocks) block hỏng sau mốc đó).")
+        case .inconclusive:
+            print("⚠️ Chưa kết luận được — lỗi I/O giữa chừng.")
+        }
+        print(String(format: "Tốc độ: ghi %.1f MB/s · đọc %.1f MB/s",
+                     result.writeBytesPerSec / 1e6, result.readBytesPerSec / 1e6))
+    } catch let error as BenchmarkError where error == .cancelled {
+        print("\nĐã huỷ — file test đã được xoá.")
         exit(130)
     } catch {
         FileHandle.standardError.write(Data("\nLỗi: \(error.localizedDescription)\n".utf8))

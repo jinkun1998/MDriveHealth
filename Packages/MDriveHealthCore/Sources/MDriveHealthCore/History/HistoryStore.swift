@@ -89,11 +89,15 @@ public final class HistoryStore: @unchecked Sendable {
                 seq_write_bps REAL NOT NULL,
                 seq_read_bps REAL NOT NULL,
                 rand_write_bps REAL,
-                rand_read_bps REAL
+                rand_read_bps REAL,
+                queue_depth INTEGER NOT NULL DEFAULT 1
             );
             CREATE INDEX IF NOT EXISTS idx_benchmarks_drive_time
                 ON benchmark_results(drive_key, captured_at);
             """)
+        // Migration for databases created before queue_depth existed; the
+        // duplicate-column error on newer databases is expected and ignored.
+        try? execute("ALTER TABLE benchmark_results ADD COLUMN queue_depth INTEGER NOT NULL DEFAULT 1")
     }
 
     deinit {

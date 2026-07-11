@@ -20,6 +20,8 @@ struct ContentView: View {
     // Loaded in .task — an initializer default would re-run the IOKit read on
     // every struct re-init and discard the result (@State keeps the first).
     @State private var battery: BatteryInfo?
+    @AppStorage("hasSeenOnboarding") private var hasSeenOnboarding = false
+    @State private var showOnboarding = false
 
     var body: some View {
         NavigationSplitView {
@@ -105,7 +107,13 @@ struct ContentView: View {
         // a pending id that has now loaded and otherwise picks the default.
         .onChange(of: store.snapshots.count) { applyPendingSelectionOrDefault() }
         .onChange(of: store.pendingSelection, initial: true) { applyPendingSelectionOrDefault() }
-        .task { battery = BatteryReader.read() }
+        .task {
+            battery = BatteryReader.read()
+            if !hasSeenOnboarding { showOnboarding = true }
+        }
+        .sheet(isPresented: $showOnboarding, onDismiss: { hasSeenOnboarding = true }) {
+            OnboardingView(isPresented: $showOnboarding)
+        }
         .onChange(of: store.lastRefresh) {
             battery = BatteryReader.read()
         }

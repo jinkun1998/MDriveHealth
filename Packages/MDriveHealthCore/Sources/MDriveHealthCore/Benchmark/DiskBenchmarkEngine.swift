@@ -63,11 +63,12 @@ public final class DiskBenchmarkEngine: @unchecked Sendable {
 
         try preallocate(fd: fd, fileSize: fileSize)
 
-        // Four incompressible buffers, page-aligned (an F_NOCACHE requirement),
-        // rotated to defeat controller-side dedup/compression.
+        // Incompressible buffers, page-aligned (an F_NOCACHE requirement),
+        // rotated to defeat controller-side dedup/compression. With a queue
+        // depth > 1 every worker needs its OWN buffer (pread writes into it).
         var buffers: [UnsafeMutableRawPointer] = []
         defer { buffers.forEach { free($0) } }
-        for _ in 0..<4 {
+        for _ in 0..<max(4, config.queueDepth) {
             var raw: UnsafeMutableRawPointer?
             // posix_memalign returns its error code and does NOT set errno.
             let allocError = posix_memalign(&raw, BenchmarkConfig.pageSize, seqBlock)
@@ -83,30 +84,56 @@ public final class DiskBenchmarkEngine: @unchecked Sendable {
             reason: "Disk speed benchmark")
         defer { ProcessInfo.processInfo.endActivity(activity) }
 
+        let depth = config.queueDepth
+
         // Phase 1 — sequential write (must run before any read: preallocated
         // but unwritten extents read back as synthesized zeros).
-        let seqWrite = try sequentialPhase(
-            .sequentialWrite, fd: fd, buffers: buffers, blockBytes: seqBlock,
-            fileSize: fileSize, isCancelled: isCancelled, progress: progress)
+        let seqWrite = depth > 1
+            ? try concurrentSequentialPhase(
+                .sequentialWrite, fd: fd, buffers: buffers, blockBytes: seqBlock,
+                fileSize: fileSize, depth: depth, isCancelled: isCancelled,
+                progress: progress)
+            : try sequentialPhase(
+                .sequentialWrite, fd: fd, buffers: buffers, blockBytes: seqBlock,
+                fileSize: fileSize, isCancelled: isCancelled, progress: progress)
         try fullSync(fd: fd)
 
         // Phase 2 — sequential read.
-        let seqRead = try sequentialPhase(
-            .sequentialRead, fd: fd, buffers: buffers, blockBytes: seqBlock,
-            fileSize: fileSize, isCancelled: isCancelled, progress: progress)
+        let seqRead = depth > 1
+            ? try concurrentSequentialPhase(
+                .sequentialRead, fd: fd, buffers: buffers, blockBytes: seqBlock,
+                fileSize: fileSize, depth: depth, isCancelled: isCancelled,
+                progress: progress)
+            : try sequentialPhase(
+                .sequentialRead, fd: fd, buffers: buffers, blockBytes: seqBlock,
+                fileSize: fileSize, isCancelled: isCancelled, progress: progress)
 
         var randWrite: Double?
         var randRead: Double?
         if config.includeRandomPhases {
-            randWrite = try randomPhase(
-                .randomWrite, fd: fd, buffers: buffers, blockBytes: config.randomBlockBytes,
-                fileSize: fileSize, seconds: config.randomPhaseSeconds,
-                isCancelled: isCancelled, progress: progress)
+            randWrite = depth > 1
+                ? try concurrentRandomPhase(
+                    .randomWrite, fd: fd, buffers: buffers,
+                    blockBytes: config.randomBlockBytes, fileSize: fileSize,
+                    seconds: config.randomPhaseSeconds, depth: depth,
+                    isCancelled: isCancelled, progress: progress)
+                : try randomPhase(
+                    .randomWrite, fd: fd, buffers: buffers,
+                    blockBytes: config.randomBlockBytes, fileSize: fileSize,
+                    seconds: config.randomPhaseSeconds,
+                    isCancelled: isCancelled, progress: progress)
             try fullSync(fd: fd)
-            randRead = try randomPhase(
-                .randomRead, fd: fd, buffers: buffers, blockBytes: config.randomBlockBytes,
-                fileSize: fileSize, seconds: config.randomPhaseSeconds,
-                isCancelled: isCancelled, progress: progress)
+            randRead = depth > 1
+                ? try concurrentRandomPhase(
+                    .randomRead, fd: fd, buffers: buffers,
+                    blockBytes: config.randomBlockBytes, fileSize: fileSize,
+                    seconds: config.randomPhaseSeconds, depth: depth,
+                    isCancelled: isCancelled, progress: progress)
+                : try randomPhase(
+                    .randomRead, fd: fd, buffers: buffers,
+                    blockBytes: config.randomBlockBytes, fileSize: fileSize,
+                    seconds: config.randomPhaseSeconds,
+                    isCancelled: isCancelled, progress: progress)
         }
 
         return BenchmarkResult(
@@ -114,6 +141,7 @@ public final class DiskBenchmarkEngine: @unchecked Sendable {
             volumeBSDName: volume.bsdName, volumeName: volume.name,
             mountPoint: volume.mountPoint, fileSizeBytes: fileSize,
             sequentialBlockBytes: seqBlock, randomBlockBytes: config.randomBlockBytes,
+            queueDepth: depth,
             sequentialWriteBytesPerSec: seqWrite, sequentialReadBytesPerSec: seqRead,
             randomWriteBytesPerSec: randWrite, randomReadBytesPerSec: randRead)
     }
@@ -215,6 +243,168 @@ public final class DiskBenchmarkEngine: @unchecked Sendable {
         emitter.emit(fraction: 1, totalBytes: ops &* UInt64(blockBytes),
                      progress: progress, force: true)
         return elapsed > 0 ? Double(ops &* UInt64(blockBytes)) / elapsed : 0
+    }
+
+    // MARK: - Concurrent phases (queue depth > 1)
+
+    /// Shared state for concurrent workers: byte counter, first error, and a
+    /// rate-gated progress emitter — all behind one lock.
+    private final class PhaseShared: @unchecked Sendable {
+        let lock = NSLock()
+        var doneBytes: UInt64 = 0
+        var error: BenchmarkError?
+        var lastEmit: ContinuousClock.Instant
+        var lastBytes: UInt64 = 0
+        let start: ContinuousClock.Instant
+        let clock: ContinuousClock
+        /// Set for time-boxed phases: fraction = elapsed/budget, not bytes.
+        let timeBudget: TimeInterval?
+
+        init(clock: ContinuousClock, timeBudget: TimeInterval? = nil) {
+            self.clock = clock
+            self.start = clock.now
+            self.lastEmit = start
+            self.timeBudget = timeBudget
+        }
+
+        var hasStopped: Bool {
+            lock.lock(); defer { lock.unlock() }
+            return error != nil
+        }
+
+        func fail(_ newError: BenchmarkError) {
+            lock.lock()
+            if error == nil { error = newError }
+            lock.unlock()
+        }
+
+        /// Adds completed bytes; when the 0.2 s gate opens, emits progress.
+        func add(bytes: Int, of total: UInt64, phase: BenchmarkPhase,
+                 progress: ProgressHandler) {
+            lock.lock()
+            doneBytes &+= UInt64(bytes)
+            let now = clock.now
+            let sinceEmitComponents = lastEmit.duration(to: now).components
+            let sinceEmit = Double(sinceEmitComponents.seconds)
+                + Double(sinceEmitComponents.attoseconds) / 1e18
+            guard sinceEmit >= 0.2 else { lock.unlock(); return }
+            let done = doneBytes
+            let instant = Double(done &- lastBytes) / sinceEmit
+            let sinceStartComponents = start.duration(to: now).components
+            let sinceStart = Double(sinceStartComponents.seconds)
+                + Double(sinceStartComponents.attoseconds) / 1e18
+            lastEmit = now
+            lastBytes = done
+            lock.unlock()
+            let fraction: Double
+            if let timeBudget, timeBudget > 0 {
+                fraction = min(1, sinceStart / timeBudget)
+            } else {
+                fraction = min(1, Double(done) / Double(max(total, 1)))
+            }
+            progress(BenchmarkProgress(
+                phase: phase,
+                fractionCompleted: fraction,
+                instantaneousBytesPerSecond: max(0, instant),
+                averageBytesPerSecond: sinceStart > 0 ? Double(done) / sinceStart : 0))
+        }
+    }
+
+    private func concurrentSequentialPhase(
+        _ phase: BenchmarkPhase, fd: Int32, buffers: [UnsafeMutableRawPointer],
+        blockBytes: Int, fileSize: UInt64, depth: Int,
+        isCancelled: @escaping @Sendable () -> Bool,
+        progress: @escaping ProgressHandler) throws -> Double {
+        let isWrite = (phase == .sequentialWrite)
+        let total = Self.blockCount(fileSizeBytes: fileSize, blockBytes: blockBytes)
+        let clock = ContinuousClock()
+        let shared = PhaseShared(clock: clock)
+        progress(BenchmarkProgress(phase: phase, fractionCompleted: 0,
+                                   instantaneousBytesPerSecond: 0,
+                                   averageBytesPerSecond: 0))
+
+        // Worker k handles blocks k, k+depth, k+2·depth… — positioned I/O on
+        // one shared fd is thread-safe; each worker owns its buffer.
+        DispatchQueue.concurrentPerform(iterations: depth) { worker in
+            let buffer = buffers[worker]
+            var index = UInt64(worker)
+            while index < total {
+                if isCancelled() || shared.hasStopped { return }
+                let off = Self.offset(forBlockIndex: index, blockBytes: blockBytes)
+                let n = isWrite
+                    ? pwrite(fd, buffer, blockBytes, off)
+                    : pread(fd, buffer, blockBytes, off)
+                guard n == blockBytes else {
+                    if n == -1, errno == ENOSPC { shared.fail(.diskFull) }
+                    else if n == -1 {
+                        shared.fail(.ioFailed(operation: isWrite ? "pwrite" : "pread",
+                                              errno: errno))
+                    } else {
+                        shared.fail(.shortIO(expectedBytes: blockBytes, actualBytes: n))
+                    }
+                    return
+                }
+                shared.add(bytes: blockBytes, of: fileSize, phase: phase,
+                           progress: progress)
+                index &+= UInt64(depth)
+            }
+        }
+        if isCancelled() { throw BenchmarkError.cancelled }
+        if let error = shared.error { throw error }
+        let elapsed = seconds(shared.start.duration(to: clock.now))
+        progress(BenchmarkProgress(phase: phase, fractionCompleted: 1,
+                                   instantaneousBytesPerSecond: 0,
+                                   averageBytesPerSecond: elapsed > 0 ? Double(fileSize) / elapsed : 0))
+        return elapsed > 0 ? Double(fileSize) / elapsed : 0
+    }
+
+    private func concurrentRandomPhase(
+        _ phase: BenchmarkPhase, fd: Int32, buffers: [UnsafeMutableRawPointer],
+        blockBytes: Int, fileSize: UInt64, seconds budget: TimeInterval, depth: Int,
+        isCancelled: @escaping @Sendable () -> Bool,
+        progress: @escaping ProgressHandler) throws -> Double {
+        let isWrite = (phase == .randomWrite)
+        let blocks = Self.blockCount(fileSizeBytes: fileSize, blockBytes: blockBytes)
+        guard blocks > 0 else { return 0 }
+        let clock = ContinuousClock()
+        let shared = PhaseShared(clock: clock, timeBudget: budget)
+        progress(BenchmarkProgress(phase: phase, fractionCompleted: 0,
+                                   instantaneousBytesPerSecond: 0,
+                                   averageBytesPerSecond: 0))
+        let deadline = clock.now.advanced(by: .seconds(budget))
+
+        DispatchQueue.concurrentPerform(iterations: depth) { worker in
+            var rng = SystemRandomNumberGenerator()
+            let buffer = buffers[worker]
+            while clock.now < deadline {
+                if isCancelled() || shared.hasStopped { return }
+                let idx = UInt64.random(in: 0..<blocks, using: &rng)
+                let off = Self.offset(forBlockIndex: idx, blockBytes: blockBytes)
+                let n = isWrite
+                    ? pwrite(fd, buffer, blockBytes, off)
+                    : pread(fd, buffer, blockBytes, off)
+                guard n == blockBytes else {
+                    if n == -1, errno == ENOSPC { shared.fail(.diskFull) }
+                    else if n == -1 {
+                        shared.fail(.ioFailed(operation: isWrite ? "pwrite" : "pread",
+                                              errno: errno))
+                    } else {
+                        shared.fail(.shortIO(expectedBytes: blockBytes, actualBytes: n))
+                    }
+                    return
+                }
+                shared.add(bytes: blockBytes, of: 0, phase: phase,
+                           progress: progress)
+            }
+        }
+        if isCancelled() { throw BenchmarkError.cancelled }
+        if let error = shared.error { throw error }
+        let elapsed = seconds(shared.start.duration(to: clock.now))
+        let bytes = shared.doneBytes
+        progress(BenchmarkProgress(phase: phase, fractionCompleted: 1,
+                                   instantaneousBytesPerSecond: 0,
+                                   averageBytesPerSecond: elapsed > 0 ? Double(bytes) / elapsed : 0))
+        return elapsed > 0 ? Double(bytes) / elapsed : 0
     }
 
     // MARK: - Syscall wrappers

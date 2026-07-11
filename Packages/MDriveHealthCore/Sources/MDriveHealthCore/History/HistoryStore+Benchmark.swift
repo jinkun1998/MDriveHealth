@@ -18,8 +18,8 @@ extension HistoryStore {
                 INSERT INTO benchmark_results
                 (drive_key, bsd_name, volume_name, mount_point, captured_at,
                  file_size, seq_block, rand_block, seq_write_bps, seq_read_bps,
-                 rand_write_bps, rand_read_bps)
-                VALUES (?,?,?,?,?,?,?,?,?,?,?,?)
+                 rand_write_bps, rand_read_bps, queue_depth)
+                VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)
                 """
             var statement: OpaquePointer?
             guard sqlite3_prepare_v2(database, sql, -1, &statement, nil) == SQLITE_OK else {
@@ -39,6 +39,7 @@ extension HistoryStore {
             sqlite3_bind_double(statement, 10, result.sequentialReadBytesPerSec)
             bindOptionalDouble(statement, 11, result.randomWriteBytesPerSec)
             bindOptionalDouble(statement, 12, result.randomReadBytesPerSec)
+            sqlite3_bind_int64(statement, 13, Int64(result.queueDepth))
 
             guard sqlite3_step(statement) == SQLITE_DONE else {
                 throw HistoryError.sqlite(String(cString: sqlite3_errmsg(database)))
@@ -86,7 +87,7 @@ extension HistoryStore {
     private static let benchmarkSelect = """
         SELECT bsd_name, volume_name, mount_point, captured_at, file_size,
                seq_block, rand_block, seq_write_bps, seq_read_bps,
-               rand_write_bps, rand_read_bps
+               rand_write_bps, rand_read_bps, queue_depth
         FROM benchmark_results
         """
 
@@ -100,6 +101,7 @@ extension HistoryStore {
             fileSizeBytes: UInt64(clamping: sqlite3_column_int64(statement, 4)),
             sequentialBlockBytes: Int(sqlite3_column_int64(statement, 5)),
             randomBlockBytes: Int(sqlite3_column_int64(statement, 6)),
+            queueDepth: max(1, Int(sqlite3_column_int64(statement, 11))),
             sequentialWriteBytesPerSec: sqlite3_column_double(statement, 7),
             sequentialReadBytesPerSec: sqlite3_column_double(statement, 8),
             randomWriteBytesPerSec: columnOptionalDouble(statement, 9),

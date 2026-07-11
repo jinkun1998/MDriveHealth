@@ -5420,6 +5420,998 @@
           }
         }
       }
+    },
+    "Tốc độ đọc/ghi": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tốc độ đọc/ghi"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Read/write speed"
+          }
+        }
+      }
+    },
+    "Dung lượng thật": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dung lượng thật"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Real capacity"
+          }
+        }
+      }
+    },
+    "Chế độ": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chế độ"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mode"
+          }
+        }
+      }
+    },
+    "Kiểm tra dung lượng thật": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kiểm tra dung lượng thật"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Verify real capacity"
+          }
+        }
+      }
+    },
+    "Phát hiện ổ fake dung lượng (USB/SSD \"2TB giá rẻ\"): ghi kín chỗ trống bằng dữ liệu kiểm tra rồi đọc lại so khớp từng byte. Ổ gian lận sẽ lộ ra đúng mốc dung lượng thật.": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Phát hiện ổ fake dung lượng (USB/SSD \"2TB giá rẻ\"): ghi kín chỗ trống bằng dữ liệu kiểm tra rồi đọc lại so khớp từng byte. Ổ gian lận sẽ lộ ra đúng mốc dung lượng thật."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Detects fake-capacity drives (those cheap \"2TB\" USB sticks): fills free space with test data, reads it back, and verifies every byte. A fraudulent drive fails exactly at its real capacity."
+          }
+        }
+      }
+    },
+    "Bắt đầu kiểm tra": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bắt đầu kiểm tra"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Start verification"
+          }
+        }
+      }
+    },
+    "capacity.warn.size": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sẽ ghi ~%@ rồi đọc lại toàn bộ — ổ càng lớn càng lâu (có thể hàng giờ với ổ chậm)."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Writes ~%@ then reads it all back — bigger drives take longer (hours on slow drives)."
+          }
+        }
+      }
+    },
+    "Dữ liệu sẵn có KHÔNG bị ảnh hưởng — chỉ ghi vào chỗ trống và tự xoá sạch sau khi xong (kể cả khi huỷ).": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dữ liệu sẵn có KHÔNG bị ảnh hưởng — chỉ ghi vào chỗ trống và tự xoá sạch sau khi xong (kể cả khi huỷ)."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Existing data is NOT touched — only free space is written, and everything is deleted afterwards (even on cancel)."
+          }
+        }
+      }
+    },
+    "Đừng ghi thêm dữ liệu vào ổ trong lúc kiểm tra.": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đừng ghi thêm dữ liệu vào ổ trong lúc kiểm tra."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Don't write additional data to the drive during the check."
+          }
+        }
+      }
+    },
+    "Đang ghi dữ liệu kiểm tra…": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đang ghi dữ liệu kiểm tra…"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Writing test data…"
+          }
+        }
+      }
+    },
+    "Đang đọc lại & so khớp…": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đang đọc lại & so khớp…"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reading back & verifying…"
+          }
+        }
+      }
+    },
+    "capacity.progress": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@ / %2$@"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@ / %2$@"
+          }
+        }
+      }
+    },
+    "DUNG LƯỢNG THẬT — không phát hiện gian lận": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "DUNG LƯỢNG THẬT — không phát hiện gian lận"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "GENUINE CAPACITY — no fraud detected"
+          }
+        }
+      }
+    },
+    "capacity.genuine.detail": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đã ghi và xác minh %@ — toàn bộ dữ liệu đọc lại khớp từng byte."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wrote and verified %@ — every byte read back intact."
+          }
+        }
+      }
+    },
+    "PHÁT HIỆN Ổ FAKE DUNG LƯỢNG": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "PHÁT HIỆN Ổ FAKE DUNG LƯỢNG"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "FAKE-CAPACITY DRIVE DETECTED"
+          }
+        }
+      }
+    },
+    "capacity.fake.detail": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chỉ ~%1$@ lưu được thật sự. Dữ liệu ghi sau mốc này bị hỏng (%2$lld block lỗi). ĐỪNG lưu dữ liệu quan trọng lên ổ này — hãy đòi hoàn tiền."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Only ~%1$@ is real storage. Data written past that point corrupts (%2$lld bad blocks). Do NOT trust this drive — get a refund."
+          }
+        }
+      }
+    },
+    "Chưa kết luận được — có lỗi I/O giữa chừng": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chưa kết luận được — có lỗi I/O giữa chừng"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Inconclusive — I/O errors interrupted the check"
+          }
+        }
+      }
+    },
+    "capacity.result.caption": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@ · ghi %2$@ · đọc %3$@ · %4$@"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@ · write %2$@ · read %3$@ · %4$@"
+          }
+        }
+      }
+    },
+    "Chia sẻ ảnh": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chia sẻ ảnh"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Share image"
+          }
+        }
+      }
+    },
+    "Ghi tuần tự": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ghi tuần tự"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sequential write"
+          }
+        }
+      }
+    },
+    "Đọc tuần tự": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đọc tuần tự"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sequential read"
+          }
+        }
+      }
+    },
+    "Random 4K Ghi": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Random 4K Ghi"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Random 4K write"
+          }
+        }
+      }
+    },
+    "Random 4K Đọc": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Random 4K Đọc"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Random 4K read"
+          }
+        }
+      }
+    },
+    "share.footer": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đo bằng MDriveHealth (QD1, %@) — app sức khoẻ ổ đĩa miễn phí cho cộng đồng Maclife 🇻🇳"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Measured with MDriveHealth (QD1, %@) — the free drive-health app for the Maclife community 🇻🇳"
+          }
+        }
+      }
+    },
+    "share.capacity.fake": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chỉ ~%1$@ lưu được thật sự trong %2$@ đã kiểm tra."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Only ~%1$@ of the %2$@ tested is real storage."
+          }
+        }
+      }
+    },
+    "share.capacity.genuine": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đã ghi & xác minh %@ — dữ liệu khớp 100%%."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wrote & verified %@ — data matches 100%%."
+          }
+        }
+      }
+    },
+    "share.capacity.footer": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kiểm tra kiểu H2testw bằng MDriveHealth — app sức khoẻ ổ đĩa miễn phí cho cộng đồng Maclife 🇻🇳"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "H2testw-style check by MDriveHealth — the free drive-health app for the Maclife community 🇻🇳"
+          }
+        }
+      }
+    },
+    "Cầu nối USB": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cầu nối USB"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "USB bridge"
+          }
+        }
+      }
+    },
+    "Hãng cầu nối": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hãng cầu nối"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bridge vendor"
+          }
+        }
+      }
+    },
+    "Chip/enclosure": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chip/enclosure"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chip/enclosure"
+          }
+        }
+      }
+    },
+    "Vendor/Product ID": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vendor/Product ID"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vendor/Product ID"
+          }
+        }
+      }
+    },
+    "Tốc độ link thực tế": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tốc độ link thực tế"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Negotiated link speed"
+          }
+        }
+      }
+    },
+    "Chế độ truyền": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chế độ truyền"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Transfer mode"
+          }
+        }
+      }
+    },
+    "usb.bot": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "BOT (Bulk-Only, chậm hơn UASP)"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "BOT (Bulk-Only, slower than UASP)"
+          }
+        }
+      }
+    },
+    "Đang chạy ở 480 Mb/s (USB 2.0) — kiểm tra lại cáp và cổng: ổ này có thể nhanh hơn nhiều với cáp/cổng USB 3.": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đang chạy ở 480 Mb/s (USB 2.0) — kiểm tra lại cáp và cổng: ổ này có thể nhanh hơn nhiều với cáp/cổng USB 3."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Running at 480 Mb/s (USB 2.0) — check the cable and port: this drive can be much faster on USB 3."
+          }
+        }
+      }
+    },
+    "Chip cầu nối này không passthrough SMART — macOS không có driver SAT nên không app nào đọc được chỉ số sức khoẻ qua nó. Vẫn đo được tốc độ và kiểm tra dung lượng thật ở tab Tốc độ.": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chip cầu nối này không passthrough SMART — macOS không có driver SAT nên không app nào đọc được chỉ số sức khoẻ qua nó. Vẫn đo được tốc độ và kiểm tra dung lượng thật ở tab Tốc độ."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This bridge chip doesn't pass SMART through — macOS has no SAT driver, so no app can read health data across it. Speed tests and the real-capacity check in the Speed tab still work."
+          }
+        }
+      }
+    },
+    "Độ sâu hàng đợi": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Độ sâu hàng đợi"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Queue depth"
+          }
+        }
+      }
+    },
+    "Tiêu chuẩn (QD1)": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tiêu chuẩn (QD1)"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Standard (QD1)"
+          }
+        }
+      }
+    },
+    "Cao (QD8)": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cao (QD8)"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "High (QD8)"
+          }
+        }
+      }
+    },
+    "benchmark.result.caption.qd": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@ · %2$@ · QD%3$lld · %4$@"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@ · %2$@ · QD%3$lld · %4$@"
+          }
+        }
+      }
+    },
+    "Quay lại": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Quay lại"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Back"
+          }
+        }
+      }
+    },
+    "Tiếp tục": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tiếp tục"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Continue"
+          }
+        }
+      }
+    },
+    "Bắt đầu dùng": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bắt đầu dùng"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Get started"
+          }
+        }
+      }
+    },
+    "Điểm sức khoẻ 0–100": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Điểm sức khoẻ 0–100"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Health score 0–100"
+          }
+        }
+      }
+    },
+    "Theo dõi nền & cảnh báo": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Theo dõi nền & cảnh báo"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Background monitoring & alerts"
+          }
+        }
+      }
+    },
+    "Lưu ý về ổ USB": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lưu ý về ổ USB"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A note about USB drives"
+          }
+        }
+      }
+    },
+    "MDriveHealth chấm điểm từng ổ dựa trên các chỉ báo SMART trọng yếu (sector lỗi, media error, độ mòn SSD…). 90+ là Tốt; dưới 50 là lúc cần sao lưu và tính chuyện thay ổ.": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "MDriveHealth chấm điểm từng ổ dựa trên các chỉ báo SMART trọng yếu (sector lỗi, media error, độ mòn SSD…). 90+ là Tốt; dưới 50 là lúc cần sao lưu và tính chuyện thay ổ."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "MDriveHealth scores each drive from the SMART indicators that matter (bad sectors, media errors, SSD wear…). 90+ is Good; below 50 means back up and plan a replacement."
+          }
+        }
+      }
+    },
+    "App âm thầm đọc SMART định kỳ và chỉ lên tiếng khi có chuyện: sức khoẻ giảm, xuất hiện sector lỗi mới, quá nhiệt, hay self-test xong. macOS sẽ hỏi quyền thông báo — hãy bấm Cho phép.": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "App âm thầm đọc SMART định kỳ và chỉ lên tiếng khi có chuyện: sức khoẻ giảm, xuất hiện sector lỗi mới, quá nhiệt, hay self-test xong. macOS sẽ hỏi quyền thông báo — hãy bấm Cho phép."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The app quietly polls SMART and only speaks up when something happens: health drops, new bad sectors, overheating, or a finished self-test. macOS will ask for notification permission — click Allow."
+          }
+        }
+      }
+    },
+    "Để theo dõi liên tục kể cả sau khi khởi động lại máy, cho app tự chạy khi đăng nhập. Icon nằm gọn trên menu bar, không làm phiền.": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Để theo dõi liên tục kể cả sau khi khởi động lại máy, cho app tự chạy khi đăng nhập. Icon nằm gọn trên menu bar, không làm phiền."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "To keep monitoring across restarts, let the app launch at login. It sits quietly in the menu bar."
+          }
+        }
+      }
+    },
+    "macOS không cho đọc SMART qua cầu USB thường — đây là giới hạn hệ điều hành, KHÔNG phải lỗi ổ hay lỗi app. Với ổ USB, mày vẫn đo được tốc độ và kiểm tra dung lượng thật (bắt ổ fake) ở tab Tốc độ.": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "macOS không cho đọc SMART qua cầu USB thường — đây là giới hạn hệ điều hành, KHÔNG phải lỗi ổ hay lỗi app. Với ổ USB, mày vẫn đo được tốc độ và kiểm tra dung lượng thật (bắt ổ fake) ở tab Tốc độ."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "macOS can't read SMART across ordinary USB bridges — an OS limitation, not a drive or app fault. For USB drives you can still benchmark speed and verify real capacity (catch fakes) in the Speed tab."
+          }
+        }
+      }
+    },
+    "Đẩy an toàn": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đẩy an toàn"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Safe eject"
+          }
+        }
+      }
+    },
+    "Unmount toàn bộ volume của ổ này; nếu bị kẹt sẽ chỉ ra app nào đang giữ file": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Unmount toàn bộ volume của ổ này; nếu bị kẹt sẽ chỉ ra app nào đang giữ file"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Unmounts every volume on this drive; if it's stuck, shows which app is holding files"
+          }
+        }
+      }
+    },
+    "Không đẩy được — có ứng dụng đang giữ file trên ổ": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Không đẩy được — có ứng dụng đang giữ file trên ổ"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Can't eject — an app is holding files on the drive"
+          }
+        }
+      }
+    },
+    "Đẩy mạnh (force)": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đẩy mạnh (force)"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Force eject"
+          }
+        }
+      }
+    },
+    "eject.blockers": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đang giữ file: %@. Đóng các app này rồi thử lại, hoặc đẩy mạnh (có thể mất dữ liệu chưa lưu của chính các app đó)."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Holding files: %@. Close these apps and retry, or force-eject (their unsaved data may be lost)."
+          }
+        }
+      }
+    },
+    "Không đẩy được ổ": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Không đẩy được ổ"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Could not eject the drive"
+          }
+        }
+      }
+    },
+    "OK": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OK"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OK"
+          }
+        }
+      }
+    },
+    "TRIM/Deallocate": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "TRIM/Deallocate"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "TRIM/Deallocate"
+          }
+        }
+      }
+    },
+    "trim.on": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đang bật"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Enabled"
+          }
+        }
+      }
+    },
+    "trim.off": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đang tắt"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Disabled"
+          }
+        }
+      }
+    },
+    "TRIM đang tắt cho SSD SATA này — hiệu năng và tuổi thọ sẽ giảm dần. Bật bằng Terminal: sudo trimforce enable (máy sẽ khởi động lại).": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "TRIM đang tắt cho SSD SATA này — hiệu năng và tuổi thọ sẽ giảm dần. Bật bằng Terminal: sudo trimforce enable (máy sẽ khởi động lại)."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "TRIM is off for this SATA SSD — performance and lifespan degrade over time. Enable via Terminal: sudo trimforce enable (the Mac will restart)."
+          }
+        }
+      }
+    },
+    "Đang đo tốc độ — tạm dừng đọc SMART để không nhiễu kết quả": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đang đo tốc độ — tạm dừng đọc SMART để không nhiễu kết quả"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Benchmarking — SMART polling is paused to avoid skewing results"
+          }
+        }
+      }
     }
   },
   "version": "1.0"

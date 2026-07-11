@@ -19,17 +19,23 @@ public struct BenchmarkConfig: Sendable, Codable, Hashable {
     public var includeRandomPhases: Bool
     /// Time budget per random direction (write, then read).
     public var randomPhaseSeconds: TimeInterval
+    /// Concurrent in-flight operations. 1 = the honest latency-bound default;
+    /// 8 approaches the drive's parallel throughput (comparable to other
+    /// tools' Q8 figures).
+    public var queueDepth: Int
 
     public init(fileSizeBytes: UInt64 = BenchmarkConfig.defaultFileSize,
                 sequentialBlockBytes: Int = 4 * 1_048_576,
                 randomBlockBytes: Int = 4096,
                 includeRandomPhases: Bool = true,
-                randomPhaseSeconds: TimeInterval = 8) {
+                randomPhaseSeconds: TimeInterval = 8,
+                queueDepth: Int = 1) {
         self.fileSizeBytes = fileSizeBytes
         self.sequentialBlockBytes = sequentialBlockBytes
         self.randomBlockBytes = randomBlockBytes
         self.includeRandomPhases = includeRandomPhases
         self.randomPhaseSeconds = randomPhaseSeconds
+        self.queueDepth = queueDepth
     }
 
     public static let defaultFileSize: UInt64 = 1 << 30            // 1 GiB
@@ -83,6 +89,14 @@ public struct BenchmarkConfig: Sendable, Codable, Hashable {
             throw BenchmarkError.invalidConfiguration(
                 "fileSizeBytes must be at least one random block")
         }
+        guard (1...16).contains(queueDepth) else {
+            throw BenchmarkError.invalidConfiguration(
+                "queueDepth must be between 1 and 16")
+        }
+        guard fileSizeBytes / UInt64(sequentialBlockBytes) >= UInt64(queueDepth) else {
+            throw BenchmarkError.invalidConfiguration(
+                "fileSizeBytes must hold at least queueDepth sequential blocks")
+        }
     }
 }
 
@@ -114,6 +128,7 @@ public struct BenchmarkResult: Sendable, Codable, Hashable {
     public let fileSizeBytes: UInt64        // config echo
     public let sequentialBlockBytes: Int
     public let randomBlockBytes: Int
+    public let queueDepth: Int
     public let sequentialWriteBytesPerSec: Double
     public let sequentialReadBytesPerSec: Double
     public let randomWriteBytesPerSec: Double?   // nil when random phases skipped
@@ -121,7 +136,8 @@ public struct BenchmarkResult: Sendable, Codable, Hashable {
 
     public init(capturedAt: Date, volumeBSDName: String, volumeName: String,
                 mountPoint: String, fileSizeBytes: UInt64, sequentialBlockBytes: Int,
-                randomBlockBytes: Int, sequentialWriteBytesPerSec: Double,
+                randomBlockBytes: Int, queueDepth: Int = 1,
+                sequentialWriteBytesPerSec: Double,
                 sequentialReadBytesPerSec: Double,
                 randomWriteBytesPerSec: Double?, randomReadBytesPerSec: Double?) {
         self.capturedAt = capturedAt
@@ -131,6 +147,7 @@ public struct BenchmarkResult: Sendable, Codable, Hashable {
         self.fileSizeBytes = fileSizeBytes
         self.sequentialBlockBytes = sequentialBlockBytes
         self.randomBlockBytes = randomBlockBytes
+        self.queueDepth = queueDepth
         self.sequentialWriteBytesPerSec = sequentialWriteBytesPerSec
         self.sequentialReadBytesPerSec = sequentialReadBytesPerSec
         self.randomWriteBytesPerSec = randomWriteBytesPerSec

@@ -77,3 +77,24 @@ final class VolumeUsageTests: XCTestCase {
         XCTAssertEqual(groups[2].totalBytes, 700)
     }
 }
+
+final class USBBridgeReaderTests: XCTestCase {
+    func testSpeedEnumMapsToMbps() {
+        XCTAssertEqual(USBBridgeReader.speedMbps(fromUSBSpeedValue: 3), 480)
+        XCTAssertEqual(USBBridgeReader.speedMbps(fromUSBSpeedValue: 4), 5_000)
+        XCTAssertEqual(USBBridgeReader.speedMbps(fromUSBSpeedValue: 5), 10_000)
+        XCTAssertEqual(USBBridgeReader.speedMbps(fromUSBSpeedValue: 6), 20_000)
+        XCTAssertNil(USBBridgeReader.speedMbps(fromUSBSpeedValue: 0))
+        XCTAssertNil(USBBridgeReader.speedMbps(fromUSBSpeedValue: 99))
+    }
+
+    func testInternalDriveHasNoBridge() throws {
+        // The internal Apple SSD must not report a USB bridge.
+        let drives = (try? DriveEnumerator().enumerate()) ?? []
+        guard let internalDrive = drives.first(where: { $0.isInternal }) else {
+            throw XCTSkip("no internal drive found")
+        }
+        XCTAssertNil(USBBridgeReader.bridgeInfo(
+            forDriveRegistryEntryID: internalDrive.registryEntryID))
+    }
+}

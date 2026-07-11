@@ -23,6 +23,8 @@ func printUsage() {
       mdrivehealth-cli smart [diskN]   Báo cáo SMART chi tiết (mặc định: mọi ổ hỗ trợ)
       mdrivehealth-cli benchmark <vol> [--size 512m|1g|2g|5g] [--no-random] [--no-record]
                                        Đo tốc độ (vol = /Volumes/X hoặc diskNsM)
+      mdrivehealth-cli verify-capacity <vol> [--max 1g|2g|5g]
+                                       Kiểm tra dung lượng thật (phát hiện ổ fake)
       mdrivehealth-cli help
     """)
 }
@@ -241,6 +243,8 @@ case "list":
     }
 case "benchmark", "bench":
     runBenchmarkCommand(arguments: Array(arguments.dropFirst()))
+case "verify-capacity", "verify":
+    runVerifyCapacityCommand(arguments: Array(arguments.dropFirst()))
 case "help", "-h", "--help":
     printUsage()
 default:
