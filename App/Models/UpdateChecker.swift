@@ -7,7 +7,7 @@ import Foundation
 
 enum UpdateChecker {
     /// GitHub repository that hosts releases (owner/name).
-    static let repository = "maclife-cloud/MDriveHealth"
+    static let repository = "maclifevn/MDriveHealth"
 
     struct Release: Sendable {
         let version: String

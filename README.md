@@ -32,7 +32,7 @@
 
 ## Cài đặt / Install
 
-Tải file `.dmg` mới nhất từ [Releases](https://github.com/maclife-cloud/MDriveHealth/releases), mở và kéo **MDriveHealth** vào **Applications**.
+Tải file `.dmg` mới nhất từ [Releases](https://github.com/maclifevn/MDriveHealth/releases), mở và kéo **MDriveHealth** vào **Applications**.
 
 > App được ký Developer ID và notarize bởi Apple — mở bình thường không bị Gatekeeper chặn.
 
@@ -40,7 +40,7 @@ Tải file `.dmg` mới nhất từ [Releases](https://github.com/maclife-cloud/
 
 ```bash
 brew install xcodegen
-git clone https://github.com/maclife-cloud/MDriveHealth.git
+git clone https://github.com/maclifevn/MDriveHealth.git
 cd MDriveHealth
 xcodegen generate
 xcodebuild -project MDriveHealth.xcodeproj -scheme MDriveHealth -configuration Release build
