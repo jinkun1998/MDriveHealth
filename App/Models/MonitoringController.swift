@@ -62,7 +62,13 @@ final class MonitoringController {
         }
     }
 
+    private var hasStarted = false
+
     func start() {
+        // ContentView's .task re-runs on every window reopen; the poll timer
+        // must not be reset (indefinitely postponing polls) each time.
+        guard !hasStarted else { return }
+        hasStarted = true
         requestNotificationPermission()
         scheduleTimer()
         // Refreshes happen via ContentView .task on launch; the timer handles
@@ -93,6 +99,7 @@ final class MonitoringController {
         guard UserDefaults.standard.bool(forKey: SettingsKeys.monitoringEnabled) else {
             return
         }
+        // Benchmark suppression lives inside DriveStore.refresh itself.
         // Background polls let spun-down drives sleep.
         await store.refresh(wakingSleepingDrives: false)
         evaluateAlerts()
@@ -173,7 +180,11 @@ final class MonitoringController {
         let runningKey = SettingsKeys.selfTestRunningPrefix + key
 
         if status.inProgress {
-            defaults.set(true, forKey: runningKey)
+            // Write only on transition — every UserDefaults write posts
+            // didChangeNotification, which the interval observer must field.
+            if !defaults.bool(forKey: runningKey) {
+                defaults.set(true, forKey: runningKey)
+            }
             return
         }
 
@@ -184,8 +195,8 @@ final class MonitoringController {
         let resultChanged = previousCode >= 0 && code != previousCode
 
         defer {
-            defaults.set(code, forKey: codeKey)
-            defaults.set(false, forKey: runningKey)
+            if previousCode != code { defaults.set(code, forKey: codeKey) }
+            if sawRun { defaults.set(false, forKey: runningKey) }
         }
         // Report a genuinely new terminal result; a user abort is not a fault.
         guard sawRun || resultChanged, !status.wasAborted else { return }

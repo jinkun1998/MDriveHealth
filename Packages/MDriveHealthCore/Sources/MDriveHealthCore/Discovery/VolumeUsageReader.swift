@@ -53,11 +53,30 @@ public enum VolumeUsageReader {
     /// plane, via AppleAPFSContainerScheme on the physical store partition.
     public static func volumes(forDriveRegistryEntryID registryEntryID: UInt64)
         -> [VolumeUsage] {
+        volumes(forDriveRegistryEntryID: registryEntryID,
+                mounts: mountedFilesystems())
+    }
+
+    /// Batch variant: reads the mount table (and volume capacities) once for
+    /// the whole fleet instead of once per drive per refresh.
+    public static func volumes(forDrives drives: [DriveInfo]) -> [UInt64: [VolumeUsage]] {
+        let mounts = mountedFilesystems()
+        var byDrive: [UInt64: [VolumeUsage]] = [:]
+        for drive in drives {
+            byDrive[drive.id] = volumes(forDriveRegistryEntryID: drive.registryEntryID,
+                                        mounts: mounts)
+        }
+        return byDrive
+    }
+
+    private static func volumes(forDriveRegistryEntryID registryEntryID: UInt64,
+                                mounts: [(bsdName: String, mountPoint: String, fileSystemType: String)])
+        -> [VolumeUsage] {
         let deviceNames = descendantMediaBSDNames(of: registryEntryID)
         guard !deviceNames.isEmpty else { return [] }
 
         var volumes: [VolumeUsage] = []
-        for mount in mountedFilesystems() {
+        for mount in mounts {
             // Snapshot mounts ("disk3s3s1") have no IOMedia node of their
             // own; peel partition suffixes until a known device matches.
             guard belongsToDrive(mount.bsdName, deviceNames: deviceNames) else {

@@ -17,6 +17,7 @@ struct DriveDetailView: View {
         case overview = "Tổng quan"
         case attributes = "Thuộc tính SMART"
         case history = "Lịch sử"
+        case benchmark = "Tốc độ"
         case selfTest = "Self-test"
         case info = "Thiết bị"
         var id: String { rawValue }
@@ -44,6 +45,8 @@ struct DriveDetailView: View {
                     AttributesTab(snapshot: snapshot)
                 case .history:
                     HistoryTab(snapshot: snapshot)
+                case .benchmark:
+                    BenchmarkTab(snapshot: snapshot)
                 case .selfTest:
                     SelfTestTab(snapshot: snapshot)
                 case .info:
@@ -75,31 +78,40 @@ struct DriveDetailView: View {
         }
     }
 
-    private var reportText: String {
-        ReportGenerator.text(for: snapshot,
-                             ioErrors24h: store.ioErrorCounts[snapshot.drive.bsdName])
+    /// Fetches the latest benchmark off the main thread, then builds the
+    /// report (the sqlite read must not block a toolbar click).
+    private func buildReport() async -> String {
+        let benchmark = try? await store.history?.latestBenchmark(
+            driveKey: HistoryStore.driveKey(for: snapshot.drive))
+        return ReportGenerator.text(
+            for: snapshot,
+            ioErrors24h: store.ioErrorCounts[snapshot.drive.bsdName],
+            latestBenchmark: benchmark ?? nil)
     }
 
     private func copyReport() {
-        let pasteboard = NSPasteboard.general
-        pasteboard.clearContents()
-        pasteboard.setString(reportText, forType: .string)
-        reportCopied = true
         Task {
+            let report = await buildReport()
+            let pasteboard = NSPasteboard.general
+            pasteboard.clearContents()
+            pasteboard.setString(report, forType: .string)
+            reportCopied = true
             try? await Task.sleep(for: .seconds(2))
             reportCopied = false
         }
     }
 
     private func saveReport() {
-        let panel = NSSavePanel()
-        let model = snapshot.drive.model.replacingOccurrences(of: " ", with: "-")
-        panel.nameFieldStringValue = "MDriveHealth-\(model).txt"
-        panel.allowedContentTypes = [.plainText]
-        let report = reportText
-        panel.begin { response in
-            guard response == .OK, let url = panel.url else { return }
-            try? report.write(to: url, atomically: true, encoding: .utf8)
+        Task {
+            let report = await buildReport()
+            let panel = NSSavePanel()
+            let model = snapshot.drive.model.replacingOccurrences(of: " ", with: "-")
+            panel.nameFieldStringValue = "MDriveHealth-\(model).txt"
+            panel.allowedContentTypes = [.plainText]
+            panel.begin { response in
+                guard response == .OK, let url = panel.url else { return }
+                try? report.write(to: url, atomically: true, encoding: .utf8)
+            }
         }
     }
 

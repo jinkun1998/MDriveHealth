@@ -38,18 +38,24 @@ public struct IOErrorEvent: Sendable, Codable, Hashable {
 }
 
 public enum IOErrorWatcher {
-    /// Returns kernel log lines mentioning I/O errors within the window.
+    /// Returns kernel log lines mentioning I/O errors within the window, or
+    /// nil when the scan itself failed (launch failure, timeout, nonzero
+    /// exit) — callers must treat nil as "unknown", not "no errors".
     /// `bsdName` (e.g. "disk0") narrows results to one device when given.
     public static func recentErrors(withinMinutes minutes: Int,
                                     bsdName: String? = nil,
-                                    timeout: TimeInterval = 20) -> [IOErrorEvent] {
+                                    timeout: TimeInterval = 20) -> [IOErrorEvent]? {
         var predicate = """
             process == "kernel" AND (eventMessage CONTAINS[c] "I/O error" \
             OR eventMessage CONTAINS[c] "read error" \
             OR eventMessage CONTAINS[c] "write error")
             """
         if let bsdName, !bsdName.isEmpty {
-            let escapedName = bsdName.replacingOccurrences(of: "\"", with: "\\\"")
+            // Escape backslashes BEFORE quotes so neither can break out of
+            // the NSPredicate string literal.
+            let escapedName = bsdName
+                .replacingOccurrences(of: "\\", with: "\\\\")
+                .replacingOccurrences(of: "\"", with: "\\\"")
             predicate += " AND eventMessage CONTAINS \"\(escapedName)\""
         }
 
@@ -61,12 +67,14 @@ public enum IOErrorWatcher {
         ]
         let stdout = Pipe()
         process.standardOutput = stdout
-        process.standardError = Pipe()
+        // Never a Pipe we don't drain: a chatty `log show` filling a 64 KB
+        // stderr pipe would deadlock the scan until the timeout kills it.
+        process.standardError = FileHandle.nullDevice
 
         do {
             try process.run()
         } catch {
-            return []
+            return nil
         }
         DispatchQueue.global().asyncAfter(deadline: .now() + timeout) {
             if process.isRunning {
@@ -75,7 +83,7 @@ public enum IOErrorWatcher {
         }
         let data = stdout.fileHandleForReading.readDataToEndOfFile()
         process.waitUntilExit()
-        guard process.terminationStatus == 0 else { return [] }
+        guard process.terminationStatus == 0 else { return nil }
 
         let formatter = DateFormatter()
         formatter.locale = Locale(identifier: "en_US_POSIX")

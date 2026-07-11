@@ -76,6 +76,23 @@ public final class HistoryStore: @unchecked Sendable {
                 ON drive_snapshots(drive_key, captured_at);
             CREATE INDEX IF NOT EXISTS idx_snapshots_time
                 ON drive_snapshots(captured_at);
+            CREATE TABLE IF NOT EXISTS benchmark_results (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                drive_key TEXT NOT NULL,
+                bsd_name TEXT,
+                volume_name TEXT,
+                mount_point TEXT,
+                captured_at REAL NOT NULL,
+                file_size INTEGER NOT NULL,
+                seq_block INTEGER NOT NULL,
+                rand_block INTEGER NOT NULL,
+                seq_write_bps REAL NOT NULL,
+                seq_read_bps REAL NOT NULL,
+                rand_write_bps REAL,
+                rand_read_bps REAL
+            );
+            CREATE INDEX IF NOT EXISTS idx_benchmarks_drive_time
+                ON benchmark_results(drive_key, captured_at);
             """)
     }
 
@@ -234,22 +251,29 @@ public final class HistoryStore: @unchecked Sendable {
 
     public func pruneOlderThan(_ date: Date) throws {
         try queue.sync {
-            let sql = "DELETE FROM drive_snapshots WHERE captured_at < ?"
-            var statement: OpaquePointer?
-            guard sqlite3_prepare_v2(db, sql, -1, &statement, nil) == SQLITE_OK else {
-                throw HistoryError.sqlite(String(cString: sqlite3_errmsg(db)))
-            }
-            defer { sqlite3_finalize(statement) }
-            sqlite3_bind_double(statement, 1, date.timeIntervalSince1970)
-            guard sqlite3_step(statement) == SQLITE_DONE else {
-                throw HistoryError.sqlite(String(cString: sqlite3_errmsg(db)))
+            for table in ["drive_snapshots", "benchmark_results"] {
+                let sql = "DELETE FROM \(table) WHERE captured_at < ?"
+                var statement: OpaquePointer?
+                guard sqlite3_prepare_v2(db, sql, -1, &statement, nil) == SQLITE_OK else {
+                    throw HistoryError.sqlite(String(cString: sqlite3_errmsg(db)))
+                }
+                defer { sqlite3_finalize(statement) }
+                sqlite3_bind_double(statement, 1, date.timeIntervalSince1970)
+                guard sqlite3_step(statement) == SQLITE_DONE else {
+                    throw HistoryError.sqlite(String(cString: sqlite3_errmsg(db)))
+                }
             }
         }
     }
 
     // MARK: - Internals
 
-    private func bindOptionalInt(_ statement: OpaquePointer?, _ index: Int32, _ value: Int64?) {
+    /// The benchmark extension in HistoryStore+Benchmark.swift reuses the
+    /// serialized queue and the sqlite handle through these.
+    var database: OpaquePointer? { db }
+    var serialQueue: DispatchQueue { queue }
+
+    func bindOptionalInt(_ statement: OpaquePointer?, _ index: Int32, _ value: Int64?) {
         if let value {
             sqlite3_bind_int64(statement, index, value)
         } else {

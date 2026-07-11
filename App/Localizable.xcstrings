@@ -2977,38 +2977,6 @@
         }
       }
     },
-    "Mở MDriveHealth": {
-      "localizations": {
-        "vi": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Mở MDriveHealth"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Open MDriveHealth"
-          }
-        }
-      }
-    },
-    "Làm mới ngay": {
-      "localizations": {
-        "vi": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Làm mới ngay"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Refresh now"
-          }
-        }
-      }
-    },
     "Đang đọc SMART…": {
       "localizations": {
         "vi": {
@@ -3037,22 +3005,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Settings…"
-          }
-        }
-      }
-    },
-    "Thoát MDriveHealth": {
-      "localizations": {
-        "vi": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Thoát MDriveHealth"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Quit MDriveHealth"
           }
         }
       }
@@ -3489,54 +3441,6 @@
         }
       }
     },
-    "menubar.smartNA": {
-      "localizations": {
-        "vi": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "SMART n/a"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "SMART n/a"
-          }
-        }
-      }
-    },
-    "menubar.reading": {
-      "localizations": {
-        "vi": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "MDriveHealth · Đang đọc SMART"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "MDriveHealth · Reading SMART"
-          }
-        }
-      }
-    },
-    "menubar.noData": {
-      "localizations": {
-        "vi": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "MDriveHealth · Chưa có dữ liệu"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "MDriveHealth · No data yet"
-          }
-        }
-      }
-    },
     "menubar.checkedAt": {
       "localizations": {
         "vi": {
@@ -3565,22 +3469,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "not checked yet"
-          }
-        }
-      }
-    },
-    "menubar.subtitle": {
-      "localizations": {
-        "vi": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%1$lld ổ · %2$@"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%1$lld drives · %2$@"
           }
         }
       }
@@ -3881,22 +3769,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Average writes per day"
-          }
-        }
-      }
-    },
-    "Dự kiến cạn lifetime": {
-      "localizations": {
-        "vi": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Dự kiến cạn lifetime"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Estimated lifetime exhaustion"
           }
         }
       }
@@ -4793,6 +4665,758 @@
           "stringUnit": {
             "state": "translated",
             "value": "Mounted volumes"
+          }
+        }
+      }
+    },
+    "Tốc độ": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tốc độ"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Speed"
+          }
+        }
+      }
+    },
+    "Đo tốc độ đọc/ghi": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đo tốc độ đọc/ghi"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Measure read/write speed"
+          }
+        }
+      }
+    },
+    "Volume": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Volume"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Volume"
+          }
+        }
+      }
+    },
+    "Cỡ dữ liệu đo": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cỡ dữ liệu đo"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Test data size"
+          }
+        }
+      }
+    },
+    "Đo thêm Random 4K (~16 giây)": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đo thêm Random 4K (~16 giây)"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Also measure Random 4K (~16s)"
+          }
+        }
+      }
+    },
+    "Bắt đầu đo": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bắt đầu đo"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Start test"
+          }
+        }
+      }
+    },
+    "Huỷ": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Huỷ"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cancel"
+          }
+        }
+      }
+    },
+    "Chạy lại": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chạy lại"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Run again"
+          }
+        }
+      }
+    },
+    "Lịch sử đo": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lịch sử đo"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Test history"
+          }
+        }
+      }
+    },
+    "Ghi (MB/s)": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ghi (MB/s)"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Write (MB/s)"
+          }
+        }
+      }
+    },
+    "Đọc (MB/s)": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đọc (MB/s)"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Read (MB/s)"
+          }
+        }
+      }
+    },
+    "MB/s": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "MB/s"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "MB/s"
+          }
+        }
+      }
+    },
+    "Giây": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Giây"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Seconds"
+          }
+        }
+      }
+    },
+    "Pha": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pha"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Phase"
+          }
+        }
+      }
+    },
+    "Tuần tự · Ghi": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tuần tự · Ghi"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sequential · Write"
+          }
+        }
+      }
+    },
+    "Tuần tự · Đọc": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tuần tự · Đọc"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sequential · Read"
+          }
+        }
+      }
+    },
+    "Random 4K · Ghi": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Random 4K · Ghi"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Random 4K · Write"
+          }
+        }
+      }
+    },
+    "Random 4K · Đọc": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Random 4K · Đọc"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Random 4K · Read"
+          }
+        }
+      }
+    },
+    "≈ lần trước": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "≈ lần trước"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "≈ last time"
+          }
+        }
+      }
+    },
+    "Không có volume nào mount trên ổ này": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Không có volume nào mount trên ổ này"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No volume mounted on this drive"
+          }
+        }
+      }
+    },
+    "Đang chạy benchmark trên ổ khác — đợi xong rồi đo ổ này.": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đang chạy benchmark trên ổ khác — đợi xong rồi đo ổ này."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A benchmark is running on another drive — wait for it to finish."
+          }
+        }
+      }
+    },
+    "Volume khởi động đi qua lớp mã hoá FileVault — kết quả phản ánh tốc độ đã mã hoá.": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Volume khởi động đi qua lớp mã hoá FileVault — kết quả phản ánh tốc độ đã mã hoá."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The boot volume passes through FileVault encryption — results reflect encrypted throughput."
+          }
+        }
+      }
+    },
+    "Ổ đang chạy SMART self-test — nên đợi test xong để có số chính xác.": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ổ đang chạy SMART self-test — nên đợi test xong để có số chính xác."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A SMART self-test is running — wait for it to finish for accurate numbers."
+          }
+        }
+      }
+    },
+    "Benchmark cần một volume đã mount và ghi được. Ổ chưa định dạng hoặc chưa mount thì không đo được.": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Benchmark cần một volume đã mount và ghi được. Ổ chưa định dạng hoặc chưa mount thì không đo được."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The benchmark needs a mounted, writable volume. Unformatted or unmounted drives can't be tested."
+          }
+        }
+      }
+    },
+    "Đo ở độ sâu hàng đợi QD1 (một luồng), nên số thường thấp hơn kết quả Q8T1 của CrystalDiskMark.": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đo ở độ sâu hàng đợi QD1 (một luồng), nên số thường thấp hơn kết quả Q8T1 của CrystalDiskMark."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Measured at queue depth QD1 (single thread), so numbers are usually lower than CrystalDiskMark's Q8T1."
+          }
+        }
+      }
+    },
+    "benchmark.phase.seqWrite": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ghi tuần tự"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sequential write"
+          }
+        }
+      }
+    },
+    "benchmark.phase.seqRead": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đọc tuần tự"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sequential read"
+          }
+        }
+      }
+    },
+    "benchmark.phase.randWrite": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ghi Random 4K"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Random 4K write"
+          }
+        }
+      }
+    },
+    "benchmark.phase.randRead": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đọc Random 4K"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Random 4K read"
+          }
+        }
+      }
+    },
+    "benchmark.delta.up": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "▲ %lld%% nhanh hơn lần trước"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "▲ %lld%% faster than last time"
+          }
+        }
+      }
+    },
+    "benchmark.delta.down": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "▼ %lld%% chậm hơn lần trước"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "▼ %lld%% slower than last time"
+          }
+        }
+      }
+    },
+    "report.speed": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "TỐC ĐỘ (benchmark)"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "SPEED (benchmark)"
+          }
+        }
+      }
+    },
+    "report.speed.when": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đo lúc"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Measured"
+          }
+        }
+      }
+    },
+    "report.speed.seq": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tuần tự"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sequential"
+          }
+        }
+      }
+    },
+    "report.speed.rand": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Random 4K"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Random 4K"
+          }
+        }
+      }
+    },
+    "benchmark.volumeOption": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@ — trống %2$@"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@ — %2$@ free"
+          }
+        }
+      }
+    },
+    "benchmark.notEnoughSpace": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Không đủ dung lượng trống trên volume này (cần ~%@)."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Not enough free space on this volume (need ~%@)."
+          }
+        }
+      }
+    },
+    "benchmark.warn.write": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Benchmark ghi %@ dữ liệu lên volume rồi tự xoá — tránh dùng ổ nặng trong lúc đo."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The benchmark writes %@ to the volume then deletes it — avoid heavy disk use while it runs."
+          }
+        }
+      }
+    },
+    "benchmark.result.caption": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@ · %2$@ · %3$@"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@ · %2$@ · %3$@"
+          }
+        }
+      }
+    },
+    "benchmark.history.sub": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@ · %2$@"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@ · %2$@"
+          }
+        }
+      }
+    },
+    "benchmark.history.wr": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "W %1$lld · R %2$lld MB/s"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "W %1$lld · R %2$lld MB/s"
+          }
+        }
+      }
+    },
+    "Sensor %lld": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sensor %lld"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sensor %lld"
+          }
+        }
+      }
+    },
+    "Raw": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Raw"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Raw"
+          }
+        }
+      }
+    },
+    "S/N %@": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "S/N %@"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "S/N %@"
+          }
+        }
+      }
+    },
+    "Dự kiến cạn SSD lifetime": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dự kiến cạn SSD lifetime"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Estimated SSD lifetime exhaustion"
+          }
+        }
+      }
+    },
+    "Kết quả gần nhất": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kết quả gần nhất"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Latest result"
+          }
+        }
+      }
+    },
+    "Biểu đồ tốc độ trực tiếp": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Biểu đồ tốc độ trực tiếp"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Live speed chart"
           }
         }
       }

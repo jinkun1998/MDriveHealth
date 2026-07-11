@@ -37,6 +37,9 @@ final class DriveStore {
     /// Set by notifications / the menu bar to select a drive in the main
     /// window; ContentView consumes and clears it.
     var pendingSelection: UInt64?
+    /// A disk benchmark is running; background SMART polling pauses so its
+    /// I/O does not skew the measurement.
+    var benchmarkInProgress = false
 
     /// Best-effort persistent history; nil when the database cannot be opened.
     let history: HistoryStore? = try? HistoryStore()
@@ -62,6 +65,10 @@ final class DriveStore {
     /// refreshes always read everything.
     func refresh(wakingSleepingDrives: Bool = true) async {
         guard !isRefreshing else { return }
+        // A running benchmark owns the disk: EVERY refresh path (background
+        // poll, manual button, self-test progress poll) must stay quiet so
+        // SMART commands and log scans don't skew the measurement.
+        guard !benchmarkInProgress else { return }
         isRefreshing = true
         defer { isRefreshing = false }
 
@@ -74,12 +81,16 @@ final class DriveStore {
             } catch {
                 return ([], error.localizedDescription)
             }
+            // One mount-table read serves the whole fleet.
+            let volumesByDrive = VolumeUsageReader.volumes(forDrives: drives)
             // Probe concurrently: one slow drive (e.g. an HDD spinning up)
             // must not stall the readings of every other drive.
             let snapshots = await withTaskGroup(of: (Int, DriveSnapshot).self) { group in
                 for (index, drive) in drives.enumerated() {
                     group.addTask {
-                        (index, Self.probe(drive: drive, historyStore: historyStore,
+                        (index, Self.probe(drive: drive,
+                                           volumes: volumesByDrive[drive.id] ?? [],
+                                           historyStore: historyStore,
                                            wakingSleepingDrives: wakingSleepingDrives))
                     }
                 }
@@ -101,13 +112,13 @@ final class DriveStore {
 
     /// Probes one drive; called concurrently off the main actor.
     nonisolated private static func probe(drive: DriveInfo,
+                                          volumes: [VolumeUsage],
                                           historyStore: HistoryStore?,
                                           wakingSleepingDrives: Bool) -> DriveSnapshot {
         var snapshot = DriveSnapshot(drive: drive)
         // Capacity works for every drive — including USB enclosures that
         // cannot serve SMART.
-        snapshot.volumes = VolumeUsageReader.volumes(
-            forDriveRegistryEntryID: drive.registryEntryID)
+        snapshot.volumes = volumes
         guard drive.smartInterface != .unsupported, !drive.isVirtual else {
             return snapshot
         }
@@ -172,10 +183,17 @@ final class DriveStore {
         let now = Date()
         guard let scanMinutes = IOErrorMonitor.scanMinutes(lastScan: lastIOScan, now: now)
         else { return }
-        lastIOScan = now
+        let previousScan = lastIOScan
+        lastIOScan = now   // claim the slot so overlapping refreshes don't double-scan
         let knownEvents = ioErrorEvents
         Task.detached(priority: .background) {
-            let fresh = IOErrorWatcher.recentErrors(withinMinutes: scanMinutes)
+            guard let fresh = IOErrorWatcher.recentErrors(withinMinutes: scanMinutes) else {
+                // Scan failed — restore the marker so the missed window is
+                // retried next time instead of silently dropped from the 24h
+                // counts.
+                await MainActor.run { [weak self] in self?.lastIOScan = previousScan }
+                return
+            }
             let window = IOErrorMonitor.merge(known: knownEvents, fresh: fresh, now: now)
             let counts = IOErrorMonitor.counts(events: window, bsdNames: bsdNames)
             await MainActor.run { [weak self] in
@@ -188,9 +206,13 @@ final class DriveStore {
     private var lastPrune: Date?
 
     private func pruneHistoryOccasionally() {
-        // Keep 12 months of history; prune at most once per app day.
+        // Keep 12 months of history; prune at most once per app day. The
+        // DELETE runs off-main — it can touch a year of rows.
         if let lastPrune, Date().timeIntervalSince(lastPrune) < 86_400 { return }
         lastPrune = Date()
-        try? history?.pruneOlderThan(Date().addingTimeInterval(-365 * 86_400))
+        guard let history else { return }
+        Task.detached(priority: .utility) {
+            try? await history.pruneOlderThan(Date().addingTimeInterval(-365 * 86_400))
+        }
     }
 }

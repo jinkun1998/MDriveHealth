@@ -59,6 +59,7 @@ struct MDriveHealthApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
     @State private var store: DriveStore
     @State private var monitor: MonitoringController
+    @State private var benchmark: BenchmarkRunner
     @AppStorage(SettingsKeys.showMenuBar) private var showMenuBar = true
     @AppStorage(SettingsKeys.menuBarDisplay) private var menuBarDisplay = MenuBarDisplay.icon
 
@@ -67,12 +68,14 @@ struct MDriveHealthApp: App {
         let store = DriveStore()
         _store = State(initialValue: store)
         _monitor = State(initialValue: MonitoringController(store: store))
+        _benchmark = State(initialValue: BenchmarkRunner(store: store))
     }
 
     var body: some Scene {
         WindowGroup(id: "main") {
             ContentView()
                 .environment(store)
+                .environment(benchmark)
                 .frame(minWidth: 860, minHeight: 560)
                 .task {
                     monitor.start()

@@ -37,9 +37,12 @@ struct DriveCompareView: View {
     @State private var selectedID: UInt64?
     /// 24h temperature series per drive for the sparkline column.
     @State private var temperatureSeries: [UInt64: [Double]] = [:]
+    /// Rebuilt on refresh/sort change — not per body evaluation, so the Table
+    /// isn't re-sorted (and re-diffed) every time anything in the store moves.
+    @State private var rows: [FleetRow] = []
 
-    private var rows: [FleetRow] {
-        store.visibleSnapshots.map(FleetRow.init).sorted(using: sortOrder)
+    private func rebuildRows() {
+        rows = store.visibleSnapshots.map(FleetRow.init).sorted(using: sortOrder)
     }
 
     var body: some View {
@@ -142,7 +145,11 @@ struct DriveCompareView: View {
             }
         }
         .padding()
-        .task(id: store.lastRefresh) { await loadSparklines() }
+        .task(id: store.lastRefresh) {
+            rebuildRows()
+            await loadSparklines()
+        }
+        .onChange(of: sortOrder) { rebuildRows() }
     }
 
     private func openDrive(_ id: UInt64?) {
@@ -152,19 +159,15 @@ struct DriveCompareView: View {
 
     private func loadSparklines() async {
         guard let history = store.history else { return }
-        let drives = store.visibleSnapshots.map(\.drive)
-        temperatureSeries = await Task.detached(priority: .utility) {
-            () -> [UInt64: [Double]] in
-            var series: [UInt64: [Double]] = [:]
-            let since = Date().addingTimeInterval(-24 * 3_600)
-            for drive in drives {
-                let key = HistoryStore.driveKey(for: drive)
-                let points = (try? history.history(driveKey: key, since: since,
-                                                   bucketInterval: 1_800)) ?? []
-                series[drive.id] = points.compactMap { $0.temperatureC.map(Double.init) }
-            }
-            return series
-        }.value
+        let since = Date().addingTimeInterval(-24 * 3_600)
+        var series: [UInt64: [Double]] = [:]
+        for drive in store.visibleSnapshots.map(\.drive) {
+            let key = HistoryStore.driveKey(for: drive)
+            let points = (try? await history.history(driveKey: key, since: since,
+                                                     bucketInterval: 1_800)) ?? []
+            series[drive.id] = points.compactMap { $0.temperatureC.map(Double.init) }
+        }
+        temperatureSeries = series
     }
 }
 

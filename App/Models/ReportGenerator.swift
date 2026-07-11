@@ -9,7 +9,8 @@ import MDriveHealthCore
 /// Builds the text report users copy into community posts when asking for
 /// help — everything a helper needs to assess the drive at a glance.
 enum ReportGenerator {
-    static func text(for snapshot: DriveSnapshot, ioErrors24h: Int?) -> String {
+    static func text(for snapshot: DriveSnapshot, ioErrors24h: Int?,
+                     latestBenchmark: BenchmarkResult? = nil) -> String {
         var lines: [String] = []
         let drive = snapshot.drive
 
@@ -26,7 +27,10 @@ enum ReportGenerator {
                 ? " · " + String(localized: "report.internal", defaultValue: "ổ trong")
                 : " · " + String(localized: "report.external", defaultValue: "ổ ngoài")))
         if let serial = drive.serialNumber {
-            lines.append(label(String(localized: "report.serial", defaultValue: "Serial")) + serial)
+            // Masked: this report is written to be pasted into public
+            // community posts — a full serial enables warranty fraud.
+            lines.append(label(String(localized: "report.serial", defaultValue: "Serial"))
+                + maskedSerial(serial))
         }
         if let firmware = drive.firmwareRevision {
             lines.append(label(String(localized: "report.firmware", defaultValue: "Firmware")) + firmware)
@@ -94,6 +98,20 @@ enum ReportGenerator {
             lines.append("")
         }
 
+        // Benchmark.
+        if let benchmark = latestBenchmark {
+            lines.append(section(String(localized: "report.speed", defaultValue: "TỐC ĐỘ (benchmark)")))
+            lines.append(label(String(localized: "report.speed.when", defaultValue: "Đo lúc"))
+                + "\(benchmark.capturedAt.formatted(date: .abbreviated, time: .shortened)) · \(benchmark.volumeName) · \(Format.bytes(benchmark.fileSizeBytes))")
+            lines.append(label(String(localized: "report.speed.seq", defaultValue: "Tuần tự"))
+                + "Ghi \(Format.speed(benchmark.sequentialWriteBytesPerSec)) · Đọc \(Format.speed(benchmark.sequentialReadBytesPerSec))")
+            if let rw = benchmark.randomWriteBytesPerSec, let rr = benchmark.randomReadBytesPerSec {
+                lines.append(label(String(localized: "report.speed.rand", defaultValue: "Random 4K"))
+                    + "Ghi \(Format.speed(rw)) (\(Format.iops(benchmark.randomWriteIOPS ?? 0))) · Đọc \(Format.speed(rr)) (\(Format.iops(benchmark.randomReadIOPS ?? 0)))")
+            }
+            lines.append("")
+        }
+
         // Raw SMART data.
         switch snapshot.reading {
         case .ata(let reading):
@@ -129,6 +147,10 @@ enum ReportGenerator {
         lines.append(String(localized: "report.footer",
                             defaultValue: "— Tạo bởi MDriveHealth, công cụ mã nguồn mở miễn phí cho cộng đồng Maclife —"))
         return lines.joined(separator: "\n")
+    }
+
+    private static func maskedSerial(_ serial: String) -> String {
+        serial.count > 4 ? "••••" + serial.suffix(4) : serial
     }
 
     private static func section(_ title: String) -> String {

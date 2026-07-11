@@ -194,7 +194,7 @@ private struct DriveMenuCard: View {
             }
             .padding(.horizontal, 10)
             .padding(.vertical, 8)
-            .background(.quaternary.opacity(0.4), in: RoundedRectangle(cornerRadius: 8))
+            .cardBackground(cornerRadius: 8)
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)

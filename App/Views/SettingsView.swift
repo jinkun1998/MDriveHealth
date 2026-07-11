@@ -102,7 +102,9 @@ struct SettingsView: View {
                     if checkingUpdates { ProgressView().controlSize(.small) }
                     if let release = availableRelease {
                         Button {
-                            NSWorkspace.shared.open(release.downloadURL ?? release.url)
+                            // Only https — the URL comes from remote JSON.
+                            let url = release.downloadURL ?? release.url
+                            if url.scheme == "https" { NSWorkspace.shared.open(url) }
                         } label: {
                             Label(String(localized: "update.download",
                                          defaultValue: "Tải bản \(release.version)"),

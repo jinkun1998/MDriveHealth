@@ -33,10 +33,10 @@ struct OverviewTab: View {
 
                 if let health = snapshot.health, let reading = snapshot.reading {
                     gaugeRow(health: health, reading: reading)
-                    quickStats(reading: reading)
-                }
-
-                if !snapshot.volumes.isEmpty {
+                    // Capacity fills the empty cells left by the last stat row.
+                    statsAndCapacity(reading: reading)
+                } else if !snapshot.volumes.isEmpty {
+                    // No SMART reading (e.g. USB) — still show capacity.
                     capacitySection
                 }
 
@@ -134,46 +134,117 @@ struct OverviewTab: View {
                 .strokeBorder(health.rating.color.opacity(0.22), lineWidth: 1))
     }
 
-    @ViewBuilder
-    private func quickStats(reading: DriveReading) -> some View {
-        let columns = [GridItem(.adaptive(minimum: 160), spacing: 10)]
-        LazyVGrid(columns: columns, spacing: 10) {
-            if let hours = reading.powerOnHours {
-                StatCard(title: "Thời gian hoạt động", value: Format.hours(hours),
-                         systemImage: "clock")
+    private struct StatItem: Identifiable {
+        let id: String              // icon name — unique per card, stable across renders
+        let title: LocalizedStringKey
+        let value: String
+    }
+
+    private func statItems(reading: DriveReading) -> [StatItem] {
+        var items: [StatItem] = []
+        if let hours = reading.powerOnHours {
+            items.append(.init(id: "clock", title: "Thời gian hoạt động",
+                               value: Format.hours(hours)))
+        }
+        if let cycles = reading.powerCycles {
+            items.append(.init(id: "power", title: "Số lần bật nguồn", value: "\(cycles)"))
+        }
+        if let written = reading.bytesWritten {
+            items.append(.init(id: "square.and.pencil", title: "Tổng dữ liệu đã ghi",
+                               value: Format.bytes(written)))
+        }
+        if case .nvme(let nvme) = reading {
+            items.append(.init(id: "doc.text.magnifyingglass", title: "Tổng dữ liệu đã đọc",
+                               value: Format.bytes(nvme.smart.bytesRead)))
+            items.append(.init(id: "bolt.slash", title: "Tắt nguồn đột ngột",
+                               value: "\(nvme.smart.unsafeShutdowns)"))
+            items.append(.init(id: "externaldrive.badge.plus", title: "Spare còn lại",
+                               value: "\(nvme.smart.availableSpare)%"))
+        }
+        if case .ata(let ata) = reading, let family = ata.driveFamily {
+            items.append(.init(id: "tag", title: "Dòng ổ (drivedb)", value: family))
+        }
+        if let rate = wearTrend?.bytesWrittenPerDay, rate > 0 {
+            items.append(.init(id: "chart.line.uptrend.xyaxis", title: "Ghi trung bình mỗi ngày",
+                               value: String(localized: "format.perDay",
+                                             defaultValue: "\(Format.bytes(UInt64(rate)))/ngày")))
+        }
+        if let exhaustion = wearTrend?.estimatedExhaustionDate {
+            items.append(.init(id: "hourglass", title: "Dự kiến cạn SSD lifetime",
+                               value: exhaustion.formatted(.dateTime.month(.wide).year())))
+        }
+        return items
+    }
+
+    /// Stat cards in a fixed 3-column grid; the capacity bar(s) fill the empty
+    /// cells left in the last row (and spill to full-width rows below when
+    /// there's more than one volume group or the last row is already full).
+    private func statsAndCapacity(reading: DriveReading) -> some View {
+        let stats = statItems(reading: reading)
+        let groups = VolumeUsageReader.capacityGroups(snapshot.volumes)
+        let columns = 3
+        let fullRows = stats.count / columns
+        let remainder = stats.count % columns
+        // First capacity group tucks into the trailing gap when there is one.
+        let inlineGroup = remainder > 0 ? groups.first : nil
+        let belowGroups = inlineGroup != nil ? Array(groups.dropFirst()) : groups
+
+        return Grid(horizontalSpacing: 10, verticalSpacing: 10) {
+            ForEach(0..<fullRows, id: \.self) { row in
+                GridRow {
+                    ForEach(0..<columns, id: \.self) { col in
+                        statCard(stats[row * columns + col])
+                    }
+                }
             }
-            if let cycles = reading.powerCycles {
-                StatCard(title: "Số lần bật nguồn", value: "\(cycles)",
-                         systemImage: "power")
+            if remainder > 0 {
+                GridRow {
+                    ForEach(0..<remainder, id: \.self) { col in
+                        statCard(stats[fullRows * columns + col])
+                    }
+                    if let inlineGroup {
+                        capacityCard(inlineGroup).gridCellColumns(columns - remainder)
+                    } else {
+                        Color.clear.gridCellColumns(columns - remainder)
+                    }
+                }
             }
-            if let written = reading.bytesWritten {
-                StatCard(title: "Tổng dữ liệu đã ghi", value: Format.bytes(written),
-                         systemImage: "square.and.pencil")
-            }
-            if case .nvme(let nvme) = reading {
-                StatCard(title: "Tổng dữ liệu đã đọc", value: Format.bytes(nvme.smart.bytesRead),
-                         systemImage: "doc.text.magnifyingglass")
-                StatCard(title: "Tắt nguồn đột ngột", value: "\(nvme.smart.unsafeShutdowns)",
-                         systemImage: "bolt.slash")
-                StatCard(title: "Spare còn lại", value: "\(nvme.smart.availableSpare)%",
-                         systemImage: "externaldrive.badge.plus")
-            }
-            if case .ata(let ata) = reading, let family = ata.driveFamily {
-                StatCard(title: "Dòng ổ (drivedb)", value: family,
-                         systemImage: "tag")
-            }
-            if let rate = wearTrend?.bytesWrittenPerDay, rate > 0 {
-                StatCard(title: "Ghi trung bình mỗi ngày",
-                         value: String(localized: "format.perDay",
-                                       defaultValue: "\(Format.bytes(UInt64(rate)))/ngày"),
-                         systemImage: "chart.line.uptrend.xyaxis")
-            }
-            if let exhaustion = wearTrend?.estimatedExhaustionDate {
-                StatCard(title: "Dự kiến cạn lifetime",
-                         value: exhaustion.formatted(.dateTime.month(.wide).year()),
-                         systemImage: "hourglass")
+            ForEach(belowGroups) { group in
+                GridRow {
+                    capacityCard(group).gridCellColumns(columns)
+                }
             }
         }
+    }
+
+    private func statCard(_ item: StatItem) -> some View {
+        StatCard(title: item.title, value: item.value, systemImage: item.id)
+    }
+
+    private func capacityCard(_ group: VolumeCapacityGroup) -> some View {
+        VStack(alignment: .leading, spacing: 6) {
+            HStack(spacing: 4) {
+                Image(systemName: snapshot.drive.isInternal
+                      ? "internaldrive" : "externaldrive")
+                    .font(.caption)
+                Text(verbatim: group.displayName)
+                    .font(.caption)
+                    .lineLimit(1)
+                Spacer(minLength: 6)
+                Text(verbatim: "\(Format.bytes(group.usedBytes)) / \(Format.bytes(group.totalBytes)) (\(Int(group.usedFraction * 100))%)")
+                    .font(.caption)
+                    .monospacedDigit()
+                    .lineLimit(1)
+            }
+            .foregroundStyle(.secondary)
+            ProgressView(value: group.usedFraction)
+                .tint(group.usedFraction >= 0.95 ? .red
+                      : group.usedFraction >= 0.85 ? .orange : .accentColor)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(12)
+        .cardBackground()
+        .accessibilityElement(children: .combine)
     }
 
     private var capacitySection: some View {
@@ -206,14 +277,10 @@ struct OverviewTab: View {
     private func loadWearTrend() async {
         guard let history = store.history, snapshot.health != nil else { return }
         let key = HistoryStore.driveKey(for: snapshot.drive)
-        let estimate = await Task.detached(priority: .utility) {
-            () -> WearTrendEstimate in
-            let since = Date().addingTimeInterval(-90 * 86_400)
-            let points = (try? history.history(driveKey: key, since: since,
-                                               bucketInterval: 3_600)) ?? []
-            return WearTrend.estimate(from: points)
-        }.value
-        wearTrend = estimate
+        let since = Date().addingTimeInterval(-90 * 86_400)
+        let points = (try? await history.history(driveKey: key, since: since,
+                                                 bucketInterval: 3_600)) ?? []
+        wearTrend = WearTrend.estimate(from: points)
     }
 
     @ViewBuilder

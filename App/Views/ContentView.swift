@@ -17,7 +17,9 @@ enum SidebarItem: Hashable {
 struct ContentView: View {
     @Environment(DriveStore.self) private var store
     @State private var selection: SidebarItem?
-    @State private var battery = BatteryReader.read()
+    // Loaded in .task — an initializer default would re-run the IOKit read on
+    // every struct re-init and discard the result (@State keeps the first).
+    @State private var battery: BatteryInfo?
 
     var body: some View {
         NavigationSplitView {
@@ -91,8 +93,10 @@ struct ContentView: View {
                         Label("Làm mới", systemImage: "arrow.clockwise")
                     }
                 }
-                .disabled(store.isRefreshing)
-                .help("Đọc lại SMART từ tất cả ổ đĩa")
+                .disabled(store.isRefreshing || store.benchmarkInProgress)
+                .help(store.benchmarkInProgress
+                      ? "Đang đo tốc độ — tạm dừng đọc SMART để không nhiễu kết quả"
+                      : "Đọc lại SMART từ tất cả ổ đĩa")
             }
         }
         // Both selection triggers below funnel through pendingSelection so
@@ -101,6 +105,7 @@ struct ContentView: View {
         // a pending id that has now loaded and otherwise picks the default.
         .onChange(of: store.snapshots.count) { applyPendingSelectionOrDefault() }
         .onChange(of: store.pendingSelection, initial: true) { applyPendingSelectionOrDefault() }
+        .task { battery = BatteryReader.read() }
         .onChange(of: store.lastRefresh) {
             battery = BatteryReader.read()
         }

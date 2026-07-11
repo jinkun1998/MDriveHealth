@@ -34,6 +34,8 @@ targets:
         CFBundleURLTypes:
           - CFBundleURLName: com.maclife.MDriveHealth
             CFBundleURLSchemes: [mdrivehealth]
+        # First write to an external volume root during a benchmark may prompt.
+        NSRemovableVolumesUsageDescription: "MDriveHealth ghi một file tạm thời để đo tốc độ đọc/ghi của ổ, rồi tự xoá."
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.maclife.MDriveHealth

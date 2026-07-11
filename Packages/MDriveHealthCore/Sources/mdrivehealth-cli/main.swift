@@ -21,6 +21,8 @@ func printUsage() {
     Usage:
       mdrivehealth-cli list            Liệt kê tất cả ổ đĩa
       mdrivehealth-cli smart [diskN]   Báo cáo SMART chi tiết (mặc định: mọi ổ hỗ trợ)
+      mdrivehealth-cli benchmark <vol> [--size 512m|1g|2g|5g] [--no-random] [--no-record]
+                                       Đo tốc độ (vol = /Volumes/X hoặc diskNsM)
       mdrivehealth-cli help
     """)
 }
@@ -237,6 +239,8 @@ case "list":
         FileHandle.standardError.write(Data("Lỗi: \(error.localizedDescription)\n".utf8))
         exit(1)
     }
+case "benchmark", "bench":
+    runBenchmarkCommand(arguments: Array(arguments.dropFirst()))
 case "help", "-h", "--help":
     printUsage()
 default:

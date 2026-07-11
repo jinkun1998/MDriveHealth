@@ -152,8 +152,14 @@ struct SelfTestTab: View {
             startedAt = Date()
             startError = nil
             // Pick up the "in progress" state right away so progress polling
-            // kicks in without a manual refresh.
-            Task { await store.refresh() }
+            // kicks in. A refresh may already be in flight (refresh() would
+            // silently drop ours) — wait it out, then read again.
+            Task {
+                while store.isRefreshing {
+                    try? await Task.sleep(for: .milliseconds(200))
+                }
+                await store.refresh()
+            }
         } catch {
             startError = String(localized: "selftest.error",
                                 defaultValue: "Không chạy được self-test: \(error.localizedDescription)")

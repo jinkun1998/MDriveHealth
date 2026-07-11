@@ -41,6 +41,10 @@ struct HistoryTab: View {
     @State private var range: Range = .week
     @State private var points: [HistoryPoint] = []
     @State private var hoverDate: Date?
+    /// Materialized from `points` on load/metric change — chartXSelection
+    /// re-evaluates body on every pointer move while scrubbing, so this must
+    /// not be recomputed per frame.
+    @State private var chartData: [(date: Date, value: Double)] = []
 
     private var timeLabel: String { String(localized: "chart.axis.time", defaultValue: "Thời gian") }
     private var markerLabel: String { String(localized: "chart.axis.marker", defaultValue: "Mốc") }
@@ -129,12 +133,13 @@ struct HistoryTab: View {
             }
         }
         .padding()
-        .task(id: "\(snapshot.id)-\(range.rawValue)") { reload() }
-        .onChange(of: store.lastRefresh) { reload() }
+        .task(id: "\(snapshot.id)-\(range.rawValue)") { await reload() }
+        .onChange(of: store.lastRefresh) { Task { await reload() } }
+        .onChange(of: metric) { rebuildChartData() }
     }
 
-    private var chartData: [(date: Date, value: Double)] {
-        points.compactMap { point in
+    private func rebuildChartData() {
+        chartData = points.compactMap { point in
             let value: Double?
             switch metric {
             case .temperature: value = point.temperatureC.map(Double.init)
@@ -203,12 +208,13 @@ struct HistoryTab: View {
         return Array(events.prefix(12))
     }
 
-    private func reload() {
+    private func reload() async {
         guard let history = store.history else { return }
         let key = HistoryStore.driveKey(for: snapshot.drive)
         let since = Date().addingTimeInterval(-range.interval)
         let bucket = max(1, range.interval / 1_000)
-        points = (try? history.history(
+        points = (try? await history.history(
             driveKey: key, since: since, bucketInterval: bucket)) ?? []
+        rebuildChartData()
     }
 }

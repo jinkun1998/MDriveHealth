@@ -39,5 +39,7 @@
 	<string>14.0</string>
 	<key>NSHumanReadableCopyright</key>
 	<string>© 2026 Maclife community — GPL-3.0-or-later</string>
+	<key>NSRemovableVolumesUsageDescription</key>
+	<string>MDriveHealth ghi một file tạm thời để đo tốc độ đọc/ghi của ổ, rồi tự xoá.</string>
 </dict>
 </plist>

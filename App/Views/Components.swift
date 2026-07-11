@@ -133,15 +133,36 @@ struct StatCard: View {
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(12)
-        .background(.quaternary.opacity(0.4), in: RoundedRectangle(cornerRadius: 10))
+        .cardBackground()
+        .accessibilityElement(children: .combine)
+    }
+}
+
+extension View {
+    /// Shared card chrome: soft fill plus a hairline border — the border is
+    /// what keeps card edges visible in dark mode, where a faint .quaternary
+    /// fill alone melts into the window background.
+    func cardBackground(cornerRadius: CGFloat = 10) -> some View {
+        self
+            .background(.quaternary.opacity(0.35),
+                        in: RoundedRectangle(cornerRadius: cornerRadius))
+            .overlay(RoundedRectangle(cornerRadius: cornerRadius)
+                .strokeBorder(Color.primary.opacity(0.07), lineWidth: 1))
     }
 }
 
 enum Format {
-    static func bytes(_ value: UInt64) -> String {
+    /// Shared instance — Format is only called from the main actor, and
+    /// formatter construction is a classic per-frame allocation sink (bytes()
+    /// runs dozens of times per render pass).
+    private static let byteFormatter: ByteCountFormatter = {
         let formatter = ByteCountFormatter()
         formatter.countStyle = .file
-        return formatter.string(fromByteCount: Int64(clamping: value))
+        return formatter
+    }()
+
+    static func bytes(_ value: UInt64) -> String {
+        byteFormatter.string(fromByteCount: Int64(clamping: value))
     }
 
     static func hours(_ value: UInt64) -> String {
@@ -154,5 +175,17 @@ enum Format {
 
     static func minutes(_ value: UInt64) -> String {
         String(localized: "format.minutes", defaultValue: "\(Int(clamping: value)) phút")
+    }
+
+    /// Throughput in decimal MB/s (1e6) — the disk-benchmark convention.
+    /// locale-aware so vi gets its decimal comma like every other number.
+    static func speed(_ bytesPerSecond: Double) -> String {
+        String(format: "%.1f MB/s", locale: .current, bytesPerSecond / 1e6)
+    }
+
+    static func iops(_ value: Double) -> String {
+        value >= 1000
+            ? String(format: "%.1fk IOPS", locale: .current, value / 1000)
+            : String(format: "%.0f IOPS", locale: .current, value)
     }
 }

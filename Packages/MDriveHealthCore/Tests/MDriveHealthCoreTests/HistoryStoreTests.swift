@@ -129,6 +129,51 @@ final class HistoryStoreTests: XCTestCase {
         XCTAssertEqual(points.map(\.defectCount), [20, 80])
     }
 
+    private func sampleBenchmark(capturedAt: Date, seqWrite: Double = 2_000_000_000,
+                                 randomWrite: Double? = 60_000_000) -> BenchmarkResult {
+        BenchmarkResult(
+            capturedAt: capturedAt, volumeBSDName: "disk3s1", volumeName: "Macintosh HD",
+            mountPoint: "/", fileSizeBytes: 1 << 30, sequentialBlockBytes: 4 << 20,
+            randomBlockBytes: 4096, sequentialWriteBytesPerSec: seqWrite,
+            sequentialReadBytesPerSec: 2_800_000_000,
+            randomWriteBytesPerSec: randomWrite, randomReadBytesPerSec: nil)
+    }
+
+    func testBenchmarkRecordRoundTrip() throws {
+        let now = Date()
+        try store.record(benchmark: sampleBenchmark(capturedAt: now), driveKey: "BENCH#1")
+        let latest = try XCTUnwrap(try store.latestBenchmark(driveKey: "BENCH#1"))
+        XCTAssertEqual(latest.volumeName, "Macintosh HD")
+        XCTAssertEqual(latest.sequentialWriteBytesPerSec, 2_000_000_000, accuracy: 1)
+        XCTAssertEqual(latest.randomWriteBytesPerSec ?? 0, 60_000_000, accuracy: 1)
+        XCTAssertNil(latest.randomReadBytesPerSec, "nil random-read must round-trip as nil")
+        XCTAssertEqual(latest.randomWriteIOPS ?? 0, 60_000_000 / 4096, accuracy: 0.01)
+    }
+
+    func testLatestBenchmarkIsPerDriveKey() throws {
+        let base = Date(timeIntervalSince1970: 1_700_000_000)
+        for offset in [0.0, 100, 200] {
+            try store.record(benchmark: sampleBenchmark(capturedAt: base.addingTimeInterval(offset),
+                                                        seqWrite: 1_000_000_000 + offset),
+                             driveKey: "BENCH#1")
+        }
+        try store.record(benchmark: sampleBenchmark(capturedAt: base), driveKey: "BENCH#2")
+        let latest = try store.latestBenchmark(driveKey: "BENCH#1")
+        XCTAssertEqual(latest?.capturedAt, base.addingTimeInterval(200))
+        XCTAssertEqual(try store.benchmarks(driveKey: "BENCH#1", since: .distantPast).count, 3)
+        XCTAssertEqual(try store.benchmarks(driveKey: "BENCH#2", since: .distantPast).count, 1)
+    }
+
+    func testPruneRemovesOldBenchmarksAndKeepsRecent() throws {
+        let now = Date()
+        try store.record(benchmark: sampleBenchmark(capturedAt: now.addingTimeInterval(-400 * 86_400)),
+                         driveKey: "BENCH#1")
+        try store.record(benchmark: sampleBenchmark(capturedAt: now), driveKey: "BENCH#1")
+        try store.pruneOlderThan(now.addingTimeInterval(-365 * 86_400))
+        XCTAssertEqual(try store.benchmarks(driveKey: "BENCH#1", since: .distantPast).count, 1,
+                       "year-old benchmark should be pruned, recent one kept")
+    }
+
     func testKeysAreIsolatedAndPruneWorks() throws {
         let now = Date()
         let old = sampleReading(capturedAt: now.addingTimeInterval(-400 * 86_400))

@@ -784,6 +784,166 @@
           }
         }
       }
+    },
+    "benchmark.error.config": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cấu hình benchmark không hợp lệ: %@"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Invalid benchmark configuration: %@"
+          }
+        }
+      }
+    },
+    "benchmark.error.readonly": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Không ghi được lên volume %@ (chỉ đọc?)."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cannot write to volume %@ (read-only?)."
+          }
+        }
+      }
+    },
+    "benchmark.error.space": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Không đủ dung lượng trống: cần %1$lld byte, còn %2$lld byte."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Not enough free space: need %1$lld bytes, have %2$lld bytes."
+          }
+        }
+      }
+    },
+    "benchmark.error.filesize": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Định dạng ổ này giới hạn file tối đa %lld byte — hãy chọn cỡ nhỏ hơn."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This filesystem caps file size at %lld bytes — choose a smaller size."
+          }
+        }
+      }
+    },
+    "benchmark.error.create": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Không tạo được file kiểm tra tại %1$@ (errno %2$lld)."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Could not create the test file at %1$@ (errno %2$lld)."
+          }
+        }
+      }
+    },
+    "benchmark.error.io": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lỗi %1$@ khi đo (errno %2$lld)."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@ failed during the benchmark (errno %2$lld)."
+          }
+        }
+      }
+    },
+    "benchmark.error.short": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đọc/ghi thiếu: mong %1$lld byte, được %2$lld byte."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Short I/O: expected %1$lld bytes, got %2$lld bytes."
+          }
+        }
+      }
+    },
+    "benchmark.error.cancelled": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đã huỷ benchmark."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Benchmark cancelled."
+          }
+        }
+      }
+    },
+    "benchmark.error.running": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đang có một benchmark khác chạy."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Another benchmark is already running."
+          }
+        }
+      }
+    },
+    "benchmark.error.diskFull": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Volume bị đầy giữa lúc đo — hãy giải phóng thêm dung lượng rồi thử lại."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The volume filled up during the test — free some space and try again."
+          }
+        }
+      }
     }
   },
   "version": "1.0"
