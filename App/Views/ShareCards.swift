@@ -17,8 +17,10 @@ enum ShareCardRenderer {
         guard let cgImage = renderer.cgImage else { return nil }
         let rep = NSBitmapImageRep(cgImage: cgImage)
         guard let data = rep.representation(using: .png, properties: [:]) else { return nil }
+        // Unique per render — a fixed name would silently overwrite another
+        // drive's card between generating and sharing.
         let url = FileManager.default.temporaryDirectory
-            .appendingPathComponent("\(name).png")
+            .appendingPathComponent("\(name)-\(UUID().uuidString.prefix(8)).png")
         do {
             try data.write(to: url)
             return url
@@ -82,8 +84,8 @@ struct BenchmarkShareCard: View {
                     }
                 }
 
-                Text(String(localized: "share.footer",
-                            defaultValue: "Đo bằng MDriveHealth (QD1, \(Format.bytes(result.fileSizeBytes))) — app sức khoẻ ổ đĩa miễn phí cho cộng đồng Maclife 🇻🇳"))
+                Text(String(localized: "share.footer.qd",
+                            defaultValue: "Đo bằng MDriveHealth (QD\(result.queueDepth), \(Format.bytes(result.fileSizeBytes))) — app sức khoẻ ổ đĩa miễn phí cho cộng đồng Maclife 🇻🇳"))
                     .font(.caption)
                     .foregroundStyle(.gray)
             }

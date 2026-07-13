@@ -113,6 +113,11 @@ private func runProcessWithStatus(_ path: String, _ arguments: [String],
     DispatchQueue.global().asyncAfter(deadline: .now() + timeout) {
         if process.isRunning { process.terminate() }
     }
+    // SIGTERM can be ignored; without the SIGKILL escalation a stuck child
+    // would block readDataToEndOfFile() forever (spinner stuck in the UI).
+    DispatchQueue.global().asyncAfter(deadline: .now() + timeout + 2) {
+        if process.isRunning { kill(process.processIdentifier, SIGKILL) }
+    }
     let data = stdout.fileHandleForReading.readDataToEndOfFile()
     process.waitUntilExit()
     return (process.terminationStatus, data)

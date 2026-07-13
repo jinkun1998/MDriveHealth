@@ -157,6 +157,25 @@ final class CapacityVerifierTests: XCTestCase {
         XCTAssertFalse(FileManager.default.fileExists(
             atPath: CapacityVerifier.testDirectoryURL(for: volume).path))
     }
+    func testMissingFileDuringVerifyIsInconclusiveNotError() throws {
+        let verifier = CapacityVerifier()
+        let target: UInt64 = 48 << 10
+        _ = try verifier.fill(directory: directory, target: target, seed: 5,
+                              config: tinyConfig, isCancelled: { false },
+                              progress: { _ in })
+        // Simulate a drive erroring past some point: remove the middle file.
+        try FileManager.default.removeItem(
+            at: directory.appendingPathComponent("0001.bin"))
+
+        let outcome = try verifier.verify(directory: directory, expectedBytes: target,
+                                          seed: 5, config: tinyConfig,
+                                          isCancelled: { false }, progress: { _ in })
+        XCTAssertTrue(outcome.readErrorEncountered,
+                      "read failure must be reported, not thrown")
+        XCTAssertNil(outcome.firstCorruption)
+        XCTAssertEqual(outcome.okBytes, 16 << 10, "file 0000 verified before the failure")
+    }
+
 }
 
 private final class CollectedPhases: @unchecked Sendable {

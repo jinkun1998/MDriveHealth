@@ -1084,7 +1084,7 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "SMART attributes"
+            "value": "SMART"
           }
         }
       }
@@ -5789,22 +5789,6 @@
         }
       }
     },
-    "share.footer": {
-      "localizations": {
-        "vi": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Đo bằng MDriveHealth (QD1, %@) — app sức khoẻ ổ đĩa miễn phí cho cộng đồng Maclife 🇻🇳"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Measured with MDriveHealth (QD1, %@) — the free drive-health app for the Maclife community 🇻🇳"
-          }
-        }
-      }
-    },
     "share.capacity.fake": {
       "localizations": {
         "vi": {
@@ -6409,6 +6393,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Benchmarking — SMART polling is paused to avoid skewing results"
+          }
+        }
+      }
+    },
+    "share.footer.qd": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đo bằng MDriveHealth (QD%1$lld, %2$@) — app sức khoẻ ổ đĩa miễn phí cho cộng đồng Maclife 🇻🇳"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Measured with MDriveHealth (QD%1$lld, %2$@) — the free drive-health app for the Maclife community 🇻🇳"
           }
         }
       }

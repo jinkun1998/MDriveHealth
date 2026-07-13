@@ -137,9 +137,15 @@ struct DeviceInfoTab: View {
             }
         }
         .task(id: snapshot.id) {
+            // Reset first so a drive switch never shows the previous drive's
+            // bridge/TRIM; drop the result if this task was cancelled by a
+            // newer switch while we awaited.
+            bridge = nil
+            trimEnabled = nil
             bridge = USBBridgeReader.bridgeInfo(
                 forDriveRegistryEntryID: snapshot.drive.registryEntryID)
-            trimEnabled = await TrimStatusReader.trimSupport(bsdName: snapshot.drive.bsdName)
+            let trim = await TrimStatusReader.trimSupport(bsdName: snapshot.drive.bsdName)
+            if !Task.isCancelled { trimEnabled = trim }
         }
     }
 

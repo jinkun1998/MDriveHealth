@@ -36,6 +36,16 @@ xcodebuild -project MDriveHealth.xcodeproj -scheme MDriveHealth \
   OTHER_CODE_SIGN_FLAGS="--timestamp" ENABLE_HARDENED_RUNTIME=YES | tail -2
 
 cp -R "$DIST/MDriveHealth.xcarchive/Products/Applications/MDriveHealth.app" "$APP"
+
+# Re-stamp the linked SDK to 15.0 (min stays 14.0). Building with the 26.x
+# SDK makes SwiftUI on macOS 15.x take "new design" code paths it renders
+# blank (field report: everything inside ScrollViews invisible on 15.7).
+# The stamp invalidates the signature, so it runs BEFORE re-signing.
+echo "==> Stamping linked SDK to 15.0 for back-compat"
+vtool -set-build-version macos 14.0 15.0 -replace \
+  -output "$APP/Contents/MacOS/MDriveHealth" "$APP/Contents/MacOS/MDriveHealth"
+codesign --force --deep --sign "$IDENTITY" --timestamp \
+  --options runtime "$APP"
 codesign --verify --deep --strict "$APP"
 echo "==> Signature OK"
 

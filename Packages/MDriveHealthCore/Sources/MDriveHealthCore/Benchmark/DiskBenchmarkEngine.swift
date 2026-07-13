@@ -295,18 +295,21 @@ public final class DiskBenchmarkEngine: @unchecked Sendable {
                 + Double(sinceStartComponents.attoseconds) / 1e18
             lastEmit = now
             lastBytes = done
-            lock.unlock()
             let fraction: Double
             if let timeBudget, timeBudget > 0 {
                 fraction = min(1, sinceStart / timeBudget)
             } else {
                 fraction = min(1, Double(done) / Double(max(total, 1)))
             }
+            // Emit while still holding the lock: releasing first lets two
+            // workers deliver out of order (fraction regressions in the UI).
+            // The handler is cheap — it only schedules a MainActor hop.
             progress(BenchmarkProgress(
                 phase: phase,
                 fractionCompleted: fraction,
                 instantaneousBytesPerSecond: max(0, instant),
                 averageBytesPerSecond: sinceStart > 0 ? Double(done) / sinceStart : 0))
+            lock.unlock()
         }
     }
 

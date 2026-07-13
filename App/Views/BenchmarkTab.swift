@@ -22,6 +22,14 @@ struct BenchmarkTab: View {
 
     @State private var mode: Mode = .speed
     @State private var selectedVolumeID: String?
+
+    /// A run in progress on THIS drive pins its own mode — flipping the
+    /// picker must never hide a live progress view and its Cancel button.
+    private var effectiveMode: Mode {
+        if runner.isRunning, runner.ownerDriveID == snapshot.id { return .speed }
+        if capacityRunner.isRunning, capacityRunner.ownerDriveID == snapshot.id { return .capacity }
+        return mode
+    }
     @State private var fileSize: UInt64 = BenchmarkConfig.defaultFileSize
     @State private var includeRandom = false
     @State private var queueDepth = 1
@@ -57,7 +65,7 @@ struct BenchmarkTab: View {
                 } else if runner.isBusyElsewhere(driveID: snapshot.id)
                             || capacityRunner.isBusyElsewhere(driveID: snapshot.id) {
                     busyElsewhereBox
-                } else if mode == .speed {
+                } else if effectiveMode == .speed {
                     content
                     if !history.isEmpty {
                         historySection

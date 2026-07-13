@@ -47,6 +47,14 @@ public struct CapacityVerifyConfig: Sendable, Hashable {
             throw BenchmarkError.invalidConfiguration(
                 "fileSizeBytes must be a multiple of blockBytes and under 4 GiB")
         }
+        // A cap below one block floors the target to zero — run() would then
+        // write nothing and report a false "genuine" verdict.
+        if let cap = maxBytes {
+            guard cap >= UInt64(blockBytes) else {
+                throw BenchmarkError.invalidConfiguration(
+                    "maxBytes must be at least one block")
+            }
+        }
     }
 }
 
@@ -136,7 +144,9 @@ public final class CapacityVerifier: @unchecked Sendable {
         let values = try? directory.resourceValues(forKeys: [
             .volumeAvailableCapacityForImportantUsageKey, .volumeAvailableCapacityKey,
         ])
-        let free = (values?.volumeAvailableCapacityForImportantUsage).map(UInt64.init)
+        // Clamp: importantUsage is Int64 and can be NEGATIVE on APFS edge
+        // cases — a bare UInt64.init would trap.
+        let free = (values?.volumeAvailableCapacityForImportantUsage).map { UInt64(max(0, $0)) }
             ?? (values?.volumeAvailableCapacity).map { UInt64(max(0, $0)) }
             ?? volume.availableBytes
         guard free > config.reserveBytes + UInt64(config.blockBytes) else {
@@ -148,6 +158,11 @@ public final class CapacityVerifier: @unchecked Sendable {
         if let cap = config.maxBytes { target = min(target, cap) }
         // Whole blocks only — the tail sub-block isn't worth the alignment loss.
         target -= target % UInt64(config.blockBytes)
+        guard target >= UInt64(config.blockBytes) else {
+            throw BenchmarkError.insufficientFreeSpace(
+                requiredBytes: config.reserveBytes + UInt64(config.blockBytes),
+                availableBytes: free)
+        }
 
         let seed = UInt64.random(in: .min ... .max)
         let capturedAt = Date()
@@ -159,8 +174,16 @@ public final class CapacityVerifier: @unchecked Sendable {
                                 seed: seed, config: config,
                                 isCancelled: isCancelled, progress: progress)
 
-        let verdict: CapacityVerifyResult.Verdict =
-            verify.firstCorruption == nil ? .genuine : .fake
+        // Corruption anywhere = fake, even if reads also errored. Read errors
+        // with no corruption proven = inconclusive (never a false "genuine").
+        let verdict: CapacityVerifyResult.Verdict
+        if verify.firstCorruption != nil {
+            verdict = .fake
+        } else if verify.readErrorEncountered {
+            verdict = .inconclusive
+        } else {
+            verdict = .genuine
+        }
         return CapacityVerifyResult(
             capturedAt: capturedAt,
             volumeName: volume.name, mountPoint: volume.mountPoint,
@@ -200,6 +223,9 @@ public final class CapacityVerifier: @unchecked Sendable {
         let okBytes: UInt64
         let firstCorruption: UInt64?
         let corruptedBlocks: Int
+        /// Read failed mid-verify (fake drives often EIO past the wrap
+        /// point) — verification stopped early but collected evidence stands.
+        let readErrorEncountered: Bool
         let bytesPerSec: Double
     }
 
@@ -241,12 +267,17 @@ public final class CapacityVerifier: @unchecked Sendable {
                     let failure = errno
                     close(fd)
                     // Running out of space here is EXPECTED (we fill to the
-                    // brim of the reserve) — stop filling and verify what fits.
-                    if n == -1, failure == ENOSPC { return FillOutcome(
-                        bytes: written,
-                        bytesPerSec: rate(bytes: written, since: start, clock: clock)) }
-                    if n == -1 { throw BenchmarkError.ioFailed(operation: "pwrite", errno: failure) }
-                    throw BenchmarkError.shortIO(expectedBytes: block, actualBytes: n)
+                    // brim of the reserve) — stop filling and verify what
+                    // fits. That shows up either as -1/ENOSPC (nothing fit)
+                    // or, far more commonly, a PARTIAL write (n < block:
+                    // space ran out mid-request). The partial tail block is
+                    // discarded; `written` only ever counts whole blocks.
+                    if (n == -1 && failure == ENOSPC) || (n >= 0 && n < block) {
+                        return FillOutcome(
+                            bytes: written,
+                            bytesPerSec: rate(bytes: written, since: start, clock: clock))
+                    }
+                    throw BenchmarkError.ioFailed(operation: "pwrite", errno: failure)
                 }
                 fileBytes += UInt64(block)
                 written += UInt64(block)
@@ -302,8 +333,12 @@ public final class CapacityVerifier: @unchecked Sendable {
             let path = directory.appendingPathComponent(String(format: "%04d.bin", fileIndex)).path
             let fd = open(path, O_RDONLY)
             guard fd >= 0 else {
-                // Whole file unreadable/missing — treat as inconclusive I/O.
-                throw BenchmarkError.ioFailed(operation: "open(verify)", errno: errno)
+                // Whole file unreadable — stop, but keep the evidence
+                // gathered so far instead of discarding it with a throw.
+                return VerifyOutcome(okBytes: okBytes, firstCorruption: firstCorruption,
+                                     corruptedBlocks: corruptedBlocks,
+                                     readErrorEncountered: true,
+                                     bytesPerSec: rate(bytes: processed, since: start, clock: clock))
             }
             _ = fcntl(fd, F_NOCACHE, 1)
             var fileBytes: UInt64 = 0
@@ -312,10 +347,15 @@ public final class CapacityVerifier: @unchecked Sendable {
                 if isCancelled() { close(fd); throw BenchmarkError.cancelled }
                 let n = pread(fd, readBuffer, block, off_t(fileBytes))
                 guard n == block else {
-                    let failure = errno
                     close(fd)
-                    if n == -1 { throw BenchmarkError.ioFailed(operation: "pread", errno: failure) }
-                    throw BenchmarkError.shortIO(expectedBytes: block, actualBytes: n)
+                    // Fake drives often return EIO past the wrap point.
+                    // A read failure is itself evidence — return the partial
+                    // outcome (fake if corruption already seen, else
+                    // inconclusive) rather than aborting with a raw error.
+                    return VerifyOutcome(okBytes: okBytes, firstCorruption: firstCorruption,
+                                         corruptedBlocks: corruptedBlocks,
+                                         readErrorEncountered: true,
+                                         bytesPerSec: rate(bytes: processed, since: start, clock: clock))
                 }
                 Self.fillPattern(buffer: expectBuffer, byteCount: block,
                                  seed: seed, blockIndex: globalBlock)
@@ -349,6 +389,7 @@ public final class CapacityVerifier: @unchecked Sendable {
         }
         return VerifyOutcome(okBytes: okBytes, firstCorruption: firstCorruption,
                              corruptedBlocks: corruptedBlocks,
+                             readErrorEncountered: false,
                              bytesPerSec: rate(bytes: processed, since: start, clock: clock))
     }
 

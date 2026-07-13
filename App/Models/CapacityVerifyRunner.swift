@@ -29,6 +29,9 @@ final class CapacityVerifyRunner {
     private let store: DriveStore
     private let verifier = CapacityVerifier()
     private var cancelFlag: CancelBox?
+    /// Straggler progress hops from a cancelled run must not touch the next
+    /// run's state (same guard BenchmarkRunner uses).
+    private var runGeneration = 0
 
     init(store: DriveStore) { self.store = store }
 
@@ -46,6 +49,8 @@ final class CapacityVerifyRunner {
         let verifier = verifier
         let cancelFlag = CancelBox()
         self.cancelFlag = cancelFlag
+        runGeneration += 1
+        let generation = runGeneration
 
         progress = nil
         ownerDriveID = snapshot.id
@@ -60,7 +65,7 @@ final class CapacityVerifyRunner {
                         volume: volume,
                         isCancelled: { cancelFlag.isSet },
                         progress: { p in
-                            Task { @MainActor in self.apply(p) }
+                            Task { @MainActor in self.apply(p, generation: generation) }
                         })
                 }
                 finish(.finished(result))
@@ -86,8 +91,8 @@ final class CapacityVerifyRunner {
 
     // MARK: - Private
 
-    private func apply(_ p: CapacityVerifyProgress) {
-        guard isRunning else { return }
+    private func apply(_ p: CapacityVerifyProgress, generation: Int) {
+        guard generation == runGeneration, isRunning else { return }
         progress = p
         state = .running(p.phase)
     }

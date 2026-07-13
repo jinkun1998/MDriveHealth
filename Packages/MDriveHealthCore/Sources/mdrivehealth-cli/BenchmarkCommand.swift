@@ -110,7 +110,7 @@ func runBenchmarkCommand(arguments: [String]) {
 func runVerifyCapacityCommand(arguments: [String]) {
     guard let target = arguments.first, !target.hasPrefix("-") else {
         FileHandle.standardError.write(Data(
-            "Cần chỉ định volume: mdrivehealth-cli verify-capacity </Volumes/X | diskNsM> [--max 8g]\n".utf8))
+            "Cần chỉ định volume: mdrivehealth-cli verify-capacity </Volumes/X | diskNsM> [--max 512m|1g|2g|5g]\n".utf8))
         exit(2)
     }
     var config = CapacityVerifyConfig()
